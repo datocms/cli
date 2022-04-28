@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI to interact with DatoCMS APIs",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -17,7 +17,7 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
-    "@datocms/cli-utils": "^0.1.0",
+    "@datocms/cli-utils": "^0.1.1",
     "@oclif/core": "^1",
     "@oclif/plugin-autocomplete": "^1.2.0",
     "@oclif/plugin-help": "^5",
