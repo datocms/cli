@@ -41,5 +41,6 @@
   "keywords": [
     "oclif"
   ],
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "gitHead": "1b871e11c8b693622e23b1844ff65b870210552c"
 }
