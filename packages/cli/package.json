@@ -1,0 +1,67 @@
+{
+  "name": "@datocms/cli",
+  "version": "0.1.0",
+  "description": "CLI to interact with DatoCMS APIs",
+  "author": "Stefano Verna <s.verna@datocms.com>",
+  "bin": {
+    "datocms": "./bin/run"
+  },
+  "homepage": "https://github.com/datocms/cli",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": "datocms/cli",
+  "files": [
+    "/bin",
+    "/dist",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "dependencies": {
+    "@datocms/cli-utils": "0.1.0",
+    "lodash": "^4.17.21",
+    "@oclif/core": "^1",
+    "@oclif/plugin-autocomplete": "^1.2.0",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-not-found": "^2.3.1",
+    "@oclif/plugin-plugins": "^2.0.1",
+    "@oclif/plugin-warn-if-update-available": "^2.0.4"
+  },
+  "oclif": {
+    "bin": "datocms",
+    "dirname": "datocms",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins",
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-warn-if-update-available"
+    ],
+    "topicSeparator": ":",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      },
+      "env": {
+        "description": "Manage a project primary/sandbox environments"
+      }
+    }
+  },
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "yarn lint",
+    "prepack": "yarn build && oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "bugs": "https://github.com/datocms/cli/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "types": "dist/index.d.ts"
+}

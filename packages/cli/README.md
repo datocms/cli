@@ -1,0 +1,560 @@
+# DatoCMS CLI
+
+<!-- toc -->
+
+- [DatoCMS CLI](#datocms-cli)
+- [Usage](#usage)
+- [Commands](#commands)
+<!-- tocstop -->
+
+# Usage
+
+<!-- usage -->
+
+```sh-session
+$ npm install -g @datocms/cli
+$ datocms COMMAND
+running command...
+$ datocms (--version)
+@datocms/cli/0.0.0 darwin-x64 node-v14.17.5
+$ datocms --help [COMMAND]
+USAGE
+  $ datocms COMMAND
+...
+```
+
+<!-- usagestop -->
+
+# Commands
+
+<!-- commands -->
+
+- [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
+- [`datocms config:project:remove [PROJECT_ID]`](#datocms-configprojectremove-project_id)
+- [`datocms config:project:set API_TOKEN [PROJECT_ID]`](#datocms-configprojectset-api_token-project_id)
+- [`datocms env:destroy ENVIRONMENT_ID`](#datocms-envdestroy-environment_id)
+- [`datocms env:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-envfork-source_environment_id-new_environment_id)
+- [`datocms env:list`](#datocms-envlist)
+- [`datocms env:promote ENVIRONMENT_ID`](#datocms-envpromote-environment_id)
+- [`datocms help [COMMAND]`](#datocms-help-command)
+- [`datocms maintenance:off`](#datocms-maintenanceoff)
+- [`datocms maintenance:on`](#datocms-maintenanceon)
+- [`datocms plugins`](#datocms-plugins)
+- [`datocms plugins:install PLUGIN...`](#datocms-pluginsinstall-plugin)
+- [`datocms plugins:inspect PLUGIN...`](#datocms-pluginsinspect-plugin)
+- [`datocms plugins:install PLUGIN...`](#datocms-pluginsinstall-plugin-1)
+- [`datocms plugins:link PLUGIN`](#datocms-pluginslink-plugin)
+- [`datocms plugins:uninstall PLUGIN...`](#datocms-pluginsuninstall-plugin)
+- [`datocms plugins:uninstall PLUGIN...`](#datocms-pluginsuninstall-plugin-1)
+- [`datocms plugins:uninstall PLUGIN...`](#datocms-pluginsuninstall-plugin-2)
+- [`datocms plugins:update`](#datocms-pluginsupdate)
+
+## `datocms autocomplete [SHELL]`
+
+display autocomplete installation instructions
+
+```
+USAGE
+  $ datocms autocomplete [SHELL] [-r]
+
+ARGUMENTS
+  SHELL  shell type
+
+FLAGS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+DESCRIPTION
+  display autocomplete installation instructions
+
+EXAMPLES
+  $ datocms autocomplete
+
+  $ datocms autocomplete bash
+
+  $ datocms autocomplete zsh
+
+  $ datocms autocomplete --refresh-cache
+```
+
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.2.0/src/commands/autocomplete/index.ts)_
+
+## `datocms config:project:remove [PROJECT_ID]`
+
+Removes project from DatoCMS config file
+
+```
+USAGE
+  $ datocms config:project:remove [PROJECT_ID] [--json] [--config-file <value>]
+
+ARGUMENTS
+  PROJECT_ID  [default: default] The name of the project
+
+FLAGS
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Removes project from DatoCMS config file
+```
+
+_See code: [dist/commands/config/project/remove.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/config/project/remove.ts)_
+
+## `datocms config:project:set API_TOKEN [PROJECT_ID]`
+
+Adds/updates project settings in DatoCMS config file
+
+```
+USAGE
+  $ datocms config:project:set [API_TOKEN] [PROJECT_ID] [--json] [--config-file <value>]
+
+ARGUMENTS
+  API_TOKEN   The API token associated with the project
+  PROJECT_ID  [default: default] The local name for the project
+
+FLAGS
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Adds/updates project settings in DatoCMS config file
+```
+
+_See code: [dist/commands/config/project/set.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/config/project/set.ts)_
+
+## `datocms env:destroy ENVIRONMENT_ID`
+
+Destroys a sandbox environment
+
+```
+USAGE
+  $ datocms env:destroy [ENVIRONMENT_ID] [--json] [--config-file <value>] [--api-token <value>] [--project
+    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
+
+ARGUMENTS
+  ENVIRONMENT_ID  The environment to destroy
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --project=<value>                               [default: default] Use the API key of a specific project contained in
+                                                  config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Destroys a sandbox environment
+```
+
+_See code: [dist/commands/env/destroy.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/env/destroy.ts)_
+
+## `datocms env:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
+
+Creates a new sandbox environment by forking an existing one
+
+```
+USAGE
+  $ datocms env:fork [SOURCE_ENVIRONMENT_ID] [NEW_ENVIRONMENT_ID] [--json] [--config-file <value>]
+    [--api-token <value>] [--project <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
+
+ARGUMENTS
+  SOURCE_ENVIRONMENT_ID  The environment to copy
+  NEW_ENVIRONMENT_ID     The name of the new sandbox environment to generate
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --project=<value>                               [default: default] Use the API key of a specific project contained in
+                                                  config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Creates a new sandbox environment by forking an existing one
+```
+
+_See code: [dist/commands/env/fork.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/env/fork.ts)_
+
+## `datocms env:list`
+
+Returns information regarding a project primary/sandbox environments
+
+```
+USAGE
+  $ datocms env:list [--json] [--config-file <value>] [--api-token <value>] [--project <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output
+    csv|json|yaml |  | [--csv | --no-truncate]] [--no-header | ]
+
+FLAGS
+  -x, --extended                                  show extra columns
+  --api-token=<value>                             Specify a custom API key to access a project
+  --columns=<value>                               only show provided columns (comma-separated)
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --csv                                           output is csv format [alias: --output=csv]
+  --filter=<value>                                filter property by partial string matching, ex: name=foo
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --no-header                                     hide table header from output
+  --no-truncate                                   do not truncate output to fit screen
+  --output=<option>                               output in a more machine friendly format
+                                                  <options: csv|json|yaml>
+  --project=<value>                               [default: default] Use the API key of a specific project contained in
+                                                  config file
+  --sort=<value>                                  property to sort by (prepend '-' for descending)
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Returns information regarding a project primary/sandbox environments
+```
+
+_See code: [dist/commands/env/list.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/env/list.ts)_
+
+## `datocms env:promote ENVIRONMENT_ID`
+
+Promotes a sandbox environment to primary
+
+```
+USAGE
+  $ datocms env:promote [ENVIRONMENT_ID] [--json] [--config-file <value>] [--api-token <value>] [--project
+    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
+
+ARGUMENTS
+  ENVIRONMENT_ID  The environment to promote
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --project=<value>                               [default: default] Use the API key of a specific project contained in
+                                                  config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Promotes a sandbox environment to primary
+```
+
+_See code: [dist/commands/env/promote.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/env/promote.ts)_
+
+## `datocms help [COMMAND]`
+
+Display help for datocms.
+
+```
+USAGE
+  $ datocms help [COMMAND] [-n]
+
+ARGUMENTS
+  COMMAND  Command to show help for.
+
+FLAGS
+  -n, --nested-commands  Include all nested commands in the output.
+
+DESCRIPTION
+  Display help for datocms.
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
+
+## `datocms maintenance:off`
+
+Take a project out of maintenance mode
+
+```
+USAGE
+  $ datocms maintenance:off [--json] [--config-file <value>] [--api-token <value>] [--project <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS]
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --project=<value>                               [default: default] Use the API key of a specific project contained in
+                                                  config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Take a project out of maintenance mode
+```
+
+_See code: [dist/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/maintenance/off.ts)_
+
+## `datocms maintenance:on`
+
+Put a project in maintenance mode
+
+```
+USAGE
+  $ datocms maintenance:on [--json] [--config-file <value>] [--api-token <value>] [--project <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--force]
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --force                                         Forces the activation of maintenance mode even there are users
+                                                  currently editing records
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --project=<value>                               [default: default] Use the API key of a specific project contained in
+                                                  config file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Put a project in maintenance mode
+```
+
+_See code: [dist/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v0.0.0/dist/commands/maintenance/on.ts)_
+
+## `datocms plugins`
+
+List installed plugins.
+
+```
+USAGE
+  $ datocms plugins [--core]
+
+FLAGS
+  --core  Show core plugins.
+
+DESCRIPTION
+  List installed plugins.
+
+EXAMPLES
+  $ datocms plugins
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/index.ts)_
+
+## `datocms plugins:install PLUGIN...`
+
+Installs a plugin into the CLI.
+
+```
+USAGE
+  $ datocms plugins:install PLUGIN...
+
+ARGUMENTS
+  PLUGIN  Plugin to install.
+
+FLAGS
+  -f, --force    Run yarn install with force flag.
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Installs a plugin into the CLI.
+
+  Can be installed from npm or a git url.
+
+  Installation of a user-installed plugin will override a core plugin.
+
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  the CLI without the need to patch and update the whole CLI.
+
+ALIASES
+  $ datocms plugins:add
+
+EXAMPLES
+  $ datocms plugins:install myplugin
+
+  $ datocms plugins:install https://github.com/someuser/someplugin
+
+  $ datocms plugins:install someuser/someplugin
+```
+
+## `datocms plugins:inspect PLUGIN...`
+
+Displays installation properties of a plugin.
+
+```
+USAGE
+  $ datocms plugins:inspect PLUGIN...
+
+ARGUMENTS
+  PLUGIN  [default: .] Plugin to inspect.
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Displays installation properties of a plugin.
+
+EXAMPLES
+  $ datocms plugins:inspect myplugin
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/inspect.ts)_
+
+## `datocms plugins:install PLUGIN...`
+
+Installs a plugin into the CLI.
+
+```
+USAGE
+  $ datocms plugins:install PLUGIN...
+
+ARGUMENTS
+  PLUGIN  Plugin to install.
+
+FLAGS
+  -f, --force    Run yarn install with force flag.
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Installs a plugin into the CLI.
+
+  Can be installed from npm or a git url.
+
+  Installation of a user-installed plugin will override a core plugin.
+
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  the CLI without the need to patch and update the whole CLI.
+
+ALIASES
+  $ datocms plugins:add
+
+EXAMPLES
+  $ datocms plugins:install myplugin
+
+  $ datocms plugins:install https://github.com/someuser/someplugin
+
+  $ datocms plugins:install someuser/someplugin
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/install.ts)_
+
+## `datocms plugins:link PLUGIN`
+
+Links a plugin into the CLI for development.
+
+```
+USAGE
+  $ datocms plugins:link PLUGIN
+
+ARGUMENTS
+  PATH  [default: .] path to plugin
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Links a plugin into the CLI for development.
+
+  Installation of a linked plugin will override a user-installed or core plugin.
+
+  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
+  command will override the user-installed or core plugin implementation. This is useful for development work.
+
+EXAMPLES
+  $ datocms plugins:link myplugin
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/link.ts)_
+
+## `datocms plugins:uninstall PLUGIN...`
+
+Removes a plugin from the CLI.
+
+```
+USAGE
+  $ datocms plugins:uninstall PLUGIN...
+
+ARGUMENTS
+  PLUGIN  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ datocms plugins:unlink
+  $ datocms plugins:remove
+```
+
+## `datocms plugins:uninstall PLUGIN...`
+
+Removes a plugin from the CLI.
+
+```
+USAGE
+  $ datocms plugins:uninstall PLUGIN...
+
+ARGUMENTS
+  PLUGIN  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ datocms plugins:unlink
+  $ datocms plugins:remove
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/uninstall.ts)_
+
+## `datocms plugins:uninstall PLUGIN...`
+
+Removes a plugin from the CLI.
+
+```
+USAGE
+  $ datocms plugins:uninstall PLUGIN...
+
+ARGUMENTS
+  PLUGIN  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ datocms plugins:unlink
+  $ datocms plugins:remove
+```
+
+## `datocms plugins:update`
+
+Update installed plugins.
+
+```
+USAGE
+  $ datocms plugins:update [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Update installed plugins.
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/update.ts)_
+
+<!-- commandsstop -->
