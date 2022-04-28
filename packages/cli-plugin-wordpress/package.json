@@ -16,6 +16,9 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@datocms/cli-utils": "^0.1.1",
     "@datocms/cma-client-node": "^0.1.3",
@@ -39,8 +42,9 @@
   },
   "bugs": "https://github.com/datocms/cli/issues",
   "keywords": [
-    "oclif"
+    "datocms",
+    "cli"
   ],
   "types": "dist/index.d.ts",
-  "gitHead": "1b871e11c8b693622e23b1844ff65b870210552c"
+  "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5"
 }

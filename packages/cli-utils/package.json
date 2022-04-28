@@ -23,5 +23,5 @@
     "build": "tsc",
     "prebuild": "rimraf dist"
   },
-  "gitHead": "1b871e11c8b693622e23b1844ff65b870210552c"
+  "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5"
 }
