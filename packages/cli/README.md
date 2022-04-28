@@ -16,7 +16,7 @@ $ npm install -g @datocms/cli
 $ datocms COMMAND
 running command...
 $ datocms (--version)
-@datocms/cli/0.1.1 darwin-x64 node-v14.17.5
+@datocms/cli/0.1.2 darwin-x64 node-v14.17.5
 $ datocms --help [COMMAND]
 USAGE
   $ datocms COMMAND
@@ -99,7 +99,7 @@ DESCRIPTION
   Removes project from DatoCMS config file
 ```
 
-_See code: [dist/commands/config/project/remove.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/config/project/remove.js)_
+_See code: [dist/commands/config/project/remove.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/config/project/remove.js)_
 
 ## `datocms config:project:set API_TOKEN [PROJECT_ID]`
 
@@ -123,7 +123,7 @@ DESCRIPTION
   Adds/updates project settings in DatoCMS config file
 ```
 
-_See code: [dist/commands/config/project/set.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/config/project/set.js)_
+_See code: [dist/commands/config/project/set.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/config/project/set.js)_
 
 ## `datocms env:destroy ENVIRONMENT_ID`
 
@@ -151,7 +151,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [dist/commands/env/destroy.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/env/destroy.js)_
+_See code: [dist/commands/env/destroy.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/destroy.js)_
 
 ## `datocms env:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -180,7 +180,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [dist/commands/env/fork.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/env/fork.js)_
+_See code: [dist/commands/env/fork.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/fork.js)_
 
 ## `datocms env:list`
 
@@ -215,7 +215,7 @@ DESCRIPTION
   Returns information regarding a project primary/sandbox environments
 ```
 
-_See code: [dist/commands/env/list.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/env/list.js)_
+_See code: [dist/commands/env/list.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/list.js)_
 
 ## `datocms env:promote ENVIRONMENT_ID`
 
@@ -243,7 +243,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [dist/commands/env/promote.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/env/promote.js)_
+_See code: [dist/commands/env/promote.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/promote.js)_
 
 ## `datocms help [COMMAND]`
 
@@ -288,7 +288,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [dist/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/maintenance/off.js)_
+_See code: [dist/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/maintenance/off.js)_
 
 ## `datocms maintenance:on`
 
@@ -315,7 +315,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [dist/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v0.1.1/dist/commands/maintenance/on.js)_
+_See code: [dist/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/maintenance/on.js)_
 
 ## `datocms plugins`
 
