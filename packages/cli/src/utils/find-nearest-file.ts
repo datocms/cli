@@ -16,6 +16,6 @@ export async function findNearestFile(
       throw new Error(`No "${fileName}" file found`);
     }
 
-    return findNearestFile(parentDirectoryPath);
+    return findNearestFile(fileName, parentDirectoryPath);
   }
 }
