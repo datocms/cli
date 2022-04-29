@@ -1,5 +1,7 @@
 # DatoCMS CLI
 
+DatoCMS CLI tool for managing DatoCMS projects, environments and schemas.
+
 <!-- toc -->
 
 - [DatoCMS CLI](#datocms-cli)
@@ -7,23 +9,28 @@
 - [Commands](#commands)
 <!-- tocstop -->
 
-# Usage
+<br /><br />
+<a href="https://www.datocms.com/">
+<img src="https://www.datocms.com/images/full_logo.svg" height="60">
+</a>
+<br /><br />
 
-<!-- usage -->
+# Usage
 
 ```sh-session
 $ npm install -g @datocms/cli
+
 $ datocms COMMAND
 running command...
+
 $ datocms (--version)
 @datocms/cli/0.1.6 darwin-x64 node-v14.19.1
+
 $ datocms --help [COMMAND]
 USAGE
   $ datocms COMMAND
 ...
 ```
-
-<!-- usagestop -->
 
 # Commands
 
