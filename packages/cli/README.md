@@ -16,7 +16,7 @@ $ npm install -g @datocms/cli
 $ datocms COMMAND
 running command...
 $ datocms (--version)
-@datocms/cli/0.1.3 darwin-x64 node-v14.19.1
+@datocms/cli/0.1.4 darwin-x64 node-v14.19.1
 $ datocms --help [COMMAND]
 USAGE
   $ datocms COMMAND
@@ -103,7 +103,7 @@ DESCRIPTION
   Remove a project from DatoCMS config file
 ```
 
-_See code: [dist/commands/config/remove.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/config/remove.js)_
+_See code: [dist/commands/config/remove.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/config/remove.js)_
 
 ## `datocms config:set`
 
@@ -129,7 +129,7 @@ DESCRIPTION
   Add/update project settings in DatoCMS config file
 ```
 
-_See code: [dist/commands/config/set.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/config/set.js)_
+_See code: [dist/commands/config/set.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/config/set.js)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
@@ -156,7 +156,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [dist/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/destroy.js)_
+_See code: [dist/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/environments/destroy.js)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -184,7 +184,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [dist/commands/environments/fork.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/fork.js)_
+_See code: [dist/commands/environments/fork.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/environments/fork.js)_
 
 ## `datocms environments:index`
 
@@ -258,7 +258,7 @@ ALIASES
   $ datocms environments:list
 ```
 
-_See code: [dist/commands/environments/list.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/list.js)_
+_See code: [dist/commands/environments/list.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/environments/list.js)_
 
 ## `datocms environments:primary`
 
@@ -282,7 +282,7 @@ DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [dist/commands/environments/primary.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/primary.js)_
+_See code: [dist/commands/environments/primary.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/environments/primary.js)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -309,7 +309,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [dist/commands/environments/promote.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/promote.js)_
+_See code: [dist/commands/environments/promote.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/environments/promote.js)_
 
 ## `datocms help [COMMAND]`
 
@@ -353,7 +353,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [dist/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/maintenance/off.js)_
+_See code: [dist/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/maintenance/off.js)_
 
 ## `datocms maintenance:on`
 
@@ -379,7 +379,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [dist/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/maintenance/on.js)_
+_See code: [dist/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/maintenance/on.js)_
 
 ## `datocms migrations:new NAME`
 
@@ -405,7 +405,7 @@ DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [dist/commands/migrations/new.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/migrations/new.js)_
+_See code: [dist/commands/migrations/new.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/migrations/new.js)_
 
 ## `datocms migrations:run`
 
@@ -436,7 +436,7 @@ DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [dist/commands/migrations/run.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/migrations/run.js)_
+_See code: [dist/commands/migrations/run.js](https://github.com/datocms/cli/blob/v0.1.4/dist/commands/migrations/run.js)_
 
 ## `datocms plugins`
 
