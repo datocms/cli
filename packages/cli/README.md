@@ -16,7 +16,7 @@ $ npm install -g @datocms/cli
 $ datocms COMMAND
 running command...
 $ datocms (--version)
-@datocms/cli/0.1.2 darwin-x64 node-v14.17.5
+@datocms/cli/0.1.3 darwin-x64 node-v14.19.1
 $ datocms --help [COMMAND]
 USAGE
   $ datocms COMMAND
@@ -30,15 +30,19 @@ USAGE
 <!-- commands -->
 
 - [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
-- [`datocms config:project:remove [PROJECT_ID]`](#datocms-configprojectremove-project_id)
-- [`datocms config:project:set API_TOKEN [PROJECT_ID]`](#datocms-configprojectset-api_token-project_id)
-- [`datocms env:destroy ENVIRONMENT_ID`](#datocms-envdestroy-environment_id)
-- [`datocms env:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-envfork-source_environment_id-new_environment_id)
-- [`datocms env:list`](#datocms-envlist)
-- [`datocms env:promote ENVIRONMENT_ID`](#datocms-envpromote-environment_id)
+- [`datocms config:remove PROJECT_ID`](#datocms-configremove-project_id)
+- [`datocms config:set`](#datocms-configset)
+- [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
+- [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
+- [`datocms environments:index`](#datocms-environmentsindex)
+- [`datocms environments:list`](#datocms-environmentslist)
+- [`datocms environments:primary`](#datocms-environmentsprimary)
+- [`datocms environments:promote ENVIRONMENT_ID`](#datocms-environmentspromote-environment_id)
 - [`datocms help [COMMAND]`](#datocms-help-command)
 - [`datocms maintenance:off`](#datocms-maintenanceoff)
 - [`datocms maintenance:on`](#datocms-maintenanceon)
+- [`datocms migrations:new NAME`](#datocms-migrationsnew-name)
+- [`datocms migrations:run`](#datocms-migrationsrun)
 - [`datocms plugins`](#datocms-plugins)
 - [`datocms plugins:install PLUGIN...`](#datocms-pluginsinstall-plugin)
 - [`datocms plugins:inspect PLUGIN...`](#datocms-pluginsinspect-plugin)
@@ -78,60 +82,62 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.2.0/src/commands/autocomplete/index.ts)_
 
-## `datocms config:project:remove [PROJECT_ID]`
+## `datocms config:remove PROJECT_ID`
 
-Removes project from DatoCMS config file
+Remove a project from DatoCMS config file
 
 ```
 USAGE
-  $ datocms config:project:remove [PROJECT_ID] [--json] [--config-file <value>]
+  $ datocms config:remove [PROJECT_ID] [--json] [--config-file <value>]
 
 ARGUMENTS
-  PROJECT_ID  [default: default] The name of the project
+  PROJECT_ID  The name of the project
 
 FLAGS
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
 
 GLOBAL FLAGS
   --json  Format output as json.
 
 DESCRIPTION
-  Removes project from DatoCMS config file
+  Remove a project from DatoCMS config file
 ```
 
-_See code: [dist/commands/config/project/remove.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/config/project/remove.js)_
+_See code: [dist/commands/config/remove.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/config/remove.js)_
 
-## `datocms config:project:set API_TOKEN [PROJECT_ID]`
+## `datocms config:set`
 
-Adds/updates project settings in DatoCMS config file
+Add/update project settings in DatoCMS config file
 
 ```
 USAGE
-  $ datocms config:project:set [API_TOKEN] [PROJECT_ID] [--json] [--config-file <value>]
-
-ARGUMENTS
-  API_TOKEN   The API token associated with the project
-  PROJECT_ID  [default: default] The local name for the project
+  $ datocms config:set [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--migrations-dir <value>] [--migrations-model <value>]
 
 FLAGS
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file
+  --api-token=<value>                             API token for the project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging to use for the project
+  --migrations-dir=<value>                        Directory where script migrations will be stored
+  --migrations-model=<value>                      API key of the DatoCMS model used to store migration data
+  --project=<value>                               Local name for the project
 
 GLOBAL FLAGS
   --json  Format output as json.
 
 DESCRIPTION
-  Adds/updates project settings in DatoCMS config file
+  Add/update project settings in DatoCMS config file
 ```
 
-_See code: [dist/commands/config/project/set.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/config/project/set.js)_
+_See code: [dist/commands/config/set.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/config/set.js)_
 
-## `datocms env:destroy ENVIRONMENT_ID`
+## `datocms environments:destroy ENVIRONMENT_ID`
 
 Destroys a sandbox environment
 
 ```
 USAGE
-  $ datocms env:destroy [ENVIRONMENT_ID] [--json] [--config-file <value>] [--api-token <value>] [--project
+  $ datocms environments:destroy [ENVIRONMENT_ID] [--json] [--config-file <value>] [--project <value>] [--api-token
     <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
 
 ARGUMENTS
@@ -139,10 +145,9 @@ ARGUMENTS
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a project
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
-  --project=<value>                               [default: default] Use the API key of a specific project contained in
-                                                  config file
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --project=<value>                               Use settings of project in datocms.config.js
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -151,16 +156,16 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [dist/commands/env/destroy.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/destroy.js)_
+_See code: [dist/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/destroy.js)_
 
-## `datocms env:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
+## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
 Creates a new sandbox environment by forking an existing one
 
 ```
 USAGE
-  $ datocms env:fork [SOURCE_ENVIRONMENT_ID] [NEW_ENVIRONMENT_ID] [--json] [--config-file <value>]
-    [--api-token <value>] [--project <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
+  $ datocms environments:fork [SOURCE_ENVIRONMENT_ID] [NEW_ENVIRONMENT_ID] [--json] [--config-file <value>] [--project
+    <value>] [--api-token <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
 
 ARGUMENTS
   SOURCE_ENVIRONMENT_ID  The environment to copy
@@ -168,10 +173,9 @@ ARGUMENTS
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a project
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
-  --project=<value>                               [default: default] Use the API key of a specific project contained in
-                                                  config file
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --project=<value>                               Use settings of project in datocms.config.js
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -180,15 +184,15 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [dist/commands/env/fork.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/fork.js)_
+_See code: [dist/commands/environments/fork.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/fork.js)_
 
-## `datocms env:list`
+## `datocms environments:index`
 
-Returns information regarding a project primary/sandbox environments
+Lists primary/sandbox environments of a project
 
 ```
 USAGE
-  $ datocms env:list [--json] [--config-file <value>] [--api-token <value>] [--project <value>] [--log-level
+  $ datocms environments:index [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
     NONE|BASIC|BODY|BODY_AND_HEADERS] [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output
     csv|json|yaml |  | [--csv | --no-truncate]] [--no-header | ]
 
@@ -196,34 +200,97 @@ FLAGS
   -x, --extended                                  show extra columns
   --api-token=<value>                             Specify a custom API key to access a project
   --columns=<value>                               only show provided columns (comma-separated)
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
   --csv                                           output is csv format [alias: --output=csv]
   --filter=<value>                                filter property by partial string matching, ex: name=foo
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
   --no-header                                     hide table header from output
   --no-truncate                                   do not truncate output to fit screen
   --output=<option>                               output in a more machine friendly format
                                                   <options: csv|json|yaml>
-  --project=<value>                               [default: default] Use the API key of a specific project contained in
-                                                  config file
+  --project=<value>                               Use settings of project in datocms.config.js
   --sort=<value>                                  property to sort by (prepend '-' for descending)
 
 GLOBAL FLAGS
   --json  Format output as json.
 
 DESCRIPTION
-  Returns information regarding a project primary/sandbox environments
+  Lists primary/sandbox environments of a project
+
+ALIASES
+  $ datocms environments:index
+  $ datocms environments:list
 ```
 
-_See code: [dist/commands/env/list.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/list.js)_
+## `datocms environments:list`
 
-## `datocms env:promote ENVIRONMENT_ID`
+Lists primary/sandbox environments of a project
+
+```
+USAGE
+  $ datocms environments:list [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output
+    csv|json|yaml |  | [--csv | --no-truncate]] [--no-header | ]
+
+FLAGS
+  -x, --extended                                  show extra columns
+  --api-token=<value>                             Specify a custom API key to access a project
+  --columns=<value>                               only show provided columns (comma-separated)
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --csv                                           output is csv format [alias: --output=csv]
+  --filter=<value>                                filter property by partial string matching, ex: name=foo
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --no-header                                     hide table header from output
+  --no-truncate                                   do not truncate output to fit screen
+  --output=<option>                               output in a more machine friendly format
+                                                  <options: csv|json|yaml>
+  --project=<value>                               Use settings of project in datocms.config.js
+  --sort=<value>                                  property to sort by (prepend '-' for descending)
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Lists primary/sandbox environments of a project
+
+ALIASES
+  $ datocms environments:index
+  $ datocms environments:list
+```
+
+_See code: [dist/commands/environments/list.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/list.js)_
+
+## `datocms environments:primary`
+
+Returns the name the primary environment of a project
+
+```
+USAGE
+  $ datocms environments:primary [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS]
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --project=<value>                               Use settings of project in datocms.config.js
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Returns the name the primary environment of a project
+```
+
+_See code: [dist/commands/environments/primary.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/primary.js)_
+
+## `datocms environments:promote ENVIRONMENT_ID`
 
 Promotes a sandbox environment to primary
 
 ```
 USAGE
-  $ datocms env:promote [ENVIRONMENT_ID] [--json] [--config-file <value>] [--api-token <value>] [--project
+  $ datocms environments:promote [ENVIRONMENT_ID] [--json] [--config-file <value>] [--project <value>] [--api-token
     <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
 
 ARGUMENTS
@@ -231,10 +298,9 @@ ARGUMENTS
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a project
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
-  --project=<value>                               [default: default] Use the API key of a specific project contained in
-                                                  config file
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --project=<value>                               Use settings of project in datocms.config.js
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -243,7 +309,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [dist/commands/env/promote.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/env/promote.js)_
+_See code: [dist/commands/environments/promote.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/environments/promote.js)_
 
 ## `datocms help [COMMAND]`
 
@@ -271,15 +337,14 @@ Take a project out of maintenance mode
 
 ```
 USAGE
-  $ datocms maintenance:off [--json] [--config-file <value>] [--api-token <value>] [--project <value>] [--log-level
+  $ datocms maintenance:off [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
     NONE|BASIC|BODY|BODY_AND_HEADERS]
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a project
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
-  --project=<value>                               [default: default] Use the API key of a specific project contained in
-                                                  config file
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --project=<value>                               Use settings of project in datocms.config.js
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -288,7 +353,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [dist/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/maintenance/off.js)_
+_See code: [dist/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/maintenance/off.js)_
 
 ## `datocms maintenance:on`
 
@@ -296,17 +361,16 @@ Put a project in maintenance mode
 
 ```
 USAGE
-  $ datocms maintenance:on [--json] [--config-file <value>] [--api-token <value>] [--project <value>] [--log-level
+  $ datocms maintenance:on [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
     NONE|BASIC|BODY|BODY_AND_HEADERS] [--force]
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a project
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
   --force                                         Forces the activation of maintenance mode even there are users
                                                   currently editing records
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  [default: NONE] Log performed API calls
-  --project=<value>                               [default: default] Use the API key of a specific project contained in
-                                                  config file
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --project=<value>                               Use settings of project in datocms.config.js
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -315,7 +379,64 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [dist/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/maintenance/on.js)_
+_See code: [dist/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/maintenance/on.js)_
+
+## `datocms migrations:new NAME`
+
+Create a new migration script
+
+```
+USAGE
+  $ datocms migrations:new [NAME] [--json] [--config-file <value>] [--project <value>] [--ts | --js]
+
+ARGUMENTS
+  NAME  The name to give to the script
+
+FLAGS
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --js                   Forces the creation of a JavaScript migration file
+  --project=<value>      Use settings of project in datocms.config.js
+  --ts                   Forces the creation of a TypeScript migration file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Create a new migration script
+```
+
+_See code: [dist/commands/migrations/new.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/migrations/new.js)_
+
+## `datocms migrations:run`
+
+Run migration scripts that have not run yet
+
+```
+USAGE
+  $ datocms migrations:run [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--source <value>] [--destination <value> | --in-place] [--dry-run]
+    [--migrations-dir <value>] [--migrations-model <value>]
+
+FLAGS
+  --api-token=<value>                             Specify a custom API key to access a project
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --destination=<value>                           Forces the creation of a JavaScript migration file
+  --dry-run                                       Forces the creation of a JavaScript migration file
+  --in-place                                      Forces the creation of a JavaScript migration file
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --migrations-dir=<value>                        Directory where script migrations are stored
+  --migrations-model=<value>                      API key of the DatoCMS model used to store migration data
+  --project=<value>                               Use settings of project in datocms.config.js
+  --source=<value>                                Forces the creation of a TypeScript migration file
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Run migration scripts that have not run yet
+```
+
+_See code: [dist/commands/migrations/run.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/migrations/run.js)_
 
 ## `datocms plugins`
 

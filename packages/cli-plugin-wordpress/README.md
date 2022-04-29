@@ -16,7 +16,7 @@ $ npm install -g @datocms/cli-plugin-wordpress
 $ @datocms/cli-plugin-wordpress COMMAND
 running command...
 $ @datocms/cli-plugin-wordpress (--version)
-@datocms/cli-plugin-wordpress/0.1.2 darwin-x64 node-v14.17.5
+@datocms/cli-plugin-wordpress/0.1.3 darwin-x64 node-v14.19.1
 $ @datocms/cli-plugin-wordpress --help [COMMAND]
 USAGE
   $ @datocms/cli-plugin-wordpress COMMAND
@@ -46,6 +46,6 @@ DESCRIPTION
   Imports a Wordpress site into a DatoCMS project
 ```
 
-_See code: [dist/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v0.1.2/dist/commands/wordpress/import.js)_
+_See code: [dist/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v0.1.3/dist/commands/wordpress/import.js)_
 
 <!-- commandsstop -->
