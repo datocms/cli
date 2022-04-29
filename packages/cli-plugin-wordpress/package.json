@@ -9,7 +9,11 @@
   "homepage": "https://github.com/datocms/cli",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "datocms/cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datocms/cli.git",
+    "directory": "packages/cli-plugin-wordpress"
+  },
   "files": [
     "/bin",
     "/dist",
