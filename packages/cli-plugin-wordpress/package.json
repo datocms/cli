@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-wordpress",
-  "version": "0.1.4",
+  "version": "0.1.7",
   "description": "Plugin for DatoCMS CLI to interact with Wordpress sites",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -24,7 +24,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^0.1.4"
+    "@datocms/cli-utils": "^0.1.7"
   },
   "oclif": {
     "commands": "./lib/commands",
