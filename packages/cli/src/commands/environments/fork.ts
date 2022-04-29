@@ -1,6 +1,6 @@
-import { ClientCommand, Client } from '@datocms/cli-utils';
+import { CmaClientCommand, CmaClient } from '@datocms/cli-utils';
 
-export default class Command extends ClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description =
     'Creates a new sandbox environment by forking an existing one';
 
@@ -17,7 +17,7 @@ export default class Command extends ClientCommand<typeof Command.flags> {
     },
   ];
 
-  async run(): Promise<Client.SimpleSchemaTypes.Environment> {
+  async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
     const { SOURCE_ENVIRONMENT_ID: srcEnvId, NEW_ENVIRONMENT_ID: newEnvId } =
       this.parsedArgs;
 
@@ -36,12 +36,12 @@ export default class Command extends ClientCommand<typeof Command.flags> {
 
       return environment;
     } catch (e) {
-      if (e instanceof Client.ApiError && e.findError('NOT_FOUND')) {
+      if (e instanceof CmaClient.ApiError && e.findError('NOT_FOUND')) {
         this.error(`An environment called "${srcEnvId}" does not exist`);
       }
 
       if (
-        e instanceof Client.ApiError &&
+        e instanceof CmaClient.ApiError &&
         e.findError('INVALID_FIELD', {
           field: 'name',
           code: 'VALIDATION_UNIQUENESS',

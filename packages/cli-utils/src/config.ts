@@ -2,6 +2,9 @@ import { access, readFile } from 'fs/promises';
 
 export type ProjectConfig = {
   apiToken: string;
+  baseUrl?: string;
+  logLevel?: 'NONE' | 'BASIC' | 'BODY' | 'BODY_AND_HEADERS';
+  migrationsDir?: string;
 };
 
 export type Config = {

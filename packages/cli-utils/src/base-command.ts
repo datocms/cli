@@ -2,14 +2,14 @@ import { CliUx, Command } from '@oclif/core';
 import { get } from 'lodash';
 import { ParserOutput, FlagInput } from '@oclif/core/lib/interfaces';
 
-export type InferredFlagsType<T> = T extends FlagInput<infer F>
+type InferredFlagsType<T> = T extends FlagInput<infer F>
   ? F & {
       json: boolean | undefined;
       output: string | undefined;
     }
   : any;
 
-export default abstract class BaseCommand<
+export abstract class BaseCommand<
   T extends typeof BaseCommand.flags,
 > extends Command {
   static flags = {};

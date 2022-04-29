@@ -1,6 +1,6 @@
-import { ClientCommand, Client } from '@datocms/cli-utils';
+import { CmaClientCommand, CmaClient } from '@datocms/cli-utils';
 
-export default class Command extends ClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description = 'Promotes a sandbox environment to primary';
 
   static args = [
@@ -11,7 +11,7 @@ export default class Command extends ClientCommand<typeof Command.flags> {
     },
   ];
 
-  async run(): Promise<Client.SimpleSchemaTypes.Environment> {
+  async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
     const { ENVIRONMENT_ID: envId } = this.parsedArgs;
 
     try {
@@ -22,7 +22,7 @@ export default class Command extends ClientCommand<typeof Command.flags> {
 
       return result;
     } catch (e) {
-      if (e instanceof Client.ApiError && e.findError('NOT_FOUND')) {
+      if (e instanceof CmaClient.ApiError && e.findError('NOT_FOUND')) {
         this.error(`An environment called "${envId}" does not exist!`);
       }
 
