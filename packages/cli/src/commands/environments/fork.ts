@@ -49,7 +49,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       ) {
         this.error(`An environment called "${newEnvId}" already exists`, {
           suggestions: [
-            `To delete the environment, run "${this.argv[0]} environments:destroy ${newEnvId}"`,
+            `To delete the environment, run "${this.config.bin} environments:destroy ${newEnvId}"`,
           ],
         });
       }

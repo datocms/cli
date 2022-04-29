@@ -5,13 +5,14 @@
   "author": "Stefano Verna <s.verna@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "directories": {
-    "lib": "dist"
+    "lib": "lib"
   },
   "files": [
-    "dist"
+    "lib",
+    "src"
   ],
   "publishConfig": {
     "access": "public"
@@ -24,7 +25,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "prebuild": "rimraf dist"
+    "prebuild": "rimraf lib"
   },
   "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5"
 }

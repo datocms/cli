@@ -8,7 +8,7 @@ import * as mkdirp from 'mkdirp';
 const jsTemplate = `
 'use strict';
 
-/** @param client { import("@datocms/cli/dist/cma-client-node").Client } */
+/** @param client { import("@datocms/cli/lib/cma-client-node").Client } */
 module.exports = async (client) => {
   // DatoCMS migration script
 
@@ -46,7 +46,7 @@ module.exports = async (client) => {
 `.trim();
 
 const tsTemplate = `
-import { Client } from '@datocms/cli/dist/cma-client-node';
+import { Client } from '@datocms/cli/lib/cma-client-node';
 
 export default async function(client: Client): Promise<void> {
   // DatoCMS migration script

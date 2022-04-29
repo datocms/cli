@@ -8,7 +8,7 @@
   },
   "homepage": "https://github.com/datocms/cli",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/datocms/cli.git",
@@ -16,7 +16,7 @@
   },
   "files": [
     "/bin",
-    "/dist",
+    "/lib",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
@@ -37,7 +37,7 @@
   "oclif": {
     "bin": "datocms",
     "dirname": "datocms",
-    "commands": "./dist/commands",
+    "commands": "./lib/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins",
@@ -45,6 +45,7 @@
       "@oclif/plugin-not-found",
       "@oclif/plugin-warn-if-update-available"
     ],
+    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli/<%- commandPath %>",
     "topicSeparator": ":",
     "topics": {
       "config": {
@@ -59,7 +60,7 @@
     }
   },
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf lib && tsc -b",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
@@ -75,9 +76,10 @@
     "datocms",
     "cli"
   ],
-  "types": "dist/index.d.ts",
+  "types": "lib/index.d.ts",
   "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5",
   "devDependencies": {
-    "@types/mkdirp": "^1.0.2"
+    "@types/mkdirp": "^1.0.2",
+    "typescript": "^4.4.3"
   }
 }

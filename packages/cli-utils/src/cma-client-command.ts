@@ -63,7 +63,7 @@ export abstract class CmaClientCommand<
           `The API token to use is determined by looking at:
 * The --apiToken flag
 * The DATOCMS_API_TOKEN environment variable
-* The settings contained in "${this.datoConfigRelativePath}"`,
+* Config file at "${this.datoConfigRelativePath}" (run "${this.config.bin} config:set" to setup)`,
         ],
       });
     }

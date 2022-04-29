@@ -3,7 +3,7 @@ import {
   Client,
   ApiError,
   SimpleSchemaTypes,
-} from '@datocms/cli-utils/dist/cma-client-node';
+} from '@datocms/cli-utils/lib/cma-client-node';
 import { access, readdir } from 'fs/promises';
 import { join, relative, resolve } from 'path';
 import { register as registerTsNode } from 'ts-node';

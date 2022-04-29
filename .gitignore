@@ -1,11 +1,10 @@
 *-debug.log
 *-error.log
 /.nyc_output
-**/dist
-/lib
 /package-lock.json
 /tmp
 /yarn.lock
+lib
 node_modules
 oclif.manifest.json
 datocms.config.json
