@@ -59,7 +59,7 @@ export abstract class CmaClientCommand<
           `The API key to use is determined by looking at:
 * The --apiToken flag
 * The DATOCMS_API_KEY environment variable
-* The settings contained in ${this.datoConfigPath}`,
+* The settings contained in ${this.datoConfigRelativePath}`,
         ],
       });
     }

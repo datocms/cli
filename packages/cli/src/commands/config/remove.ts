@@ -15,7 +15,7 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
 
     if (!this.datoConfig) {
       this.log(
-        `Config file not present in ${this.datoConfigPath}, skipping operation`,
+        `Config file not present in ${this.datoConfigRelativePath}, skipping operation`,
       );
       return;
     }

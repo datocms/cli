@@ -5,6 +5,8 @@ import {
   logLevelOptions,
   LogLevelFlagEnum,
 } from '@datocms/cli-utils';
+import { camelCase } from 'lodash';
+import { relative } from 'path';
 
 export default class Command extends DatoConfigCommand<typeof Command.flags> {
   static description = 'Add/update project settings in DatoCMS config file';
@@ -31,7 +33,7 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
   async run(): Promise<void> {
     if (!this.datoConfig) {
       this.log(
-        `Config file not present in ${this.datoConfigPath}, will be created from scratch`,
+        `Config file not present in ${this.datoConfigRelativePath}, will be created from scratch`,
       );
     }
 
@@ -85,7 +87,7 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
               (existingProjectConfig ? 1 : 0) ===
             0
               ? './migrations'
-              : `./${projectId}_migrations`),
+              : camelCase(`./${projectId} migrations`)),
           required: true,
         },
       ));

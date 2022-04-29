@@ -25,7 +25,9 @@
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.1",
     "@oclif/plugin-plugins": "^2.0.1",
-    "@oclif/plugin-warn-if-update-available": "^2.0.4"
+    "@oclif/plugin-warn-if-update-available": "^2.0.4",
+    "lodash": "^4.17.21",
+    "mkdirp": "^1.0.4"
   },
   "oclif": {
     "bin": "datocms",
@@ -69,5 +71,8 @@
     "cli"
   ],
   "types": "dist/index.d.ts",
-  "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5"
+  "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5",
+  "devDependencies": {
+    "@types/mkdirp": "^1.0.2"
+  }
 }

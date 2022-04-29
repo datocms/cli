@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import { Config, readConfig } from './config';
-import { resolve } from 'path';
+import { relative, resolve } from 'path';
 import { writeFile } from 'fs/promises';
 import { BaseCommand } from './base-command';
 
@@ -17,6 +17,7 @@ export abstract class DatoConfigCommand<
   };
 
   protected datoConfigPath!: string;
+  protected datoConfigRelativePath!: string;
   protected datoConfig?: Config;
 
   protected async init(): Promise<void> {
@@ -27,17 +28,19 @@ export abstract class DatoConfigCommand<
       this.parsedFlags['config-file'],
     );
 
+    this.datoConfigRelativePath = relative(process.cwd(), this.datoConfigPath);
+
     this.datoConfig = await readConfig(this.datoConfigPath);
   }
 
   protected requireDatoConfig(): void {
     if (!this.datoConfig) {
-      this.error(`No config file found in ${this.datoConfigPath}`);
+      this.error(`No config file found in ${this.datoConfigRelativePath}`);
     }
   }
 
   protected async saveDatoConfig(config: Config): Promise<void> {
-    this.startSpinner(`Writing ${this.datoConfigPath}`);
+    this.startSpinner(`Writing ${this.datoConfigRelativePath}`);
 
     await writeFile(
       this.datoConfigPath,
