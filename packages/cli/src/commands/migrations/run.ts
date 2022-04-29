@@ -292,6 +292,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     const model = await client.itemTypes.create({
       name: 'Schema migration',
       api_key: migrationModelApiKey,
+      draft_mode_active: false,
     });
 
     await client.fields.create(model.id, {
