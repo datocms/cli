@@ -35,12 +35,12 @@ export abstract class DatoConfigCommand<
 
   protected requireDatoConfig(): void {
     if (!this.datoConfig) {
-      this.error(`No config file found in ${this.datoConfigRelativePath}`);
+      this.error(`No config file found in "${this.datoConfigRelativePath}"`);
     }
   }
 
   protected async saveDatoConfig(config: Config): Promise<void> {
-    this.startSpinner(`Writing ${this.datoConfigRelativePath}`);
+    this.startSpinner(`Writing "${this.datoConfigRelativePath}"`);
 
     await writeFile(
       this.datoConfigPath,

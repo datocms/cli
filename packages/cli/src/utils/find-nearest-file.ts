@@ -13,7 +13,7 @@ export async function findNearestFile(
     const parentDirectoryPath = dirname(directoryPath);
 
     if (parentDirectoryPath === directoryPath) {
-      throw new Error(`No ${fileName} files found`);
+      throw new Error(`No "${fileName}" file found`);
     }
 
     return findNearestFile(parentDirectoryPath);

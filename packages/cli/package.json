@@ -27,7 +27,8 @@
     "@oclif/plugin-plugins": "^2.0.1",
     "@oclif/plugin-warn-if-update-available": "^2.0.4",
     "lodash": "^4.17.21",
-    "mkdirp": "^1.0.4"
+    "mkdirp": "^1.0.4",
+    "ts-node": "^10.7.0"
   },
   "oclif": {
     "bin": "datocms",

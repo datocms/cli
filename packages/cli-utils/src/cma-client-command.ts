@@ -2,6 +2,7 @@ import {
   ApiError,
   buildClient,
   Client,
+  ClientConfigOptions,
   LogLevel,
 } from '@datocms/cma-client-node';
 import { Flags } from '@oclif/core';
@@ -25,7 +26,7 @@ export abstract class CmaClientCommand<
     ...DatoProjectConfigCommand.flags,
     'api-token': Flags.string({
       description: 'Specify a custom API key to access a project',
-      env: 'DATOCMS_API_KEY',
+      env: 'DATOCMS_API_TOKEN',
     }),
     'log-level': Flags.enum<LogLevelFlagEnum>({
       options: logLevelOptions,
@@ -38,7 +39,10 @@ export abstract class CmaClientCommand<
 
   protected async init(): Promise<void> {
     await super.init();
+    this.client = this.buildClient();
+  }
 
+  protected buildClient(config: Partial<ClientConfigOptions> = {}): Client {
     const apiToken =
       this.parsedFlags['api-token'] || this.datoProjectConfig?.apiToken;
 
@@ -54,23 +58,24 @@ export abstract class CmaClientCommand<
         : logLevelMap[logLevelCode];
 
     if (!apiToken) {
-      this.error(`Cannot find an API key to use to call DatoCMS!`, {
+      this.error(`Cannot find an API token to use to call DatoCMS!`, {
         suggestions: [
-          `The API key to use is determined by looking at:
+          `The API token to use is determined by looking at:
 * The --apiToken flag
-* The DATOCMS_API_KEY environment variable
-* The settings contained in ${this.datoConfigRelativePath}`,
+* The DATOCMS_API_TOKEN environment variable
+* The settings contained in "${this.datoConfigRelativePath}"`,
         ],
       });
     }
 
-    this.client = buildClient({
+    return buildClient({
       apiToken,
       baseUrl,
       logLevel,
       logFn: (message) => {
         this.log(chalk.gray(message));
       },
+      ...config,
     });
   }
 

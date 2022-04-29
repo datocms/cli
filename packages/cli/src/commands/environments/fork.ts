@@ -47,7 +47,11 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
           code: 'VALIDATION_UNIQUENESS',
         })
       ) {
-        this.error(`An environment called "${newEnvId}" already exists`);
+        this.error(`An environment called "${newEnvId}" already exists`, {
+          suggestions: [
+            `To delete the environment, run "${this.argv[0]} environments:destroy ${newEnvId}"`,
+          ],
+        });
       }
 
       throw e;

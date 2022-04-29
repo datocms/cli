@@ -1,10 +1,14 @@
 import { access, readFile } from 'fs/promises';
+import { get } from 'lodash';
 
 export type ProjectConfig = {
-  apiToken: string;
+  apiToken?: string;
   baseUrl?: string;
   logLevel?: 'NONE' | 'BASIC' | 'BODY' | 'BODY_AND_HEADERS';
-  migrationsDir?: string;
+  migrations?: {
+    directory?: string;
+    modelApiKey?: string;
+  };
 };
 
 export type Config = {
@@ -16,8 +20,17 @@ function isProjectConfig(thing: any): thing is ProjectConfig {
     return false;
   }
 
-  if (!('apiToken' in thing) || typeof thing.apiToken !== 'string') {
-    return false;
+  for (const key of [
+    'apiToken',
+    'baseUrl',
+    'logLevel',
+    'migrations.directory',
+    'migrations.modelApiKey',
+  ]) {
+    const value = get(thing, key);
+    if (value !== undefined && typeof value !== 'string') {
+      return false;
+    }
   }
 
   return true;
@@ -63,7 +76,7 @@ export async function readConfig(
   const config = JSON.parse(rawConfig);
 
   if (!isConfig(config)) {
-    throw new Error(`Invalid configuration file at ${fullPath}!`);
+    throw new Error(`Invalid configuration file at "${fullPath}"!`);
   }
 
   return config;

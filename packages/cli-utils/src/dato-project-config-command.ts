@@ -32,7 +32,7 @@ export abstract class DatoProjectConfigCommand<
 
       if (!(this.parsedFlags.project in this.datoConfig.projects)) {
         this.error(
-          `Requested project "${this.parsedFlags.project}" is not defined in config file ${this.datoConfigRelativePath}`,
+          `Requested project "${this.parsedFlags.project}" is not defined in config file "${this.datoConfigRelativePath}"`,
           {
             suggestions: ['Add the project with config:set command'],
           },

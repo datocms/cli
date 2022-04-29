@@ -45,9 +45,9 @@ module.exports = async (client) => {
 `.trim();
 
 const tsTemplate = `
-import { CmaClient } from '@datocms/cli';
+import { Client } from '@datocms/cli/dist/cma-client-node';
 
-export default async function(client: CmaClient.Client): Promise<void> {
+export default async function(client: Client): Promise<void> {
   // DatoCMS migration script
 
   // For more examples, head to our Content Management API docs:
@@ -114,7 +114,7 @@ export default class Command extends DatoProjectConfigCommand<
     this.requireDatoProjectConfig();
 
     const migrationsDir = resolve(
-      this.datoProjectConfig!.migrationsDir || './migrations',
+      this.datoProjectConfig!.migrations?.directory || './migrations',
     );
 
     let isTsProject = false;
@@ -135,7 +135,7 @@ export default class Command extends DatoProjectConfigCommand<
     );
 
     this.startSpinner(
-      `Writing ${relative(process.cwd(), migrationScriptPath)}`,
+      `Writing "${relative(process.cwd(), migrationScriptPath)}"`,
     );
 
     await mkdirp(migrationsDir);
