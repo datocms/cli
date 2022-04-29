@@ -170,10 +170,22 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         registerTsNode({ project });
       }
 
+      const exportedThing = require(path);
+
       const migration: (
         client: Client,
         // eslint-disable-next-line unicorn/prefer-module
-      ) => Promise<void> = require(path).default;
+      ) => Promise<void> | undefined =
+        typeof exportedThing === 'function'
+          ? exportedThing
+          : 'default' in exportedThing &&
+            typeof exportedThing.default === 'function'
+          ? exportedThing.default
+          : undefined;
+
+      if (!migration) {
+        this.error('The script does not export a valid migration function');
+      }
 
       // eslint-disable-next-line no-await-in-loop
       await migration(envClient);
