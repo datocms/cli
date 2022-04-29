@@ -8,6 +8,7 @@ import * as mkdirp from 'mkdirp';
 const jsTemplate = `
 'use strict';
 
+/** @param client { import("@datocms/cli/dist/cma-client-node").Client } */
 module.exports = async (client) => {
   // DatoCMS migration script
 
