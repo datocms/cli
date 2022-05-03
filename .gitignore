@@ -10,3 +10,4 @@ oclif.manifest.json
 datocms.config.json
 migrations
 .env
+**/.DS_Store/

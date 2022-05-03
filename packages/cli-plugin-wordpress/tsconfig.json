@@ -3,10 +3,11 @@
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
+    "esModuleInterop": true,
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "target": "es2019"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "test/**/*"]
 }

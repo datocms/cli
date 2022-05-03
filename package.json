@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
+    "lint": "eslint . --ext .ts",
     "build": "lerna run build",
     "publish": "npm run build && lerna publish",
     "publish-next": "npm run build && lerna publish --dist-tag next"
