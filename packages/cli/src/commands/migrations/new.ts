@@ -1,9 +1,10 @@
 import { oclif, DatoProjectConfigCommand } from '@datocms/cli-utils';
-import { join, relative, resolve } from 'path';
+import { extname, join, relative, resolve } from 'path';
 import { findNearestFile } from '../../utils/find-nearest-file';
 import { camelCase } from 'lodash';
 import { writeFile } from 'fs/promises';
 import * as mkdirp from 'mkdirp';
+import { readFileSync } from 'fs';
 
 const jsTemplate = `
 'use strict';
@@ -99,6 +100,9 @@ export default class Command extends DatoProjectConfigCommand<
       description: 'Forces the creation of a JavaScript migration file',
       exclusive: ['ts'],
     }),
+    template: oclif.Flags.string({
+      description: 'Start the migration script from a custom template',
+    }),
   };
 
   static args = [
@@ -114,8 +118,14 @@ export default class Command extends DatoProjectConfigCommand<
 
     this.requireDatoProjectConfig();
 
+    const config = this.datoProjectConfig!;
+
+    const template = config.migrations?.template
+      ? resolve(config.migrations?.template)
+      : undefined;
+
     const migrationsDir = resolve(
-      this.datoProjectConfig!.migrations?.directory || './migrations',
+      config.migrations?.directory || './migrations',
     );
 
     let isTsProject = false;
@@ -124,7 +134,9 @@ export default class Command extends DatoProjectConfigCommand<
       isTsProject = true;
     } catch {}
 
-    const format = this.parsedFlags.js
+    const format = template
+      ? extname(template).split('.').pop()!
+      : this.parsedFlags.js
       ? 'js'
       : this.parsedFlags.ts || isTsProject
       ? 'ts'
@@ -143,7 +155,11 @@ export default class Command extends DatoProjectConfigCommand<
 
     await writeFile(
       migrationScriptPath,
-      format === 'js' ? jsTemplate : tsTemplate,
+      template
+        ? readFileSync(template, 'utf-8')
+        : format === 'js'
+        ? jsTemplate
+        : tsTemplate,
       'utf-8',
     );
 

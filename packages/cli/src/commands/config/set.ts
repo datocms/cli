@@ -29,6 +29,9 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
     'migrations-model': oclif.Flags.string({
       description: 'API key of the DatoCMS model used to store migration data',
     }),
+    'migrations-template': oclif.Flags.string({
+      description: 'Path of the file to use as migration script template',
+    }),
     'base-url': oclif.Flags.string({ hidden: true }),
   };
 
@@ -110,6 +113,15 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
         },
       ));
 
+    const migrationTemplate =
+      this.parsedFlags['migrations-template'] ||
+      (await oclif.CliUx.ux.prompt(
+        `Path of the file to use as migration script template`,
+        {
+          default: existingProjectConfig?.migrations?.template,
+        },
+      ));
+
     await this.saveDatoConfig({
       ...this.datoConfig,
       projects: {
@@ -121,6 +133,7 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
           migrations: {
             directory: migrationsDir,
             modelApiKey: migrationModelApiKey,
+            template: migrationTemplate,
           },
         },
       },

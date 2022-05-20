@@ -8,6 +8,7 @@ export type ProjectConfig = {
   migrations?: {
     directory?: string;
     modelApiKey?: string;
+    template?: string;
   };
 };
 
