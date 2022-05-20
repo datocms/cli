@@ -42,7 +42,11 @@ export abstract class CmaClientCommand<
     this.client = this.buildClient();
   }
 
-  protected buildClient(config: Partial<ClientConfigOptions> = {}): Client {
+  protected buildBaseClientInitializationOptions(): {
+    apiToken: string;
+    baseUrl: string | undefined;
+    logLevel: LogLevel;
+  } {
     const apiToken =
       this.parsedFlags['api-token'] || this.datoProjectConfig?.apiToken;
 
@@ -68,10 +72,16 @@ export abstract class CmaClientCommand<
       });
     }
 
-    return buildClient({
+    return {
       apiToken,
       baseUrl,
       logLevel,
+    };
+  }
+
+  protected buildClient(config: Partial<ClientConfigOptions> = {}): Client {
+    return buildClient({
+      ...this.buildBaseClientInitializationOptions(),
       logFn: (message) => {
         this.log(chalk.gray(message));
       },

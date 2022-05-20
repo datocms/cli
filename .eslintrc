@@ -5,6 +5,7 @@
     "unicorn/prefer-node-protocol": "off",
     "unicorn/catch-error-name": "off",
     "unicorn/import-style": "off",
-    "camelcase": "off"
+    "camelcase": "off",
+    "max-params": "off"
   }
 }

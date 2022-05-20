@@ -90,26 +90,26 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       );
     }
 
-    const destinationEnvId = inPlace
+    let destinationEnvId = inPlace
       ? sourceEnv.id
       : rawDestinationEnvId || `${sourceEnv.id}-post-migrations`;
+
+    this.log(
+      `Migrations will be run in "${destinationEnvId}" sandbox environment`,
+    );
 
     if (inPlace) {
       if (primaryEnv && primaryEnv.id === destinationEnvId) {
         this.error('Running migrations on primary environment is not allowed!');
       }
     } else {
-      await this.forkEnvironment(
+      destinationEnvId = await this.forkEnvironment(
         sourceEnv,
         destinationEnvId,
         allEnvironments,
         dryRun,
       );
     }
-
-    this.log(
-      `Migrations will be run in "${destinationEnvId}" sandbox environment`,
-    );
 
     const envClient = this.buildClient({ environment: destinationEnvId });
 
@@ -125,11 +125,34 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       migrationsDir,
     );
 
+    const someMigrationScriptRequiresLegacyClient = migrationScriptsToRun.some(
+      (s) => s.legacy,
+    );
+
+    let legacyEnvClient = null;
+
+    if (someMigrationScriptRequiresLegacyClient) {
+      const config = this.buildBaseClientInitializationOptions();
+
+      try {
+        // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
+        const { SiteClient } = require('datocms-client');
+        legacyEnvClient = new SiteClient(config.apiToken, {
+          environment: destinationEnvId,
+        });
+      } catch {
+        this.error('Detected some migrations that require legacy client', {
+          suggestions: ['Please add the "datocms-client" NPM package'],
+        });
+      }
+    }
+
     for (const migrationScript of migrationScriptsToRun) {
       // eslint-disable-next-line no-await-in-loop
       await this.runMigrationScript(
         migrationScript,
         envClient,
+        legacyEnvClient,
         dryRun,
         migrationModel,
         migrationsDir,
@@ -144,24 +167,25 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     return {
       environmentId: destinationEnvId,
-      runMigrationScripts: migrationScriptsToRun,
+      runMigrationScripts: migrationScriptsToRun.map((s) => s.path),
     };
   }
 
   private async runMigrationScript(
-    path: string,
+    script: { filename: string; path: string; legacy: boolean },
     envClient: Client,
+    legacyEnvClient: unknown,
     dryRun: boolean,
     migrationModel: SimpleSchemaTypes.ItemType | null,
     migrationsDir: string,
   ) {
-    const relativePath = relative(migrationsDir, path);
+    const relativePath = relative(migrationsDir, script.path);
 
     this.startSpinner(`Running migration "${relativePath}"`);
 
     if (!dryRun) {
       if (
-        path.endsWith('.ts') &&
+        script.filename.endsWith('.ts') &&
         !this.registeredTsNode &&
         process.env.NODE_ENV !== 'development'
       ) {
@@ -170,12 +194,10 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         registerTsNode({ project });
       }
 
-      const exportedThing = require(path);
+      // eslint-disable-next-line unicorn/prefer-module
+      const exportedThing = require(script.path);
 
-      const migration: (
-        client: Client,
-        // eslint-disable-next-line unicorn/prefer-module
-      ) => Promise<void> | undefined =
+      const migration: (client: unknown) => Promise<void> | undefined =
         typeof exportedThing === 'function'
           ? exportedThing
           : 'default' in exportedThing &&
@@ -187,14 +209,12 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         this.error('The script does not export a valid migration function');
       }
 
-      // eslint-disable-next-line no-await-in-loop
-      await migration(envClient);
+      await migration(script.legacy ? legacyEnvClient : envClient);
     }
 
     this.stopSpinner();
 
     if (!dryRun && migrationModel) {
-      // eslint-disable-next-line no-await-in-loop
       await envClient.items.create({
         item_type: migrationModel,
         name: relativePath,
@@ -211,14 +231,36 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       ? await this.fetchAlreadyRunMigrationScripts(envClient, migrationModel)
       : [];
 
-    const allMigrationScripts = (await readdir(migrationsDir)).filter((file) =>
-      file.match(MIGRATION_FILE_REGEXP),
-    );
+    const allMigrationScripts = (await readdir(migrationsDir))
+      .filter((file) => file.match(MIGRATION_FILE_REGEXP))
+      .map((file) => ({
+        filename: file,
+        path: join(migrationsDir, file),
+        legacy: false,
+      }));
 
-    return allMigrationScripts
-      .filter((file) => !alreadyRunMigrations.includes(file))
-      .map((file) => join(migrationsDir, file))
-      .sort();
+    let allLegacyMigrationScripts: Array<{
+      filename: string;
+      path: string;
+      legacy: boolean;
+    }> = [];
+
+    try {
+      const legacyMigrationsDir = join(migrationsDir, 'legacyClient');
+      await access(legacyMigrationsDir);
+
+      allLegacyMigrationScripts = (await readdir(legacyMigrationsDir))
+        .filter((file) => file.match(MIGRATION_FILE_REGEXP))
+        .map((file) => ({
+          filename: file,
+          path: join(legacyMigrationsDir, file),
+          legacy: true,
+        }));
+    } catch {}
+
+    return [...allMigrationScripts, ...allLegacyMigrationScripts]
+      .sort((a, b) => a.filename.localeCompare(b.filename))
+      .filter((script) => !alreadyRunMigrations.includes(script.filename));
   }
 
   private async forkEnvironment(
@@ -251,6 +293,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     }
 
     this.stopSpinner();
+
+    return dryRun ? sourceEnv.id : destinationEnvId;
   }
 
   private async fetchAlreadyRunMigrationScripts(
