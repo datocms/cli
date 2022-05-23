@@ -1,4 +1,4 @@
-import { oclif, CmaClientCommand } from '@datocms/cli-utils';
+import { oclif, CmaClientCommand, CmaClient } from '@datocms/cli-utils';
 import { extname, join, relative, resolve } from 'path';
 import { findNearestFile } from '../../utils/find-nearest-file';
 import { camelCase } from 'lodash';
@@ -100,6 +100,12 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     }),
     template: oclif.Flags.string({
       description: 'Start the migration script from a custom template',
+      exclusive: ['autogenerate'],
+    }),
+    autogenerate: oclif.Flags.string({
+      description:
+        "Auto-generates script by diffing the schema of two environments\n\nExamples:\n* --autogenerate=foo finds changes made to sandbox environment 'foo' and applies them to primary environment\n* --autogenerate=foo:bar finds changes made to environment 'foo' and applies them to environment 'bar'",
+      exclusive: ['template'],
     }),
   };
 
@@ -170,6 +176,107 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       return readFileSync(template, 'utf-8');
     }
 
-    return format === 'js' ? jsTemplate : tsTemplate;
+    const rawAutoGenerate = this.parsedFlags.autogenerate;
+
+    if (!rawAutoGenerate) {
+      return format === 'js' ? jsTemplate : tsTemplate;
+    }
+
+    const allEnvironments = await this.client.environments.list();
+    const primaryEnv = allEnvironments.find((env) => env.meta.primary)!;
+
+    const [fromEnvId, rawIntoEnvId] = rawAutoGenerate.split(':');
+    const intoEnvId = rawIntoEnvId || primaryEnv.id;
+
+    const fromEnv = allEnvironments.find((env) => env.id === fromEnvId);
+
+    if (!fromEnv) {
+      this.error(`Environment "${fromEnv}" does not exist`);
+    }
+
+    const intoEnv = allEnvironments.find((env) => env.id === intoEnvId);
+
+    if (!intoEnv) {
+      this.error(`Environment "${intoEnv}" does not exist`);
+    }
+
+    const fromClient = this.buildClient({ environment: fromEnvId });
+    const intoClient = this.buildClient({ environment: intoEnvId });
+
+    const fromModels = (
+      await fromClient.site.find({ include: 'item_types,item_types.fields' })
+    ).data;
+
+    const intoModels = (await intoClient.itemTypes.rawList()).data;
+
+    const fromFieldsets = (await fromClient.fieldsets.rawList()).data;
+    const intoFieldsets = (await intoClient.fieldsets.rawList()).data;
+
+    const newModels = fromModels.filter(
+      (model) =>
+        !intoModels.some(
+          (m) => m.attributes.api_key === model.attributes.api_key,
+        ),
+    );
+
+    const destroyedModels = intoModels.filter(
+      (model) =>
+        !fromModels.some(
+          (m) => m.attributes.api_key === model.attributes.api_key,
+        ),
+    );
+
+    // const changedModels = fromModels.filter(
+    //   (model) =>
+    //     !newModels.some(
+    //       (m) => m.attributes.api_key === model.attributes.api_key,
+    //     ),
+    // );
+
+    const content = [
+      ...destroyedModels.map((model) => this.buildDestroyModelCall(model)),
+      ...newModels.map((model) => this.buildCreateModelCall(model)),
+      // ...changedModels.map((model) => this.buildChangedModelCall(model)),
+    ].join('\n');
+
+    return `
+import { Client } from '@datocms/cli/lib/cma-client-node';
+
+export default async function(client: Client): Promise<void> {
+${content}
+}`;
+  }
+
+  buildDestroyModelCall(model: CmaClient.SchemaTypes.ItemType): string {
+    return `await client.itemTypes.destroy('${model.attributes.api_key}');`;
+  }
+
+  buildCreateModelCall(model: CmaClient.SchemaTypes.ItemType): string {
+    const text = `const ${
+      model.attributes.api_key
+    }_model = await client.itemTypes.create(${JSON.stringify({
+      ...model.attributes,
+      workflow: model.relationships.workflow.data,
+    })});`;
+
+    // crea tutti i campi...
+    // aggiorna ordering_field, title_field, image_preview_field, excerpt_field
+
+    return text;
+  }
+
+  buildCreateFieldCall(
+    targetModel: CmaClient.SchemaTypes.ItemType,
+    field: CmaClient.SchemaTypes.Field,
+  ) {
+    const { appeareance, ...fieldAttributes } = field.attributes;
+
+    return `await client.fields.create('${
+      targetModel.attributes.api_key
+    }', ${JSON.stringify(fieldAttributes)})`;
+  }
+
+  buildChangedModelCall(model: CmaClient.SchemaTypes.ItemType): string {
+    return `await client.itemTypes.destroy('${model.attributes.api_key}');`;
   }
 }
