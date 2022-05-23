@@ -1,17 +1,17 @@
 import { DatoConfigCommand } from '@datocms/cli-utils';
 export default class Command extends DatoConfigCommand<typeof Command.flags> {
-  static description = 'Remove a project from DatoCMS config file';
+  static description = 'Remove a profile from DatoCMS config file';
 
   static args = [
     {
-      name: 'PROJECT_ID',
-      description: 'The name of the project',
+      name: 'PROFILE_ID',
+      description: 'The name of the profile',
       required: true,
     },
   ];
 
   async run(): Promise<void> {
-    const { PROJECT_ID: projectId } = this.parsedArgs;
+    const { PROFILE_ID: profileId } = this.parsedArgs;
 
     if (!this.datoConfig) {
       this.log(
@@ -20,18 +20,18 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
       return;
     }
 
-    if (!(projectId in this.datoConfig.projects)) {
+    if (!(profileId in this.datoConfig.profiles)) {
       this.log(
-        `Config file does not contain project "${projectId}", skipping operation`,
+        `Config file does not contain profile "${profileId}", skipping operation`,
       );
       return;
     }
 
     await this.saveDatoConfig({
       ...this.datoConfig,
-      projects: Object.fromEntries(
-        Object.entries(this.datoConfig?.projects || {}).filter(
-          ([key]) => key !== projectId,
+      profiles: Object.fromEntries(
+        Object.entries(this.datoConfig?.profiles || {}).filter(
+          ([key]) => key !== profileId,
         ),
       ),
     });

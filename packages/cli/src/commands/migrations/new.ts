@@ -1,4 +1,4 @@
-import { oclif, DatoProjectConfigCommand } from '@datocms/cli-utils';
+import { oclif, CmaClientCommand } from '@datocms/cli-utils';
 import { extname, join, relative, resolve } from 'path';
 import { findNearestFile } from '../../utils/find-nearest-file';
 import { camelCase } from 'lodash';
@@ -85,13 +85,11 @@ export default async function(client: Client): Promise<void> {
 }
 `.trim();
 
-export default class Command extends DatoProjectConfigCommand<
-  typeof Command.flags
-> {
+export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description = 'Create a new migration script';
 
   static flags = {
-    ...DatoProjectConfigCommand.flags,
+    ...CmaClientCommand.flags,
     ts: oclif.Flags.boolean({
       description: 'Forces the creation of a TypeScript migration file',
       exclusive: ['js'],
@@ -116,9 +114,9 @@ export default class Command extends DatoProjectConfigCommand<
   async run(): Promise<string> {
     const { NAME: scriptName } = this.parsedArgs;
 
-    this.requireDatoProjectConfig();
+    this.requireDatoProfileConfig();
 
-    const config = this.datoProjectConfig!;
+    const config = this.datoProfileConfig!;
 
     const template = config.migrations?.template
       ? resolve(config.migrations?.template)
@@ -155,16 +153,23 @@ export default class Command extends DatoProjectConfigCommand<
 
     await writeFile(
       migrationScriptPath,
-      template
-        ? readFileSync(template, 'utf-8')
-        : format === 'js'
-        ? jsTemplate
-        : tsTemplate,
+      await this.migrationScriptContent(template, format),
       'utf-8',
     );
 
     this.stopSpinner();
 
     return migrationScriptPath;
+  }
+
+  async migrationScriptContent(
+    template: string | undefined,
+    format: string,
+  ): Promise<string> {
+    if (template) {
+      return readFileSync(template, 'utf-8');
+    }
+
+    return format === 'js' ? jsTemplate : tsTemplate;
   }
 }

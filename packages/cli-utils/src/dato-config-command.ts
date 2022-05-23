@@ -37,7 +37,7 @@ export abstract class DatoConfigCommand<
     if (!this.datoConfig) {
       this.error(`No config file found in "${this.datoConfigRelativePath}"`, {
         suggestions: [
-          `Configure a local project with "${this.config.bin} config:set"`,
+          `Configure a local configuration profile with "${this.config.bin} profile:set"`,
         ],
       });
     }

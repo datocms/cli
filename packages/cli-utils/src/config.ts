@@ -1,8 +1,7 @@
 import { access, readFile } from 'fs/promises';
 import { get } from 'lodash';
 
-export type ProjectConfig = {
-  apiToken?: string;
+export type ProfileConfig = {
   baseUrl?: string;
   logLevel?: 'NONE' | 'BASIC' | 'BODY' | 'BODY_AND_HEADERS';
   migrations?: {
@@ -13,10 +12,10 @@ export type ProjectConfig = {
 };
 
 export type Config = {
-  projects: Record<string, ProjectConfig>;
+  profiles: Record<string, ProfileConfig>;
 };
 
-function isProjectConfig(thing: any): thing is ProjectConfig {
+function isProfileConfig(thing: any): thing is ProfileConfig {
   if (typeof thing !== 'object' || !thing) {
     return false;
   }
@@ -42,19 +41,19 @@ function isConfig(thing: any): thing is Config {
     return false;
   }
 
-  if (!('projects' in thing)) {
+  if (!('profiles' in thing)) {
     return false;
   }
 
-  const { projects } = thing;
+  const { profiles } = thing;
 
-  if (typeof projects !== 'object' || !projects) {
+  if (typeof profiles !== 'object' || !profiles) {
     return false;
   }
 
   if (
-    Object.values(projects).some(
-      (projectConfig) => !isProjectConfig(projectConfig),
+    Object.values(profiles).some(
+      (profileConfig) => !isProfileConfig(profileConfig),
     )
   ) {
     return false;

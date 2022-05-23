@@ -44,9 +44,9 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     environmentId: string;
     runMigrationScripts: string[];
   }> {
-    this.requireDatoProjectConfig();
+    this.requireDatoProfileConfig();
 
-    const preference = this.datoProjectConfig?.migrations;
+    const preference = this.datoProfileConfig?.migrations;
 
     const {
       'dry-run': dryRun,
@@ -209,7 +209,21 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         this.error('The script does not export a valid migration function');
       }
 
-      await migration(script.legacy ? legacyEnvClient : envClient);
+      try {
+        await migration(script.legacy ? legacyEnvClient : envClient);
+      } catch (e) {
+        this.stopSpinner('failed!');
+
+        if (e instanceof Error) {
+          this.log();
+          this.log('----');
+          this.log(e.stack);
+          this.log('----');
+          this.log();
+        }
+
+        this.error(`Migration "${relativePath}" failed`);
+      }
     }
 
     this.stopSpinner();
@@ -280,7 +294,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     if (existingEnvironment) {
       this.error(`Environment "${destinationEnvId}" already exists!`, {
         suggestions: [
-          'To run the migrations inside an existing environment, add the --in-place flag',
+          `To execute the migrations inside the existing environment, run "${this.config.bin} migrations:run --source=${destinationEnvId} --in-place"`,
           `To delete the environment, run "${this.config.bin} environments:destroy ${destinationEnvId}"`,
         ],
       });
@@ -318,7 +332,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     dryRun: boolean,
   ): Promise<SimpleSchemaTypes.ItemType | null> {
     try {
-      return client.itemTypes.find(migrationModelApiKey);
+      return await client.itemTypes.find(migrationModelApiKey);
     } catch (e) {
       if (e instanceof ApiError && e.response.status === 404) {
         this.startSpinner(`Creating "${migrationModelApiKey}" model`);

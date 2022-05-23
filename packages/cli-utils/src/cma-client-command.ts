@@ -6,7 +6,7 @@ import {
   LogLevel,
 } from '@datocms/cma-client-node';
 import { Flags } from '@oclif/core';
-import { DatoProjectConfigCommand } from './dato-project-config-command';
+import { DatoProfileConfigCommand } from './dato-profile-config-command';
 import * as chalk from 'chalk';
 
 export const logLevelMap = {
@@ -21,12 +21,11 @@ export const logLevelOptions = Object.keys(logLevelMap) as LogLevelFlagEnum[];
 
 export abstract class CmaClientCommand<
   T extends typeof CmaClientCommand.flags,
-> extends DatoProjectConfigCommand<T> {
+> extends DatoProfileConfigCommand<T> {
   static flags = {
-    ...DatoProjectConfigCommand.flags,
+    ...DatoProfileConfigCommand.flags,
     'api-token': Flags.string({
-      description: 'Specify a custom API key to access a project',
-      env: 'DATOCMS_API_TOKEN',
+      description: 'Specify a custom API key to access a DatoCMS project',
     }),
     'log-level': Flags.enum<LogLevelFlagEnum>({
       options: logLevelOptions,
@@ -47,14 +46,19 @@ export abstract class CmaClientCommand<
     baseUrl: string | undefined;
     logLevel: LogLevel;
   } {
+    const apiTokenEnvName =
+      this.profileId === 'default'
+        ? `DATOCMS_API_TOKEN`
+        : `DATOCMS_${this.profileId.toUpperCase()}_PROFILE_API_TOKEN`;
+
     const apiToken =
-      this.parsedFlags['api-token'] || this.datoProjectConfig?.apiToken;
+      this.parsedFlags['api-token'] || process.env[apiTokenEnvName];
 
     const baseUrl =
-      this.parsedFlags['base-url'] || this.datoProjectConfig?.baseUrl;
+      this.parsedFlags['base-url'] || this.datoProfileConfig?.baseUrl;
 
     const logLevelCode =
-      this.parsedFlags['log-level'] || this.datoProjectConfig?.logLevel;
+      this.parsedFlags['log-level'] || this.datoProfileConfig?.logLevel;
 
     const logLevel =
       this.parsedFlags.json || this.parsedFlags.output || !logLevelCode
@@ -65,9 +69,8 @@ export abstract class CmaClientCommand<
       this.error(`Cannot find an API token to use to call DatoCMS!`, {
         suggestions: [
           `The API token to use is determined by looking at:
-* The --apiToken flag
-* The DATOCMS_API_TOKEN environment variable
-* Config file at "${this.datoConfigRelativePath}" (run "${this.config.bin} config:set" to setup)`,
+* The --api-token flag
+* The ${apiTokenEnvName} environment variable (we look inside a local ".env" file too)`,
         ],
       });
     }

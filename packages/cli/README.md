@@ -37,8 +37,8 @@ USAGE
 <!-- commands -->
 
 - [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
-- [`datocms config:remove PROJECT_ID`](#datocms-configremove-project_id)
-- [`datocms config:set`](#datocms-configset)
+- [`datocms profile:remove PROJECT_ID`](#datocms-configremove-project_id)
+- [`datocms profile:set`](#datocms-configset)
 - [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 - [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
 - [`datocms environments:index`](#datocms-environmentsindex)
@@ -89,13 +89,13 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.2.0/src/commands/autocomplete/index.ts)_
 
-## `datocms config:remove PROJECT_ID`
+## `datocms profile:remove PROJECT_ID`
 
 Remove a project from DatoCMS config file
 
 ```
 USAGE
-  $ datocms config:remove [PROJECT_ID] [--json] [--config-file <value>]
+  $ datocms profile:remove [PROJECT_ID] [--json] [--config-file <value>]
 
 ARGUMENTS
   PROJECT_ID  The name of the project
@@ -112,13 +112,13 @@ DESCRIPTION
 
 _See code: [src/commands/config/remove.ts](https://github.com/datocms/cli/blob/v0.1.8/packages/cli/src/commands/config/remove.ts)_
 
-## `datocms config:set`
+## `datocms profile:set`
 
 Add/update project settings in DatoCMS config file
 
 ```
 USAGE
-  $ datocms config:set [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
+  $ datocms profile:set [--json] [--config-file <value>] [--project <value>] [--api-token <value>] [--log-level
     NONE|BASIC|BODY|BODY_AND_HEADERS] [--migrations-dir <value>] [--migrations-model <value>] [--migrations-template
     <value>]
 
