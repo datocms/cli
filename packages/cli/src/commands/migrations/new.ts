@@ -1,10 +1,21 @@
 import { oclif, CmaClientCommand, CmaClient } from '@datocms/cli-utils';
 import { extname, join, relative, resolve } from 'path';
 import { findNearestFile } from '../../utils/find-nearest-file';
-import { camelCase } from 'lodash';
+import { camelCase, omit } from 'lodash';
 import { writeFile } from 'fs/promises';
 import * as mkdirp from 'mkdirp';
 import { readFileSync } from 'fs';
+
+type ItemTypeInfo = {
+  entity: CmaClient.SchemaTypes.ItemType;
+  fieldsByApiKey: Record<string, CmaClient.SchemaTypes.Field>;
+  fieldsetsByTitle: Record<string, CmaClient.SchemaTypes.Fieldset>;
+};
+
+type Schema = {
+  siteEntity: CmaClient.SchemaTypes.Site;
+  itemTypesByApiKey: Record<string, ItemTypeInfo>;
+};
 
 const jsTemplate = `
 'use strict';
@@ -203,77 +214,114 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     const fromClient = this.buildClient({ environment: fromEnvId });
     const intoClient = this.buildClient({ environment: intoEnvId });
 
-    const fromModels = (
-      await fromClient.site.find({ include: 'item_types,item_types.fields' })
-    ).data;
+    const fromSchema = await this.fetchSchema(fromClient);
+    const intoSchema = await this.fetchSchema(intoClient);
 
-    const intoModels = (await intoClient.itemTypes.rawList()).data;
-
-    const fromFieldsets = (await fromClient.fieldsets.rawList()).data;
-    const intoFieldsets = (await intoClient.fieldsets.rawList()).data;
-
-    const newModels = fromModels.filter(
-      (model) =>
-        !intoModels.some(
-          (m) => m.attributes.api_key === model.attributes.api_key,
-        ),
+    const newModelApiKeys = Object.keys(fromSchema.itemTypesByApiKey).filter(
+      (apiKey) => !Object.keys(intoSchema.itemTypesByApiKey).includes(apiKey),
     );
 
-    const destroyedModels = intoModels.filter(
-      (model) =>
-        !fromModels.some(
-          (m) => m.attributes.api_key === model.attributes.api_key,
-        ),
+    const destroyedModelApiKeys = Object.keys(
+      intoSchema.itemTypesByApiKey,
+    ).filter(
+      (apiKey) => !Object.keys(fromSchema.itemTypesByApiKey).includes(apiKey),
     );
-
-    // const changedModels = fromModels.filter(
-    //   (model) =>
-    //     !newModels.some(
-    //       (m) => m.attributes.api_key === model.attributes.api_key,
-    //     ),
-    // );
 
     const content = [
-      ...destroyedModels.map((model) => this.buildDestroyModelCall(model)),
-      ...newModels.map((model) => this.buildCreateModelCall(model)),
+      ...destroyedModelApiKeys.map((apiKey) =>
+        this.buildDestroyModelCall(intoSchema.itemTypesByApiKey[apiKey]),
+      ),
+      ...newModelApiKeys.map((apiKey) =>
+        this.buildCreateModelCall(fromSchema.itemTypesByApiKey[apiKey]),
+      ),
       // ...changedModels.map((model) => this.buildChangedModelCall(model)),
     ].join('\n');
 
     return `
-import { Client } from '@datocms/cli/lib/cma-client-node';
+    import { Client } from '@datocms/cli/lib/cma-client-node';
 
-export default async function(client: Client): Promise<void> {
-${content}
-}`;
+    export default async function(client: Client): Promise<void> {
+    ${content}
+    }`;
   }
 
-  buildDestroyModelCall(model: CmaClient.SchemaTypes.ItemType): string {
-    return `await client.itemTypes.destroy('${model.attributes.api_key}');`;
+  async fetchSchema(client: CmaClient.Client): Promise<Schema> {
+    const response = await client.site.rawFind({
+      include: 'item_types,item_types.fields,item_types.fieldsets',
+    });
+
+    const allFields = response.included!.filter(
+      (x): x is CmaClient.SchemaTypes.Field => x.type === 'field',
+    );
+    const allFieldsets: CmaClient.SchemaTypes.Fieldset[] = [];
+    // response.included!.filter(
+    //   (x): x is CmaClient.SchemaTypes.Fieldset => x.type === 'fieldset',
+    // );
+
+    return {
+      siteEntity: response.data,
+      itemTypesByApiKey: Object.fromEntries(
+        response
+          .included!.filter(
+            (x): x is CmaClient.SchemaTypes.ItemType => x.type === 'item_type',
+          )
+          .map((itemType) => [
+            itemType.attributes.api_key,
+            {
+              entity: itemType,
+              fieldsByApiKey: Object.fromEntries(
+                allFields
+                  .filter(
+                    (f) => f.relationships.item_type.data.id === itemType.id,
+                  )
+                  .map((field) => [field.attributes.api_key, field]),
+              ),
+              fieldsetsByTitle: Object.fromEntries(
+                allFieldsets
+                  .filter(
+                    (f) => f.relationships.item_type.data.id === itemType.id,
+                  )
+                  .map((field) => [field.attributes.title, field]),
+              ),
+            },
+          ]),
+      ),
+    };
   }
 
-  buildCreateModelCall(model: CmaClient.SchemaTypes.ItemType): string {
-    const text = `const ${
-      model.attributes.api_key
+  buildDestroyModelCall({ entity }: ItemTypeInfo): string {
+    return `await client.itemTypes.destroy('${entity.attributes.api_key}');`;
+  }
+
+  buildCreateModelCall({ entity }: ItemTypeInfo): string {
+    return `const ${
+      entity.attributes.api_key
     }_model = await client.itemTypes.create(${JSON.stringify({
-      ...model.attributes,
-      workflow: model.relationships.workflow.data,
+      ...entity.attributes,
+      workflow: entity.relationships.workflow.data,
     })});`;
+  }
 
-    // crea tutti i campi...
-    // aggiorna ordering_field, title_field, image_preview_field, excerpt_field
-
-    return text;
+  buildCreateFieldsetCall(
+    targetModel: CmaClient.SchemaTypes.ItemType,
+    fieldset: CmaClient.SchemaTypes.Fieldset,
+  ): string[] {
+    return [
+      `await client.fields.create('${
+        targetModel.attributes.api_key
+      }', ${JSON.stringify(fieldset.attributes)})`,
+    ];
   }
 
   buildCreateFieldCall(
     targetModel: CmaClient.SchemaTypes.ItemType,
     field: CmaClient.SchemaTypes.Field,
-  ) {
-    const { appeareance, ...fieldAttributes } = field.attributes;
-
-    return `await client.fields.create('${
-      targetModel.attributes.api_key
-    }', ${JSON.stringify(fieldAttributes)})`;
+  ): string[] {
+    return [
+      `await client.fields.create('${
+        targetModel.attributes.api_key
+      }', ${JSON.stringify(omit(field.attributes, ['appeareance']))})`,
+    ];
   }
 
   buildChangedModelCall(model: CmaClient.SchemaTypes.ItemType): string {
