@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-wordpress",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Plugin for DatoCMS CLI to interact with WordPress sites",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -24,7 +24,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^0.1.8",
+    "@datocms/cli-utils": "^0.1.9",
     "@datocms/cma-client-node": "^0.1.7",
     "@oclif/core": "^1.8.0",
     "async-scheduler": "^1.4.4",
