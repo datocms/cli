@@ -2,20 +2,16 @@
   "name": "@datocms/cli-plugin-wordpress",
   "version": "0.1.9",
   "description": "Plugin for DatoCMS CLI to interact with WordPress sites",
-  "author": "Stefano Verna <s.verna@datocms.com>",
-  "bin": {
-    "datocms": "./bin/run"
-  },
+  "author": "DatoCMS <support@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "lib/src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/datocms/cli.git",
     "directory": "packages/cli-plugin-wordpress"
   },
   "files": [
-    "/bin",
     "/lib",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
@@ -51,7 +47,7 @@
     "datocms",
     "cli"
   ],
-  "types": "lib/index.d.ts",
+  "types": "lib/src/index.d.ts",
   "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5",
   "devDependencies": {
     "@datocms/dashboard-client": "^0.1.8",
