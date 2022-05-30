@@ -1,12 +1,7 @@
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import { buildWpClient } from '../../utils/build-wp-client';
 import * as WPAPI from 'wpapi';
-import {
-  Listr,
-  ListrTaskWrapper,
-  ListrRendererFactory,
-  ListrDefaultRenderer,
-} from 'listr2';
+import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import DestroySchema from '../../import/destroy-dato-schema';
 import ImportWpAssets from '../../import/import-wp-assets';
 import ImportCategories from '../../import/import-wp-categories';
