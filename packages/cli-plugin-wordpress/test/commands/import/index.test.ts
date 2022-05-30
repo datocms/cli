@@ -2,7 +2,6 @@ import { expect } from '@oclif/test';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
 import { buildClient as buildCmaClient } from '@datocms/cma-client-node';
 import ImportCommand from '../../../src/commands/wordpress/import';
-import { CmaClient } from '@datocms/cli-utils';
 
 describe('Import from WP', () => {
   it('works', async () => {
