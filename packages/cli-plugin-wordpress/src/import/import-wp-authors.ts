@@ -74,8 +74,6 @@ export default class WpAuthors extends BaseStep {
       wpAuthors,
       (wpAuthor) => wpAuthor.name,
       async (wpAuthor) => {
-        await writeFile('./foo.json', JSON.stringify(wpAuthor), 'utf-8');
-
         const datoAuthor = await this.client.items.create({
           item_type: authorItemType,
           name: wpAuthor.name,
