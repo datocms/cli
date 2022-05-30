@@ -45,3 +45,9 @@ You can then run tests with:
 ```
 npm run test
 ```
+
+To save a new dump:
+
+```
+docker-compose exec db mysqldump -uwordpress -pwordpress wordpress > wp_test_data/mysql/dump.sql
+```

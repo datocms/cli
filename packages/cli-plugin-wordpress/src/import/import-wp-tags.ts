@@ -1,7 +1,7 @@
 import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import { Context } from '../commands/wordpress/import';
 import BaseStep from './base-step';
-import { createStringField } from '../utils/build-fields';
+import { createSlugField, createStringField } from '../utils/build-fields';
 
 const retrieveTitle = 'Retrieve tags from WordPress';
 const createTitle = 'Import tags to DatoCMS';
@@ -30,11 +30,11 @@ export default class WpTags extends BaseStep {
       name: 'WP Tag',
     });
 
-    await Promise.all(
-      ['name', 'slug'].map((apiKey) =>
-        createStringField(this.client, itemType, apiKey),
+    await Promise.all([
+      createStringField(this.client, itemType, 'name').then((field) =>
+        createSlugField(this.client, itemType, field.id),
       ),
-    );
+    ]);
 
     ctx.datoItemTypes.tag = itemType;
   }
@@ -68,10 +68,6 @@ export default class WpTags extends BaseStep {
       wpTags,
       (wpTag) => wpTag.name,
       async (wpTag) => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 3_000);
-        });
-
         const datoTag = await this.client.items.create({
           item_type: tagItemType,
           name: wpTag.name,

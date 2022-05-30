@@ -1,7 +1,12 @@
 import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import { Context } from '../commands/wordpress/import';
 import BaseStep from './base-step';
-import { createStringField, createTextField } from '../utils/build-fields';
+import {
+  createSlugField,
+  createStringField,
+  createTextField,
+} from '../utils/build-fields';
+import { writeFile } from 'fs/promises';
 
 const retrieveTitle = 'Retrieve authors from WordPress';
 const createTitle = 'Import authors to DatoCMS';
@@ -30,16 +35,10 @@ export default class WpAuthors extends BaseStep {
     });
 
     await Promise.all([
-      ...[
-        'name',
-        'email',
-        'first_name',
-        'last_name',
-        'url',
-        'nickname',
-        'username',
-        'slug',
-      ].map((apiKey) => createStringField(this.client, itemType, apiKey)),
+      createStringField(this.client, itemType, 'name').then((field) =>
+        createSlugField(this.client, itemType, field.id),
+      ),
+      createStringField(this.client, itemType, 'url'),
       createTextField(this.client, itemType, 'description'),
     ]);
 
@@ -75,21 +74,14 @@ export default class WpAuthors extends BaseStep {
       wpAuthors,
       (wpAuthor) => wpAuthor.name,
       async (wpAuthor) => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 3_000);
-        });
+        await writeFile('./foo.json', JSON.stringify(wpAuthor), 'utf-8');
 
         const datoAuthor = await this.client.items.create({
           item_type: authorItemType,
           name: wpAuthor.name,
           slug: wpAuthor.slug,
-          username: wpAuthor.username,
-          first_name: wpAuthor.first_name,
-          last_name: wpAuthor.last_name,
-          email: wpAuthor.email,
           url: wpAuthor.url,
           description: wpAuthor.description,
-          nickname: wpAuthor.nickname,
         });
 
         authorsMapping[wpAuthor.id] = datoAuthor.id;

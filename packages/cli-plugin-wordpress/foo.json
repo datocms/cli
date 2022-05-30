@@ -1,0 +1,22 @@
+{
+  "id": 1,
+  "name": "admin",
+  "url": "https://foo.bar",
+  "description": "This is my bio",
+  "link": "http://localhost:8081/?author=1",
+  "slug": "admin",
+  "avatar_urls": {
+    "24": "http://0.gravatar.com/avatar/f3ada405ce890b6f8204094deb12d8a8?s=24&d=mm&r=g",
+    "48": "http://0.gravatar.com/avatar/f3ada405ce890b6f8204094deb12d8a8?s=48&d=mm&r=g",
+    "96": "http://0.gravatar.com/avatar/f3ada405ce890b6f8204094deb12d8a8?s=96&d=mm&r=g"
+  },
+  "meta": [],
+  "_links": {
+    "self": [
+      { "href": "http://localhost:8081/index.php?rest_route=/wp/v2/users/1" }
+    ],
+    "collection": [
+      { "href": "http://localhost:8081/index.php?rest_route=/wp/v2/users" }
+    ]
+  }
+}

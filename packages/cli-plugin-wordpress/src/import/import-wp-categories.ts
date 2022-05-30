@@ -1,7 +1,11 @@
 import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import { Context } from '../commands/wordpress/import';
 import BaseStep from './base-step';
-import { createStringField, createTextField } from '../utils/build-fields';
+import {
+  createSlugField,
+  createStringField,
+  createTextField,
+} from '../utils/build-fields';
 
 const retrieveTitle = 'Retrieve categories from WordPress';
 const createTitle = 'Import categories to DatoCMS';
@@ -37,8 +41,8 @@ export default class WpCategories extends BaseStep {
     });
 
     await Promise.all([
-      ...['name', 'slug'].map((apiKey) =>
-        createStringField(this.client, itemType, apiKey),
+      createStringField(this.client, itemType, 'name').then((field) =>
+        createSlugField(this.client, itemType, field.id),
       ),
       createTextField(this.client, itemType, 'description'),
     ]);
@@ -75,10 +79,6 @@ export default class WpCategories extends BaseStep {
       wpCategories,
       (wpCategory) => wpCategory.name,
       async (wpCategory) => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 3_000);
-        });
-
         const datoCategory = await this.client.items.create({
           item_type: categoryItemType,
           name: wpCategory.name,

@@ -57,7 +57,12 @@ describe('Import from WP', () => {
       (u) => u.default_field_metadata.en.alt === 'PC Alternative Text',
     );
 
-    expect(computerImage?.default_field_metadata.en.title).to.eq('PC Title');
+    expect(computerImage).to.exist;
+
+    if (!computerImage) {
+      throw new Error('type narrowing fail');
+    }
+    expect(computerImage.default_field_metadata.en.title).to.eq('PC Title');
 
     const cloudImage = uploads.find(
       (u) => u.default_field_metadata.en.alt === 'Alternative Cloud',
@@ -96,6 +101,19 @@ describe('Import from WP', () => {
       'uncategorized',
     ]);
 
+    const topLevel = categories.find((c) => c.slug === 'top-level')!;
+    expect(topLevel.parent_id).to.be.null;
+    expect(topLevel.name).to.eq('Top level');
+    expect(topLevel.description).to.eq('Some description.');
+
+    const subLevel = categories.find((c) => c.slug === 'sub-level')!;
+    expect(subLevel.parent_id).to.eq(topLevel.id);
+    expect(subLevel.name).to.eq('Sub level');
+
+    const thirdLevel = categories.find((c) => c.slug === 'third-level')!;
+    expect(thirdLevel.parent_id).to.eq(subLevel.id);
+    expect(thirdLevel.name).to.eq('Third level');
+
     // =================== TAGS ===================
 
     const tags = await client.items.list({
@@ -108,13 +126,21 @@ describe('Import from WP', () => {
       'third',
     ]);
 
+    const firstTag = tags.find((t) => t.slug === 'first')!;
+    expect(firstTag.name).to.eq('First');
+
     // =================== AUTHORS ===================
 
     const authors = await client.items.list({
       filter: { type: 'wp_author' },
     });
 
-    expect(authors[0].name).to.eq('admin');
+    const author = authors[0]!;
+
+    expect(author.name).to.eq('admin');
+    expect(author.slug).to.eq('admin');
+    expect(author.url).to.eq('https://foo.bar');
+    expect(author.description).to.eq('This is my bio');
 
     // =================== PAGES ===================
 
@@ -135,12 +161,8 @@ describe('Import from WP', () => {
     expect(articles.length).to.eq(1);
     expect(article.slug).to.eq('hello-world');
 
-    expect(article.content).to.include(
-      `srcset="${computerImage?.url}?w=300&h=270&fit=crop 300w, ${computerImage?.url}?w=408&h=367&fit=crop 408w"`,
-    );
-    expect(article.content).to.include(
-      `class="wp-image-6" srcset="${cloudImage.url}?w=736&h=736&fit=crop 736w, ${cloudImage.url}?w=300&h=300&fit=crop 300w, ${cloudImage.url}?w=150&h=150&fit=crop 150w"`,
-    );
+    expect(article.content).to.include(computerImage.url);
+    expect(article.content).to.include(cloudImage.url);
     expect(article.tags).to.have.all.members(tags.map((c) => c.id));
 
     expect(article.categories).to.have.all.members(categories.map((c) => c.id));

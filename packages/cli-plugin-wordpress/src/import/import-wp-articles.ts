@@ -3,7 +3,11 @@ import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import { Context } from '../commands/wordpress/import';
 import convertToRegExp from '../utils/escape-string-regexp';
 import BaseStep from './base-step';
-import { createStringField, createTextField } from '../utils/build-fields';
+import {
+  createSlugField,
+  createStringField,
+  createTextField,
+} from '../utils/build-fields';
 
 const retrieveTitle = 'Retrieve articles from WordPress';
 const createTitle = 'Import articles to DatoCMS';
@@ -41,8 +45,8 @@ export default class WpArticles extends BaseStep {
     });
 
     const promiseBuilder = [
-      ...['title', 'slug'].map((apiKey) =>
-        createStringField(this.client, itemType, apiKey),
+      createStringField(this.client, itemType, 'title').then((field) =>
+        createSlugField(this.client, itemType, field.id),
       ),
       ...['excerpt', 'content'].map((apiKey) =>
         createTextField(this.client, itemType, apiKey),
@@ -160,10 +164,6 @@ export default class WpArticles extends BaseStep {
             custom_data: {},
           };
         }
-
-        await new Promise((resolve) => {
-          setTimeout(resolve, 3_000);
-        });
 
         const newItem = await this.client.items.create(itemData);
 

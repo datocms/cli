@@ -3,8 +3,6 @@ version: '3.3'
 services:
   db:
     image: mysql:5.7
-    volumes:
-      - ./wp_test_data/mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: somewordpress
       MYSQL_DATABASE: wordpress
@@ -14,6 +12,8 @@ services:
       - '3306:3306'
     expose:
       - '3306'
+    volumes:
+      - './wp_test_data/mysql/:/docker-entrypoint-initdb.d'
   wordpress:
     depends_on:
       - db
