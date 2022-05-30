@@ -48,14 +48,17 @@
     "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli/<%- commandPath %>",
     "topicSeparator": ":",
     "topics": {
-      "config": {
-        "description": "Manage DatoCMS config file (datocms.config.js)"
-      },
       "maintenance": {
         "description": "Enable/disable maintenance mode for a project"
       },
       "environments": {
         "description": "Manage primary/sandbox environments of a project"
+      },
+      "profile": {
+        "description": "Manage profiles stored in datocms.config.js file"
+      },
+      "migrations": {
+        "description": "Manage and run migration scripts"
       }
     }
   },
