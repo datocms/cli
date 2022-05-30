@@ -6,8 +6,13 @@
     "unicorn/catch-error-name": "off",
     "unicorn/import-style": "off",
     "unicorn/no-array-reduce": "off",
+    "unicorn/prefer-object-from-entries": "off",
     "camelcase": "off",
     "max-params": "off",
-    "no-await-in-loop": "off"
+    "no-await-in-loop": "off",
+    "unicorn/numeric-separators-style": [
+      "error",
+      { "number": { "minimumDigits": 0, "groupLength": 3 } }
+    ]
   }
 }
