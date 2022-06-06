@@ -103,7 +103,7 @@ export default class ImportCommand extends CmaClientCommand<
         {
           title: 'Destroy existing WordPress schema from DatoCMS project',
           task: async (ctx, task) => {
-            return new DestroySchema({ ...options, ctx, task }).task();
+            return new DestroySchema({ ...options, ctx, task }).task(task);
           },
         },
         {

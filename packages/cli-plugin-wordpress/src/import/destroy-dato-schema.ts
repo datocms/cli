@@ -1,7 +1,11 @@
+import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import { Context } from '../commands/wordpress/import';
 import BaseStep from './base-step';
 
 export default class DestroyDatoSchema extends BaseStep {
-  async task(): Promise<void> {
+  async task(
+    task: ListrTaskWrapper<Context, ListrRendererFactory>,
+  ): Promise<void> {
     const wpItemTypes = await this.client.itemTypes.list();
 
     const itemTypesToDestroy = wpItemTypes.filter((it) =>
@@ -13,7 +17,7 @@ export default class DestroyDatoSchema extends BaseStep {
     for (const itemType of itemTypesToDestroy) {
       const confirmed =
         this.autoconfirm ||
-        (await this.listrTask.prompt<boolean>({
+        (await task.prompt<boolean>({
           type: 'Confirm',
           message: `A model named "${itemType.api_key}" already exist in the project. Confirm that you want to destroy it?`,
         }));
