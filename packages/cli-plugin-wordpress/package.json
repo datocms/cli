@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-wordpress",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DatoCMS CLI plugin to import WordPress sites",
   "author": "DatoCMS <support@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
