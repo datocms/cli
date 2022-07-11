@@ -10,6 +10,7 @@ import ImportAuthors from '../../import/import-wp-authors';
 import ImportPages from '../../import/import-wp-pages';
 import ImportArticles from '../../import/import-wp-articles';
 import { Scheduler } from 'async-scheduler';
+import { LogLevel } from '@datocms/cma-client-node';
 
 export type StepOptions = {
   client: CmaClient.Client;
@@ -194,6 +195,9 @@ export default class ImportCommand extends CmaClientCommand<
           clearOutput: false,
           collapseErrors: false,
         },
+        rendererFallback:
+          this.buildBaseClientInitializationOptions().logLevel !==
+          LogLevel.NONE,
       },
     );
 
