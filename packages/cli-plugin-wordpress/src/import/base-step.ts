@@ -101,8 +101,31 @@ export default class BaseStep {
     title: string,
     requestPromise: WPRequest,
     page = 1,
+    retryCount = 1,
   ): Promise<T[]> {
-    const response = await requestPromise;
+    let response;
+
+    try {
+      response = await this.scheduler.enqueue(async () => {
+        // eslint-disable-next-line no-return-await
+        return await requestPromise;
+      });
+    } catch (e) {
+      if (retryCount > 10) {
+        throw e;
+      }
+
+      return [
+        ...response,
+        ...(await this.fetchAllWpPages(
+          task,
+          title,
+          requestPromise,
+          page,
+          retryCount + 1,
+        )),
+      ];
+    }
 
     if (!response._paging || response._paging.totalPages <= page) {
       return response;
