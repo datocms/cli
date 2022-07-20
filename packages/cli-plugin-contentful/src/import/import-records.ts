@@ -211,7 +211,7 @@ export default class ImportRecords extends BaseStep {
             notify(`Done!`);
           } catch {
             notify(
-              `Cannot publish record: ${datoItemId}. Contentful allows published records with draft links while DatoCMS don't.`,
+              `Cannot publish record: ${datoItemId}. Contentful allows published records with draft links while DatoCMS doesn't.`,
             );
           }
         }

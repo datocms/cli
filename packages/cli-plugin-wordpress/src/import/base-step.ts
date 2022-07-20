@@ -77,6 +77,7 @@ export default class BaseStep {
 
             notifier('started');
             await handler(item, notifier);
+            notifier('done');
           } catch (e) {
             failed += 1;
             if (!this.ignoreErrors) {

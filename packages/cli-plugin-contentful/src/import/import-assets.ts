@@ -28,7 +28,7 @@ export default class ImportAssets extends BaseStep {
         const fileUrl = contentfulAsset.fields.file?.[ctx.defaultLocale]?.url;
 
         if (!fileUrl) {
-          task.skip(`The upload ${contentfulAsset.sys.id} is missing an URL`);
+          notify(`missing URL in upload ${contentfulAsset.sys.id}, skip`);
           return;
         }
 
