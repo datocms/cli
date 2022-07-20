@@ -29,8 +29,8 @@
     "directory": "packages/cli-plugin-contentful"
   },
   "scripts": {
-    "build": "shx rm -rf lib && tsc -b",
-    "postpack": "shx rm -f oclif.manifest.json",
+    "build": "rm -rf lib && tsc -b",
+    "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run build && oclif manifest && oclif readme",
     "test": "mocha --timeout 120000 --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
