@@ -72,3 +72,11 @@ _See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/bl
 # Test
 
 Unfortunately Contentful management client only accepts read-write tokens, so we cannot make testing available for everybody.
+
+To run the tests use this command:
+
+```
+CONTENTFUL_TOKEN=xxx npm run test
+```
+
+You can get the `CONTENTFUL_TOKEN` from the password management service
