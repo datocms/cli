@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Utils for DatoCMS CLI",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
@@ -28,5 +28,5 @@
     "build": "tsc",
     "prebuild": "rimraf lib"
   },
-  "gitHead": "2c5704c62ffbc7e3ff6d195abbc69b745729faf5"
+  "gitHead": "0b46a0aff9dd2ab3b11436a594173758833ccdf9"
 }
