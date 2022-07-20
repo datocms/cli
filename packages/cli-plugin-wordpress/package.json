@@ -48,7 +48,7 @@
     "cli"
   ],
   "types": "lib/src/index.d.ts",
-  "gitHead": "0b46a0aff9dd2ab3b11436a594173758833ccdf9",
+  "gitHead": "97df0293a97066e53e6dcfd56800b8c974eaf43c",
   "devDependencies": {
     "@datocms/dashboard-client": "^0.1.8",
     "@oclif/test": "^2.1.0",

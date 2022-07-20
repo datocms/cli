@@ -78,7 +78,7 @@
     "cli"
   ],
   "types": "lib/index.d.ts",
-  "gitHead": "0b46a0aff9dd2ab3b11436a594173758833ccdf9",
+  "gitHead": "97df0293a97066e53e6dcfd56800b8c974eaf43c",
   "devDependencies": {
     "@types/mkdirp": "^1.0.2",
     "datocms-client": "^3.5.20",
