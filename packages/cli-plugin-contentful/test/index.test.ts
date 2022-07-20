@@ -23,6 +23,12 @@ interface LandingPageType extends CmaClient.SimpleSchemaTypes.Item {
 
 describe('Import from Contentful', () => {
   it('works', async () => {
+    if (!process.env.CONTENTFUL_TOKEN) {
+      throw new Error(
+        'Missing env variable CONTENTFUL_TOKEN! Cannot run tests!',
+      );
+    }
+
     const randomString = Math.random().toString(36).slice(0, 7) + Date.now();
 
     const nonLoggedDashboardClient = buildDashboardClient({
