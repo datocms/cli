@@ -604,29 +604,6 @@ ALIASES
   $ datocms plugins:remove
 ```
 
-## `datocms plugins:uninstall PLUGIN...`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ datocms plugins:uninstall PLUGIN...
-
-ARGUMENTS
-  PLUGIN  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ datocms plugins:unlink
-  $ datocms plugins:remove
-```
-
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/uninstall.ts)_
 
 ## `datocms plugins:uninstall PLUGIN...`
