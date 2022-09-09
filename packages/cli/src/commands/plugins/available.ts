@@ -22,6 +22,10 @@ export default class Command extends BaseCommand<typeof Command.flags> {
       package: '@datocms/cli-plugin-wordpress',
       description: 'Import a WordPress site into DatoCMS',
     },
+    {
+      package: '@datocms/cli-plugin-contentful',
+      description: 'Import a Contentful site into DatoCMS',
+    },
   ];
 
   async run(): Promise<MaybeInstalledPlugin[]> {
