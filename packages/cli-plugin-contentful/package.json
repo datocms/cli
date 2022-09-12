@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-contentful",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Plugin for DatoCMS CLI to import projects from Contentful to DatoCMS",
   "keywords": [
     "contentful",
