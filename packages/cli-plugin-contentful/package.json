@@ -62,7 +62,7 @@
   },
   "oclif": {
     "commands": "./lib/commands",
-    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli-plugin-wordpress/<%- commandPath %>"
+    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli-plugin-contentful/<%- commandPath %>"
   },
   "gitHead": "ea0c2f11fdf446e9501481cd10077597a8092f37"
 }
