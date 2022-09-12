@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-contentful",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "Plugin for DatoCMS CLI to import projects from Contentful to DatoCMS",
   "keywords": [
     "contentful",
@@ -64,5 +64,5 @@
     "commands": "./lib/commands",
     "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli-plugin-wordpress/<%- commandPath %>"
   },
-  "gitHead": "97df0293a97066e53e6dcfd56800b8c974eaf43c"
+  "gitHead": "ea0c2f11fdf446e9501481cd10077597a8092f37"
 }
