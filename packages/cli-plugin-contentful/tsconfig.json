@@ -9,5 +9,5 @@
     "strict": true,
     "target": "es2019"
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*"]
 }
