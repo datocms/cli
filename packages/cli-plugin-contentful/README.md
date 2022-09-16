@@ -1,6 +1,7 @@
 # DatoCMS Contentful Import CLI
 
 DatoCMS CLI plugin to import a Contentful project into a DatoCMS project.
+Read a more detailed documentation [on the website](https://www.datocms.com/docs/import-and-export/import-space-from-contentful)
 
 <!-- toc -->
 * [DatoCMS Contentful Import CLI](#datocms-contentful-import-cli)
@@ -50,7 +51,7 @@ FLAGS
   --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
   --contentful-environment=<value>                The environment you want to work with
   --contentful-space-id=<value>                   Your Contentful project space ID
-  --contentful-token=<value>                      Your Contentful project read-only API token
+  --contentful-token=<value>                      Your Contentful project read-write API token
   --ignore-errors                                 Ignore errors encountered during import
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
   --only-content-type=<value>                     Exclusively import the specified content types. Specify the content
