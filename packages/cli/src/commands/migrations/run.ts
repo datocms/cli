@@ -17,18 +17,20 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
   static flags = {
     ...CmaClientCommand.flags,
     source: oclif.Flags.string({
-      description: 'Forces the creation of a TypeScript migration file',
+      description: 'Specify the environment to fork',
     }),
     destination: oclif.Flags.string({
-      description: 'Forces the creation of a JavaScript migration file',
+      description: 'Specify the name of the new forked environment',
       exclusive: ['in-place'],
     }),
     'in-place': oclif.Flags.boolean({
-      description: 'Forces the creation of a JavaScript migration file',
+      description:
+        'Run the migrations in the --source environment, without forking',
       exclusive: ['destination'],
     }),
     'dry-run': oclif.Flags.boolean({
-      description: 'Forces the creation of a JavaScript migration file',
+      description:
+        'Simulate the execution of the migrations, without making any actual change',
     }),
     'migrations-dir': oclif.Flags.string({
       description: 'Directory where script migrations are stored',

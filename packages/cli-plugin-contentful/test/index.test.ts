@@ -1,6 +1,5 @@
 import { expect } from '@oclif/test';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
-import { buildClient as buildCmaClient } from '@datocms/cma-client-node';
 import ImportCommand from '../src/commands/contentful/import';
 import { CmaClient } from '@datocms/cli-utils';
 import { StructuredText } from 'datocms-structured-text-utils';
@@ -58,7 +57,7 @@ describe('Import from Contentful', () => {
 
     const datoApiToken = site.readwrite_token!;
     process.env.DATOCMS_API_TOKEN = datoApiToken;
-    const client = buildCmaClient({
+    const client = CmaClient.buildClient({
       apiToken: datoApiToken,
     });
 
