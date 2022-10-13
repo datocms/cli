@@ -135,8 +135,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       const config = this.buildBaseClientInitializationOptions();
 
       try {
-        // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
-        const { SiteClient } = require('datocms-client');
+        // eslint-disable-next-line node/no-missing-import
+        const { SiteClient } = await import('datocms-client');
         legacyEnvClient = new SiteClient(config.apiToken, {
           environment: destinationEnvId,
         });
@@ -194,8 +194,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         registerTsNode({ project });
       }
 
-      // eslint-disable-next-line unicorn/prefer-module
-      const exportedThing = require(script.path);
+      const exportedThing = await import(script.path);
 
       const migration: (client: unknown) => Promise<void> | undefined =
         typeof exportedThing === 'function'
