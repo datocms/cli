@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli",
-  "version": "1.0.10",
+  "version": "1.0.13",
   "description": "CLI to interact with DatoCMS APIs",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -24,7 +24,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^1.0.10",
+    "@datocms/cli-utils": "^1.0.13",
     "@oclif/plugin-autocomplete": "^1.2.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.1",
@@ -32,8 +32,8 @@
     "@oclif/plugin-warn-if-update-available": "^2.0.4",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "ts-node": "^10.7.0",
     "prettier": "^2.7.1",
+    "ts-node": "^10.7.0",
     "typescript": "~4.5.0"
   },
   "oclif": {
@@ -82,8 +82,8 @@
   "types": "lib/index.d.ts",
   "gitHead": "ea0c2f11fdf446e9501481cd10077597a8092f37",
   "devDependencies": {
-    "@types/prettier": "^2.7.1",
     "@types/mkdirp": "^1.0.2",
+    "@types/prettier": "^2.7.1",
     "datocms-client": "^3.5.20",
     "oclif": "^3"
   }

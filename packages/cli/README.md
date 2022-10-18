@@ -115,7 +115,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/environments/destroy.ts)_
+_See code: [lib/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/environments/destroy.js)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -143,7 +143,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/environments/fork.ts)_
+_See code: [lib/commands/environments/fork.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/environments/fork.js)_
 
 ## `datocms environments:index`
 
@@ -217,7 +217,7 @@ ALIASES
   $ datocms environments:list
 ```
 
-_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/environments/list.ts)_
+_See code: [lib/commands/environments/list.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/environments/list.js)_
 
 ## `datocms environments:primary`
 
@@ -241,7 +241,7 @@ DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/environments/primary.ts)_
+_See code: [lib/commands/environments/primary.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/environments/primary.js)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -268,7 +268,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/environments/promote.ts)_
+_See code: [lib/commands/environments/promote.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/environments/promote.js)_
 
 ## `datocms help [COMMAND]`
 
@@ -312,7 +312,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/maintenance/off.ts)_
+_See code: [lib/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/maintenance/off.js)_
 
 ## `datocms maintenance:on`
 
@@ -338,7 +338,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/maintenance/on.ts)_
+_See code: [lib/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/maintenance/on.js)_
 
 ## `datocms migrations:new NAME`
 
@@ -347,19 +347,39 @@ Create a new migration script
 ```
 USAGE
   $ datocms migrations:new [NAME] [--json] [--config-file <value>] [--profile <value>] [--api-token <value>]
-    [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--ts | --js] [--template <value>]
+    [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--ts | --js] [--template <value> | --autogenerate <value>]
 
 ARGUMENTS
   NAME  The name to give to the script
 
 FLAGS
-  --api-token=<value>                             Specify a custom API key to access a DatoCMS project
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
-  --js                                            Forces the creation of a JavaScript migration file
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
-  --profile=<value>                               Use settings of profile in datocms.config.js
-  --template=<value>                              Start the migration script from a custom template
-  --ts                                            Forces the creation of a TypeScript migration file
+  --api-token=<value>
+      Specify a custom API key to access a DatoCMS project
+
+  --autogenerate=<value>
+      Auto-generates script by diffing the schema of two environments
+
+      Examples:
+      * --autogenerate=foo finds changes made to sandbox environment 'foo' and applies them to primary environment
+      * --autogenerate=foo:bar finds changes made to environment 'foo' and applies them to environment 'bar'
+
+  --config-file=<value>
+      [default: ./datocms.config.json] Specify a custom config file path
+
+  --js
+      Forces the creation of a JavaScript migration file
+
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)
+      Level of logging for performed API calls
+
+  --profile=<value>
+      Use settings of profile in datocms.config.js
+
+  --template=<value>
+      Start the migration script from a custom template
+
+  --ts
+      Forces the creation of a TypeScript migration file
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -368,7 +388,7 @@ DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/migrations/new.ts)_
+_See code: [lib/commands/migrations/new.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/migrations/new.js)_
 
 ## `datocms migrations:run`
 
@@ -383,14 +403,15 @@ USAGE
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a DatoCMS project
   --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
-  --destination=<value>                           Forces the creation of a JavaScript migration file
-  --dry-run                                       Forces the creation of a JavaScript migration file
-  --in-place                                      Forces the creation of a JavaScript migration file
+  --destination=<value>                           Specify the name of the new forked environment
+  --dry-run                                       Simulate the execution of the migrations, without making any actual
+                                                  change
+  --in-place                                      Run the migrations in the --source environment, without forking
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
   --migrations-dir=<value>                        Directory where script migrations are stored
   --migrations-model=<value>                      API key of the DatoCMS model used to store migration data
   --profile=<value>                               Use settings of profile in datocms.config.js
-  --source=<value>                                Forces the creation of a TypeScript migration file
+  --source=<value>                                Specify the environment to fork
 
 GLOBAL FLAGS
   --json  Format output as json.
@@ -399,7 +420,7 @@ DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/migrations/run.ts)_
+_See code: [lib/commands/migrations/run.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/migrations/run.js)_
 
 ## `datocms plugins`
 
@@ -486,7 +507,7 @@ DESCRIPTION
   Lists official DatoCMS CLI plugins
 ```
 
-_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/plugins/available.ts)_
+_See code: [lib/commands/plugins/available.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/plugins/available.js)_
 
 ## `datocms plugins:inspect PLUGIN...`
 
@@ -691,7 +712,7 @@ DESCRIPTION
   Remove a profile from DatoCMS config file
 ```
 
-_See code: [src/commands/profile/remove.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/profile/remove.ts)_
+_See code: [lib/commands/profile/remove.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/profile/remove.js)_
 
 ## `datocms profile:set PROFILE_ID`
 
@@ -720,6 +741,6 @@ DESCRIPTION
   Add/update profile configuration in DatoCMS config file
 ```
 
-_See code: [src/commands/profile/set.ts](https://github.com/datocms/cli/blob/v1.0.10/packages/cli/src/commands/profile/set.ts)_
+_See code: [lib/commands/profile/set.js](https://github.com/datocms/cli/blob/v1.0.13/packages/cli/lib/commands/profile/set.js)_
 
 <!-- commandsstop -->
