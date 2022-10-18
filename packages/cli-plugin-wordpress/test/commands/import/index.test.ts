@@ -1,6 +1,6 @@
 import { expect } from '@oclif/test';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
-import { buildClient as buildCmaClient } from '@datocms/cma-client-node';
+import { CmaClient } from '@datocms/cli-utils';
 import ImportCommand from '../../../src/commands/wordpress/import';
 
 describe('Import from WP', () => {
@@ -34,7 +34,7 @@ describe('Import from WP', () => {
 
     const datoApiToken = site.readwrite_token!;
     process.env.DATOCMS_API_TOKEN = datoApiToken;
-    const client = buildCmaClient({
+    const client = CmaClient.buildClient({
       apiToken: datoApiToken,
     });
 

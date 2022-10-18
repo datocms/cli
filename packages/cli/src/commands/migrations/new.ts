@@ -1,10 +1,22 @@
-import { oclif, CmaClientCommand } from '@datocms/cli-utils';
+import { oclif, CmaClientCommand, CmaClient } from '@datocms/cli-utils';
 import { extname, join, relative, resolve } from 'path';
 import { findNearestFile } from '../../utils/find-nearest-file';
 import { camelCase } from 'lodash';
 import { writeFile } from 'fs/promises';
 import * as mkdirp from 'mkdirp';
 import { readFileSync } from 'fs';
+import { diffEnvironments } from '../../utils/environments-diff';
+
+type ItemTypeInfo = {
+  entity: CmaClient.SchemaTypes.ItemType;
+  fieldsByApiKey: Record<string, CmaClient.SchemaTypes.Field>;
+  fieldsetsByTitle: Record<string, CmaClient.SchemaTypes.Fieldset>;
+};
+
+type Schema = {
+  siteEntity: CmaClient.SchemaTypes.Site;
+  itemTypesByApiKey: Record<string, ItemTypeInfo>;
+};
 
 const jsTemplate = `
 'use strict';
@@ -100,6 +112,12 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     }),
     template: oclif.Flags.string({
       description: 'Start the migration script from a custom template',
+      exclusive: ['autogenerate'],
+    }),
+    autogenerate: oclif.Flags.string({
+      description:
+        "Auto-generates script by diffing the schema of two environments\n\nExamples:\n* --autogenerate=foo finds changes made to sandbox environment 'foo' and applies them to primary environment\n* --autogenerate=foo:bar finds changes made to environment 'foo' and applies them to environment 'bar'",
+      exclusive: ['template'],
     }),
   };
 
@@ -132,44 +150,81 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       isTsProject = true;
     } catch {}
 
-    const format = template
-      ? extname(template).split('.').pop()!
+    const format: 'js' | 'ts' = template
+      ? (extname(template).split('.').pop()! as 'js' | 'ts')
       : this.parsedFlags.js
-      ? 'js'
+      ? ('js' as const)
       : this.parsedFlags.ts || isTsProject
-      ? 'ts'
-      : 'js';
+      ? ('ts' as const)
+      : ('js' as const);
 
-    const migrationScriptPath = join(
+    const migrationFilePath = join(
       migrationsDir,
       `${Math.floor(Date.now() / 1000)}_${camelCase(scriptName)}.${format}`,
     );
 
     this.startSpinner(
-      `Writing "${relative(process.cwd(), migrationScriptPath)}"`,
+      `Writing "${relative(process.cwd(), migrationFilePath)}"`,
     );
 
     await mkdirp(migrationsDir);
 
     await writeFile(
-      migrationScriptPath,
-      await this.migrationScriptContent(template, format),
+      migrationFilePath,
+      await this.migrationScriptContent(template, format, migrationFilePath),
       'utf-8',
     );
 
     this.stopSpinner();
 
-    return migrationScriptPath;
+    return migrationFilePath;
   }
 
   async migrationScriptContent(
     template: string | undefined,
-    format: string,
+    format: 'js' | 'ts',
+    migrationFilePath: string,
   ): Promise<string> {
     if (template) {
       return readFileSync(template, 'utf-8');
     }
 
-    return format === 'js' ? jsTemplate : tsTemplate;
+    const rawAutoGenerate = this.parsedFlags.autogenerate;
+
+    if (!rawAutoGenerate) {
+      return format === 'js' ? jsTemplate : tsTemplate;
+    }
+
+    const allEnvironments = await this.client.environments.list();
+    const primaryEnv = allEnvironments.find((env) => env.meta.primary)!;
+
+    const [newEnvironmentId, rawOldEnvironmentId] = rawAutoGenerate.split(':');
+    const oldEnvironmentId = rawOldEnvironmentId || primaryEnv.id;
+
+    const newEnv = allEnvironments.find((env) => env.id === newEnvironmentId);
+
+    if (!newEnv) {
+      this.error(`Environment "${newEnv}" does not exist`);
+    }
+
+    const oldEnv = allEnvironments.find((env) => env.id === oldEnvironmentId);
+
+    if (!oldEnv) {
+      this.error(`Environment "${oldEnv}" does not exist`);
+    }
+
+    const newClient = this.buildClient({ environment: newEnvironmentId });
+    const oldClient = this.buildClient({ environment: oldEnvironmentId });
+
+    const script = await diffEnvironments({
+      newClient,
+      newEnvironmentId,
+      oldClient,
+      oldEnvironmentId,
+      migrationFilePath,
+      format,
+    });
+
+    return script;
   }
 }
