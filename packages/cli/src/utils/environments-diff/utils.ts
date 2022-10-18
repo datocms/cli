@@ -28,6 +28,10 @@ const fieldTypeName: Record<string, string> = {
   video: 'External video',
 };
 
+export function buildMenuItemTitle(menuItem: CmaClient.SchemaTypes.MenuItem) {
+  return `menu item "${menuItem.attributes.label}"`;
+}
+
 export function buildWorkflowTitle(workflow: CmaClient.SchemaTypes.Workflow) {
   return `workflow "${workflow.attributes.name}"`;
 }

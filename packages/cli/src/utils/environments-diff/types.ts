@@ -6,6 +6,8 @@ export type EntityIdsToBeRecreated = {
   itemType: string[];
   plugin: string[];
   workflow: string[];
+  menuItem: string[];
+  itemTypeFilter: string[];
 };
 
 export type ItemTypeInfo = {
@@ -198,6 +200,25 @@ export type UpdateRoleClientCommand = {
   };
 };
 
+export type CreateMenuItemClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.menuItems.create';
+  arguments: Parameters<CmaClient.Client['menuItems']['rawCreate']>;
+  oldEnvironmentId: string;
+};
+
+export type UpdateMenuItemClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.menuItems.update';
+  arguments: Parameters<CmaClient.Client['menuItems']['rawUpdate']>;
+};
+
+export type DestroyMenuItemClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.menuItems.destroy';
+  arguments: Parameters<CmaClient.Client['menuItems']['rawDestroy']>;
+};
+
 export type ClientApiCallCommand =
   | CreateFieldClientCommand
   | UpdateFieldClientCommand
@@ -220,6 +241,9 @@ export type ClientApiCallCommand =
   | CreateItemTypeClientCommand
   | UpdateItemTypeClientCommand
   | DestroyItemTypeClientCommand
-  | UpdateRoleClientCommand;
+  | UpdateRoleClientCommand
+  | CreateMenuItemClientCommand
+  | UpdateMenuItemClientCommand
+  | DestroyMenuItemClientCommand;
 
 export type Command = Comment | ClientApiCallCommand;

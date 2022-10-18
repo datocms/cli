@@ -39,5 +39,19 @@ export function getEntityIdsToBeRecreated(
           command.call === 'client.workflows.create',
       )
       .map((command) => command.oldEnvironmentId),
+    menuItem: commands
+      .filter(
+        (command): command is Types.CreateMenuItemClientCommand =>
+          command.type === 'apiCallClientCommand' &&
+          command.call === 'client.menuItems.create',
+      )
+      .map((command) => command.oldEnvironmentId),
+    itemTypeFilter: commands
+      .filter(
+        (command): command is Types.CreateItemTypeFilterClientCommand =>
+          command.type === 'apiCallClientCommand' &&
+          command.call === 'client.itemTypeFilters.create',
+      )
+      .map((command) => command.oldEnvironmentId),
   };
 }

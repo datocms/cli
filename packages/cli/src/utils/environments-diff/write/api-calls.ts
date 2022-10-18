@@ -126,6 +126,14 @@ function deserializeAndReplaceNewIdsInBody(
             const itemTypeRef = value as SimpleSchemaTypes.ItemTypeData;
             return fetchNewRef('itemType', itemTypeRef, entityIdsToBeRecreated);
           }
+          case 'item_type_filter': {
+            const itemTypeRef = value as SimpleSchemaTypes.ItemTypeData;
+            return fetchNewRef(
+              'itemTypeFilter',
+              itemTypeRef,
+              entityIdsToBeRecreated,
+            );
+          }
           case 'workflow': {
             const workflowRef = value as SimpleSchemaTypes.WorkflowData;
             return fetchNewRef('workflow', workflowRef, entityIdsToBeRecreated);
@@ -133,6 +141,10 @@ function deserializeAndReplaceNewIdsInBody(
           case 'fieldset': {
             const fieldsetRef = value as SimpleSchemaTypes.FieldsetData;
             return fetchNewRef('fieldset', fieldsetRef, entityIdsToBeRecreated);
+          }
+          case 'parent': {
+            const menuItemRef = value as SimpleSchemaTypes.MenuItemData;
+            return fetchNewRef('menuItem', menuItemRef, entityIdsToBeRecreated);
           }
           default: {
             // leave as it is
@@ -277,9 +289,10 @@ export function buildCreateItemTypeFilterClientCommandNode(
   entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [body] = command.arguments;
-  return makeApiCall(command, [
+  const apiCall = makeApiCall(command, [
     deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
   ]);
+  return assignToMapping('itemTypeFilter', command.oldEnvironmentId, apiCall);
 }
 
 export function buildUpdateItemTypeFilterClientCommandNode(
@@ -407,4 +420,35 @@ export function buildUpdateRoleClientCommandNode(
       }),
     ]),
   ];
+}
+
+export function buildCreateMenuItemClientCommandNode(
+  command: Types.CreateMenuItemClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  const apiCall = makeApiCall(command, [
+    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+  ]);
+  return assignToMapping('menuItem', command.oldEnvironmentId, apiCall);
+}
+
+export function buildUpdateMenuItemClientCommandNode(
+  command: Types.UpdateMenuItemClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [menuItemId, body] = command.arguments;
+
+  return makeApiCall(command, [
+    ts.factory.createStringLiteral(menuItemId),
+    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+  ]);
+}
+
+export function buildDestroyMenuItemClientCommandNode(
+  command: Types.DestroyMenuItemClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [menuItemId] = command.arguments;
+  return makeApiCall(command, [ts.factory.createStringLiteral(menuItemId)]);
 }

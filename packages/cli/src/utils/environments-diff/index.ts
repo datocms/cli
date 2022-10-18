@@ -11,6 +11,7 @@ import { resolveConfig } from 'prettier';
 import { manageUploadFilters } from './resources/manage-upload-filters';
 import { manageItemTypeFilters } from './resources/manage-item-type-filters';
 import { manageWorkflows } from './resources/manage-workflows';
+import { manageMenuItems } from './resources/manage-menu-items';
 import { managePlugins } from './resources/manage-plugins';
 import { updateRoles } from './resources/update-roles';
 
@@ -45,6 +46,7 @@ export async function diffEnvironments({
     ...deleteMissingItemTypes(newSchema, oldSchema),
     ...finalizeItemTypes(newSchema, oldSchema),
     ...manageItemTypeFilters(newSchema, oldSchema),
+    ...manageMenuItems(newSchema, oldSchema),
     ...updateRoles(roles, newEnvironmentId, oldEnvironmentId),
   ];
 

@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as Types from '../types';
-import { debugCodeAst, parseAstFromCode, writeCodeFromAst } from '../utils';
+import { parseAstFromCode, writeCodeFromAst } from '../utils';
 import { Options, format as prettier } from 'prettier';
 import * as ApiCommands from './api-calls';
 import { buildCommentNode } from './comments';
@@ -119,6 +119,21 @@ function writeApiCallClientCommand(
       );
     case 'client.roles.updateCurrentEnvironmentPermissions':
       return ApiCommands.buildUpdateRoleClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.menuItems.create':
+      return ApiCommands.buildCreateMenuItemClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.menuItems.update':
+      return ApiCommands.buildUpdateMenuItemClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.menuItems.destroy':
+      return ApiCommands.buildDestroyMenuItemClientCommandNode(
         command,
         entityIdsToBeRecreated,
       );

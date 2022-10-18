@@ -45,9 +45,7 @@ export function buildCreateFieldClientCommand(
 
   const attributesToUpdate = pick(
     field.attributes,
-    field.attributes.field_type === 'slug'
-      ? attributesToPick
-      : without(attributesToPick, 'position'),
+    without(attributesToPick, 'position'),
   );
 
   return [
