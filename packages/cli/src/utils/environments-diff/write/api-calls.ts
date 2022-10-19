@@ -252,8 +252,11 @@ export function buildDestroyItemTypeClientCommandNode(
   command: Types.DestroyItemTypeClientCommand,
   entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
-  const [itemTypeId] = command.arguments;
-  return makeApiCall(command, [ts.factory.createStringLiteral(itemTypeId)]);
+  const [itemTypeId, queryParams] = command.arguments;
+  return makeApiCall(command, [
+    ts.factory.createStringLiteral(itemTypeId),
+    createJsonLiteral(queryParams),
+  ]);
 }
 
 export function buildCreateUploadFilterClientCommandNode(
@@ -381,6 +384,16 @@ export function buildDestroyPluginClientCommandNode(
 ): ts.Node {
   const [pluginId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(pluginId)]);
+}
+
+export function buildUpdateSiteClientCommandNode(
+  command: Types.UpdateSiteClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  return makeApiCall(command, [
+    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+  ]);
 }
 
 export function buildUpdateRoleClientCommandNode(

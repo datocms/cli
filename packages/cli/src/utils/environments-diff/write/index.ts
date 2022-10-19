@@ -137,6 +137,11 @@ function writeApiCallClientCommand(
         command,
         entityIdsToBeRecreated,
       );
+    case 'client.site.update':
+      return ApiCommands.buildUpdateSiteClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
     default:
       throw new Error(`Dont't know how to handle ${JSON.stringify(command)}`);
   }

@@ -200,6 +200,12 @@ export type UpdateRoleClientCommand = {
   };
 };
 
+export type UpdateSiteClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.site.update';
+  arguments: Parameters<CmaClient.Client['site']['rawUpdate']>;
+};
+
 export type CreateMenuItemClientCommand = {
   type: 'apiCallClientCommand';
   call: 'client.menuItems.create';
@@ -244,6 +250,7 @@ export type ClientApiCallCommand =
   | UpdateRoleClientCommand
   | CreateMenuItemClientCommand
   | UpdateMenuItemClientCommand
-  | DestroyMenuItemClientCommand;
+  | DestroyMenuItemClientCommand
+  | UpdateSiteClientCommand;
 
 export type Command = Comment | ClientApiCallCommand;

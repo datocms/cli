@@ -14,6 +14,7 @@ import { manageWorkflows } from './resources/manage-workflows';
 import { manageMenuItems } from './resources/manage-menu-items';
 import { managePlugins } from './resources/manage-plugins';
 import { updateRoles } from './resources/update-roles';
+import { updateSite } from './resources/update-site';
 
 export async function diffEnvironments({
   newClient,
@@ -36,6 +37,7 @@ export async function diffEnvironments({
   const { data: roles } = await newClient.roles.rawList();
 
   const commands = [
+    ...updateSite(newSchema, oldSchema),
     ...manageWorkflows(newSchema, oldSchema),
     ...managePlugins(newSchema, oldSchema),
     ...manageUploadFilters(newSchema, oldSchema),
