@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-utils",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Utils for DatoCMS CLI",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
