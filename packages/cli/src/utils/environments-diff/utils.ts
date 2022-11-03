@@ -158,7 +158,7 @@ export function createJsonLiteral(
     return ts.factory.createObjectLiteralExpression(
       Object.entries(element).map(([property, child]) =>
         ts.factory.createPropertyAssignment(
-          property,
+          ts.factory.createStringLiteral(property),
           createJsonLiteral(child, {
             parentPath: [...parentPath, property],
             replace,
