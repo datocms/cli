@@ -80,7 +80,7 @@
     "cli"
   ],
   "types": "lib/index.d.ts",
-  "gitHead": "3787308440e52901c9dc64db08b8342494aa72de",
+  "gitHead": "7f9c97ad8516a83b26f9e922d44d8cdc914c1214",
   "devDependencies": {
     "@types/mkdirp": "^1.0.2",
     "@types/prettier": "^2.7.1",
