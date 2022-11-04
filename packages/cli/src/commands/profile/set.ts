@@ -35,6 +35,10 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
     'migrations-template': oclif.Flags.string({
       description: 'Path of the file to use as migration script template',
     }),
+    'migrations-tsconfig': oclif.Flags.string({
+      description:
+        'Path of the tsconfig.json to use to run TS migration scripts',
+    }),
     'base-url': oclif.Flags.string({ hidden: true }),
   };
 
@@ -110,6 +114,16 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
         },
       ));
 
+    const migrationTsconfig =
+      this.parsedFlags['migrations-tsconfig'] ||
+      (await oclif.CliUx.ux.prompt(
+        `* Path of the tsconfig.json to use to run TS migration scripts (optional)`,
+        {
+          default: existingProfileConfig?.migrations?.tsconfig,
+          required: false,
+        },
+      ));
+
     await this.saveDatoConfig({
       ...this.datoConfig,
       profiles: {
@@ -121,6 +135,7 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
             directory: migrationsDir,
             modelApiKey: migrationModelApiKey,
             template: migrationTemplate,
+            tsconfig: migrationTsconfig,
           },
         },
       },

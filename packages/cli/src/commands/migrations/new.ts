@@ -1,5 +1,5 @@
 import { oclif, CmaClientCommand, CmaClient } from '@datocms/cli-utils';
-import { extname, join, relative, resolve } from 'path';
+import { dirname, extname, join, relative, resolve } from 'path';
 import { findNearestFile } from '../../utils/find-nearest-file';
 import { camelCase } from 'lodash';
 import { writeFile } from 'fs/promises';
@@ -137,18 +137,27 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     const config = this.datoProfileConfig!;
 
     const template = config.migrations?.template
-      ? resolve(config.migrations?.template)
+      ? resolve(dirname(this.datoConfigPath), config.migrations?.template)
       : undefined;
 
-    const migrationsDir = resolve(
-      config.migrations?.directory || './migrations',
-    );
+    const migrationsDir = config.migrations?.directory
+      ? resolve(dirname(this.datoConfigPath), config.migrations?.directory)
+      : resolve('./migrations');
+
+    const migrationsTsconfig = config.migrations?.tsconfig
+      ? resolve(dirname(this.datoConfigPath), config.migrations?.tsconfig)
+      : undefined;
 
     let isTsProject = false;
-    try {
-      await findNearestFile('tsconfig.json');
+
+    if (migrationsTsconfig) {
       isTsProject = true;
-    } catch {}
+    } else {
+      try {
+        await findNearestFile('tsconfig.json');
+        isTsProject = true;
+      } catch {}
+    }
 
     const format: 'js' | 'ts' = template
       ? (extname(template).split('.').pop()! as 'js' | 'ts')

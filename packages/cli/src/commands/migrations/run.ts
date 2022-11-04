@@ -5,7 +5,7 @@ import {
   SimpleSchemaTypes,
 } from '@datocms/cli-utils/lib/cma-client-node';
 import { access, readdir } from 'fs/promises';
-import { join, relative, resolve } from 'path';
+import { dirname, join, relative, resolve } from 'path';
 import { register as registerTsNode } from 'ts-node';
 import { findNearestFile } from '../../utils/find-nearest-file';
 
@@ -38,6 +38,10 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     'migrations-model': oclif.Flags.string({
       description: 'API key of the DatoCMS model used to store migration data',
     }),
+    'migrations-tsconfig': oclif.Flags.string({
+      description:
+        'Path of the tsconfig.json to use to run TS migrations scripts',
+    }),
   };
 
   private registeredTsNode?: boolean;
@@ -59,7 +63,9 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     const migrationsDir = resolve(
       this.parsedFlags['migrations-dir'] ||
-        preference?.directory ||
+        (preference?.directory
+          ? resolve(dirname(this.datoConfigPath), preference?.directory)
+          : undefined) ||
         './migrations',
     );
 
@@ -68,12 +74,24 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       preference?.modelApiKey ||
       'schema_migration';
 
+    const migrationsTsconfig =
+      this.parsedFlags['migrations-tsconfig'] ||
+      (preference?.tsconfig
+        ? resolve(dirname(this.datoConfigPath), preference?.tsconfig)
+        : undefined);
+
     try {
       await access(migrationsDir);
     } catch {
-      this.error(
-        `Directory "${relative(process.cwd(), migrationsDir)}" does not exist!`,
-      );
+      this.error(`Directory "${migrationsDir}" does not exist!`);
+    }
+
+    if (migrationsTsconfig) {
+      try {
+        await access(migrationsTsconfig);
+      } catch {
+        this.error(`File "${migrationsTsconfig}" does not exist!`);
+      }
     }
 
     const allEnvironments = await this.client.environments.list();
@@ -158,6 +176,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         dryRun,
         migrationModel,
         migrationsDir,
+        migrationsTsconfig,
       );
     }
 
@@ -180,6 +199,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     dryRun: boolean,
     migrationModel: SimpleSchemaTypes.ItemType | null,
     migrationsDir: string,
+    migrationsTsconfig: string | undefined,
   ) {
     const relativePath = relative(migrationsDir, script.path);
 
@@ -192,8 +212,10 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         process.env.NODE_ENV !== 'development'
       ) {
         this.registeredTsNode = true;
-        const project = await findNearestFile('tsconfig.json');
-        registerTsNode({ project });
+        registerTsNode({
+          project:
+            migrationsTsconfig || (await findNearestFile('tsconfig.json')),
+        });
       }
 
       const exportedThing = await import(script.path);

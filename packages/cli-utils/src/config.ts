@@ -8,6 +8,7 @@ export type ProfileConfig = {
     directory?: string;
     modelApiKey?: string;
     template?: string;
+    tsconfig?: string;
   };
 };
 
@@ -26,6 +27,8 @@ function isProfileConfig(thing: any): thing is ProfileConfig {
     'logLevel',
     'migrations.directory',
     'migrations.modelApiKey',
+    'migrations.template',
+    'migrations.tsconfig',
   ]) {
     const value = get(thing, key);
     if (value !== undefined && typeof value !== 'string') {
