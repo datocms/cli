@@ -7,7 +7,6 @@ import {
 import { access, readdir } from 'fs/promises';
 import { join, relative, resolve } from 'path';
 import { register as registerTsNode } from 'ts-node';
-import { findNearestFile } from '../../utils/find-nearest-file';
 
 const MIGRATION_FILE_REGEXP = /^\d+.*\.(js|ts)$/;
 
@@ -59,8 +58,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     const migrationsDir = resolve(
       this.parsedFlags['migrations-dir'] ||
-        preference?.directory ||
-        './migrations',
+      preference?.directory ||
+      './migrations',
     );
 
     const migrationsModelApiKey =
@@ -86,8 +85,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     if (!sourceEnv) {
       this.error(
-        `You have no permissions to access the "${
-          sourceEnvId ? `"${sourceEnvId}"` : 'primary'
+        `You have no permissions to access the "${sourceEnvId ? `"${sourceEnvId}"` : 'primary'
         }" environment!`,
       );
     }
@@ -192,7 +190,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         process.env.NODE_ENV !== 'development'
       ) {
         this.registeredTsNode = true;
-        const project = await findNearestFile('tsconfig.json');
+        const project = resolve(__dirname, '../../../tsconfig.json');
         registerTsNode({ project });
       }
 
@@ -203,8 +201,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
           ? exportedThing
           : 'default' in exportedThing &&
             typeof exportedThing.default === 'function'
-          ? exportedThing.default
-          : undefined;
+            ? exportedThing.default
+            : undefined;
 
       if (!migration) {
         this.error('The script does not export a valid migration function');
@@ -271,7 +269,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
           path: join(legacyMigrationsDir, file),
           legacy: true,
         }));
-    } catch {}
+    } catch { }
 
     return [...allMigrationScripts, ...allLegacyMigrationScripts]
       .sort((a, b) => a.filename.localeCompare(b.filename))
