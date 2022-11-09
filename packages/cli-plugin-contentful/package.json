@@ -49,6 +49,7 @@
     "datocms-structured-text-utils": "^2.0.4",
     "humps": "^2.0.1",
     "listr2": "^4.0.5",
+    "enquirer": ">= 2.3.0 < 3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

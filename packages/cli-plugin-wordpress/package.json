@@ -25,6 +25,7 @@
     "async-scheduler": "^1.4.4",
     "inflected": "^2.1.0",
     "listr2": "^4.0.5",
+    "enquirer": ">= 2.3.0 < 3",
     "wpapi": "^1.2.2"
   },
   "oclif": {
