@@ -64,7 +64,7 @@ DESCRIPTION
   Imports a WordPress site into a DatoCMS project
 ```
 
-_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v1.0.18/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
+_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v1.0.19/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
 
 <!-- commandsstop -->
 
