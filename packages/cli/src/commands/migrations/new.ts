@@ -194,14 +194,14 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     format: 'js' | 'ts',
     migrationFilePath: string,
   ): Promise<string> {
-    if (template) {
-      return readFileSync(template, 'utf-8');
-    }
-
     const rawAutoGenerate = this.parsedFlags.autogenerate;
 
     if (!rawAutoGenerate) {
-      return format === 'js' ? jsTemplate : tsTemplate;
+      return template
+        ? readFileSync(template, 'utf-8')
+        : format === 'js'
+        ? jsTemplate
+        : tsTemplate;
     }
 
     const allEnvironments = await this.client.environments.list();
