@@ -152,7 +152,7 @@ describe('Import from Contentful', () => {
     expect(dateField?.validators).to.deep.equal({
       required: {},
       date_time_range: {
-        min: '2022-05-31T23:00:00+01:00',
+        min: '2022-06-01T01:00:00+01:00',
         max: '2022-06-10T23:00:00+01:00',
       },
     });
