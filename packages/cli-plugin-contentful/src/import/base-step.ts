@@ -54,7 +54,7 @@ export default class BaseStep {
     let finished = 0;
     let failed = 0;
 
-    const runningInfo: Record<string, string> = {};
+    const runningInfo: Record<string, string | undefined> = {};
     const refreshOutput = () => {
       task.output = Object.entries(runningInfo)
         .map(([id, message]) => `* ${id}: ${message}`)

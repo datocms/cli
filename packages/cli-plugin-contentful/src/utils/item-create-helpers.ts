@@ -47,7 +47,7 @@ export const datoValueForFieldType = async (
     return Object.entries(uploadUrlToDatoUploadUrl).reduce(
       (acc, [contentfulUploadUrl, datoUploadUrl]) =>
         acc.replace(contentfulUploadUrl, datoUploadUrl),
-      contentfulValue,
+      contentfulValue as string,
     );
   }
 
