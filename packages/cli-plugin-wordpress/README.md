@@ -3,11 +3,10 @@
 DatoCMS CLI plugin to import a WordPress site into a DatoCMS project.
 
 <!-- toc -->
-
-- [DatoCMS WordPress Import CLI](#datocms-wordpress-import-cli)
-- [Usage](#usage)
-- [Commands](#commands)
-- [Development](#development)
+* [DatoCMS WordPress Import CLI](#datocms-wordpress-import-cli)
+* [Usage](#usage)
+* [Commands](#commands)
+* [Development](#development)
 <!-- tocstop -->
 
 <br /><br />
@@ -27,8 +26,7 @@ $ datocms wordpress:import --help
 # Commands
 
 <!-- commands -->
-
-- [`@datocms/cli-plugin-wordpress wordpress:import`](#datocmscli-plugin-wordpress-wordpressimport)
+* [`@datocms/cli-plugin-wordpress wordpress:import`](#datocmscli-plugin-wordpress-wordpressimport)
 
 ## `@datocms/cli-plugin-wordpress wordpress:import`
 
@@ -64,8 +62,7 @@ DESCRIPTION
   Imports a WordPress site into a DatoCMS project
 ```
 
-_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v1.0.20/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
-
+_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v1.0.21/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
 <!-- commandsstop -->
 
 # Development

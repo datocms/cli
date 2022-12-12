@@ -3,11 +3,10 @@
 DatoCMS CLI plugin to import a Contentful project into a DatoCMS project.
 
 <!-- toc -->
-
-- [DatoCMS Contentful Import CLI](#datocms-contentful-import-cli)
-- [Usage](#usage)
-- [Commands](#commands)
-- [Test](#test)
+* [DatoCMS Contentful Import CLI](#datocms-contentful-import-cli)
+* [Usage](#usage)
+* [Commands](#commands)
+* [Test](#test)
 <!-- tocstop -->
 
 <br /><br />
@@ -27,8 +26,7 @@ $ datocms contentful:import --help
 # Commands
 
 <!-- commands -->
-
-- [`@datocms/cli-plugin-contentful contentful:import`](#datocmscli-plugin-contentful-contentfulimport)
+* [`@datocms/cli-plugin-contentful contentful:import`](#datocmscli-plugin-contentful-contentfulimport)
 
 ## `@datocms/cli-plugin-contentful contentful:import`
 
@@ -68,8 +66,7 @@ DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v1.0.20/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
-
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v1.0.21/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test
