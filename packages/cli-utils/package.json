@@ -28,5 +28,5 @@
     "build": "tsc",
     "prebuild": "rimraf lib"
   },
-  "gitHead": "b5c5e6222e00a10d55a821f58b40736030f3e493"
+  "gitHead": "fa1595ded6785e92d5483f464a139fcf7be5c395"
 }
