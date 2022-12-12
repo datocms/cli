@@ -336,8 +336,8 @@ export function managePlugins(newSchema: Schema, oldSchema: Schema): Command[] {
   );
 
   const commands: Command[] = [
-    ...createdEntities.flatMap(buildCreatePluginClientCommand),
     ...deletedEntities.flatMap(buildDestroyPluginClientCommand),
+    ...createdEntities.flatMap(buildCreatePluginClientCommand),
     ...keptEntityIds.flatMap((pluginId) =>
       buildUpdatePluginClientCommand(
         newSchema.pluginsById[pluginId],

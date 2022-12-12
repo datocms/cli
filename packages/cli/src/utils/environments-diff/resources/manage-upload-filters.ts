@@ -96,8 +96,8 @@ export function manageUploadFilters(
   );
 
   const commands: Command[] = [
-    ...createdEntities.flatMap(buildCreateUploadFilterClientCommand),
     ...deletedEntities.flatMap(buildDestroyUploadFilterClientCommand),
+    ...createdEntities.flatMap(buildCreateUploadFilterClientCommand),
     ...keptEntityIds.flatMap((uploadFilterId) =>
       buildUpdateUploadFilterClientCommand(
         newSchema.uploadFiltersById[uploadFilterId],

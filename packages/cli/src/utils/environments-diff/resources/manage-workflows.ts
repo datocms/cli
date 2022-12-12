@@ -98,8 +98,8 @@ export function manageWorkflows(
   );
 
   const commands: Command[] = [
-    ...createdEntities.flatMap(buildCreateWorkflowClientCommand),
     ...deletedEntities.flatMap(buildDestroyWorkflowClientCommand),
+    ...createdEntities.flatMap(buildCreateWorkflowClientCommand),
     ...keptEntityIds.flatMap((workflowId) =>
       buildUpdateWorkflowClientCommand(
         newSchema.workflowsById[workflowId],

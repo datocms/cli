@@ -115,16 +115,16 @@ export function manageItemTypeFilters(
   );
 
   const commands: Command[] = [
-    ...createdEntities.flatMap((entity) =>
-      buildCreateItemTypeFilterClientCommand(
-        entity,
-        newSchema.itemTypesById[entity.relationships.item_type.data.id].entity,
-      ),
-    ),
     ...deletedEntities.flatMap((entity) =>
       buildDestroyItemTypeFilterClientCommand(
         entity,
         oldSchema.itemTypesById[entity.relationships.item_type.data.id].entity,
+      ),
+    ),
+    ...createdEntities.flatMap((entity) =>
+      buildCreateItemTypeFilterClientCommand(
+        entity,
+        newSchema.itemTypesById[entity.relationships.item_type.data.id].entity,
       ),
     ),
     ...keptEntityIds.flatMap((itemTypeFilterId) =>
