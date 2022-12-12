@@ -218,7 +218,7 @@ function findSiblings({
     ? collection.filter(
         (entity) =>
           entity.type === 'field' &&
-          entity.relationships.fieldset.data?.id == fieldsetId,
+          entity.relationships.fieldset.data?.id === fieldsetId,
       )
     : collection.filter(
         (entity) =>
@@ -259,7 +259,7 @@ function findMaxPosition({
     ? collection.filter(
         (entity) =>
           entity.type === 'field' &&
-          entity.relationships.fieldset.data?.id == fieldsetId,
+          entity.relationships.fieldset.data?.id === fieldsetId,
       )
     : collection.filter(
         (entity) =>
@@ -625,14 +625,12 @@ export function updateFieldsAndFieldsets(
 
   const keptItemTypeIds = intersection(newItemTypeIds, oldItemTypeIds);
 
-  const commands = keptItemTypeIds
-    .map((itemTypeId) =>
-      updateFieldsAndFieldsetsInItemType(
-        newSchema.itemTypesById[itemTypeId],
-        oldSchema.itemTypesById[itemTypeId],
-      ),
-    )
-    .flat();
+  const commands = keptItemTypeIds.flatMap((itemTypeId) =>
+    updateFieldsAndFieldsetsInItemType(
+      newSchema.itemTypesById[itemTypeId],
+      oldSchema.itemTypesById[itemTypeId],
+    ),
+  );
 
   if (commands.length === 0) {
     return [];

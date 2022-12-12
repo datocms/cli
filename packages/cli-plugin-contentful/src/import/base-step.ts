@@ -84,7 +84,7 @@ export default class BaseStep {
             }
           } finally {
             finished += 1;
-            delete runningInfo[identifier];
+            runningInfo[identifier] = undefined;
             task.title = `${title} (${finished} of ${items.length}${
               failed > 0 ? `, ${failed} failed` : ''
             })`;

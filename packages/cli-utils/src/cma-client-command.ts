@@ -48,7 +48,7 @@ export abstract class CmaClientCommand<
   } {
     const apiTokenEnvName =
       this.profileId === 'default'
-        ? `DATOCMS_API_TOKEN`
+        ? 'DATOCMS_API_TOKEN'
         : `DATOCMS_${this.profileId.toUpperCase()}_PROFILE_API_TOKEN`;
 
     const apiToken =
@@ -66,7 +66,7 @@ export abstract class CmaClientCommand<
         : logLevelMap[logLevelCode];
 
     if (!apiToken) {
-      this.error(`Cannot find an API token to use to call DatoCMS!`, {
+      this.error('Cannot find an API token to use to call DatoCMS!', {
         suggestions: [
           `The API token to use is determined by looking at:
 * The --api-token flag

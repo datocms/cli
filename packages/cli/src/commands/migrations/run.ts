@@ -182,7 +182,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     this.log(
       migrationScriptsToRun.length === 0
-        ? `No new migration scripts to run, skipping operation`
+        ? 'No new migration scripts to run, skipping operation'
         : `Successfully run ${migrationScriptsToRun.length} migration scripts`,
     );
 

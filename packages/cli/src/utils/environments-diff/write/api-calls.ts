@@ -184,7 +184,7 @@ export function buildUpdateFieldClientCommandNode(
 
 export function buildDestroyFieldClientCommandNode(
   command: Types.DestroyFieldClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [fieldId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(fieldId)]);
@@ -218,7 +218,7 @@ export function buildUpdateFieldsetClientCommandNode(
 
 export function buildDestroyFieldsetClientCommandNode(
   command: Types.DestroyFieldsetClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [fieldsetId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(fieldsetId)]);
@@ -250,7 +250,7 @@ export function buildUpdateItemTypeClientCommandNode(
 
 export function buildDestroyItemTypeClientCommandNode(
   command: Types.DestroyItemTypeClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [itemTypeId, queryParams] = command.arguments;
   return makeApiCall(command, [
@@ -261,7 +261,7 @@ export function buildDestroyItemTypeClientCommandNode(
 
 export function buildCreateUploadFilterClientCommandNode(
   command: Types.CreateUploadFilterClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [body] = command.arguments;
   return makeApiCall(command, [deserializeBody(body)]);
@@ -269,7 +269,7 @@ export function buildCreateUploadFilterClientCommandNode(
 
 export function buildUpdateUploadFilterClientCommandNode(
   command: Types.UpdateUploadFilterClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [uploadFilterId, body] = command.arguments;
 
@@ -281,7 +281,7 @@ export function buildUpdateUploadFilterClientCommandNode(
 
 export function buildDestroyUploadFilterClientCommandNode(
   command: Types.DestroyUploadFilterClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [uploadFilterId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(uploadFilterId)]);
@@ -312,7 +312,7 @@ export function buildUpdateItemTypeFilterClientCommandNode(
 
 export function buildDestroyItemTypeFilterClientCommandNode(
   command: Types.DestroyItemTypeFilterClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [itemTypeFilterId] = command.arguments;
   return makeApiCall(command, [
@@ -347,7 +347,7 @@ export function buildUpdateWorkflowClientCommandNode(
 
 export function buildDestroyWorkflowClientCommandNode(
   command: Types.DestroyWorkflowClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [workflowId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(workflowId)]);
@@ -380,7 +380,7 @@ export function buildUpdatePluginClientCommandNode(
 
 export function buildDestroyPluginClientCommandNode(
   command: Types.DestroyPluginClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [pluginId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(pluginId)]);
@@ -460,7 +460,7 @@ export function buildUpdateMenuItemClientCommandNode(
 
 export function buildDestroyMenuItemClientCommandNode(
   command: Types.DestroyMenuItemClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [menuItemId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(menuItemId)]);

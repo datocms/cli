@@ -86,11 +86,13 @@ export default class WpPages extends BaseStep {
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
     if (
-      !ctx.wpPages ||
-      !ctx.datoItemTypes.page ||
-      !ctx.wpAssetUrlToDatoUrl ||
-      !ctx.wpAssetIdToDatoId ||
-      !ctx.authorsMapping
+      !(
+        ctx.wpPages &&
+        ctx.datoItemTypes.page &&
+        ctx.wpAssetUrlToDatoUrl &&
+        ctx.wpAssetIdToDatoId &&
+        ctx.authorsMapping
+      )
     ) {
       throw new Error('This should not happen!');
     }

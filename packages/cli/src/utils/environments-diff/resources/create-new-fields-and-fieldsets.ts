@@ -139,12 +139,10 @@ export function buildCreateFieldClientCommands(
   );
 
   return [
-    ...nonSlugFields
-      .map(buildCreateFieldClientCommand.bind(null, itemType))
-      .flat(),
-    ...slugFields
-      .map(buildCreateFieldClientCommand.bind(null, itemType))
-      .flat(),
+    ...nonSlugFields.flatMap(
+      buildCreateFieldClientCommand.bind(null, itemType),
+    ),
+    ...slugFields.flatMap(buildCreateFieldClientCommand.bind(null, itemType)),
   ];
 }
 
@@ -152,9 +150,9 @@ export function buildCreateFieldsetClientCommands(
   itemType: CmaClient.SchemaTypes.ItemType,
   fieldsets: CmaClient.SchemaTypes.Fieldset[],
 ): Command[] {
-  return sortBy(fieldsets, (e) => e.attributes.position)
-    .map(buildCreateFieldsetClientCommand.bind(null, itemType))
-    .flat();
+  return sortBy(fieldsets, (e) => e.attributes.position).flatMap(
+    buildCreateFieldsetClientCommand.bind(null, itemType),
+  );
 }
 
 function createNewFieldsAndFieldsetsInItemType(
@@ -200,14 +198,13 @@ export function createNewFieldsAndFieldsets(
   const createdItemTypeIds = difference(newItemTypeIds, oldItemTypeIds);
   const keptItemTypeIds = intersection(newItemTypeIds, oldItemTypeIds);
 
-  const commands = [...createdItemTypeIds, ...keptItemTypeIds]
-    .map((itemTypeId) =>
+  const commands = [...createdItemTypeIds, ...keptItemTypeIds].flatMap(
+    (itemTypeId) =>
       createNewFieldsAndFieldsetsInItemType(
         newSchema.itemTypesById[itemTypeId],
         oldSchema.itemTypesById[itemTypeId],
       ),
-    )
-    .flat();
+  );
 
   if (commands.length === 0) {
     return [];

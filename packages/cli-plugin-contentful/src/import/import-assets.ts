@@ -39,14 +39,8 @@ export default class ImportAssets extends BaseStep {
             locale: string,
           ) => {
             acc[locale] = {
-              title:
-                (contentfulAsset.fields.title &&
-                  contentfulAsset.fields.title[locale]) ||
-                null,
-              alt:
-                (contentfulAsset.fields.description &&
-                  contentfulAsset.fields.description[locale]) ||
-                null,
+              title: contentfulAsset.fields.title?.[locale] || null,
+              alt: contentfulAsset.fields.description?.[locale] || null,
               custom_data: {},
             };
 

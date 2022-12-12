@@ -115,36 +115,28 @@ export function manageItemTypeFilters(
   );
 
   const commands: Command[] = [
-    ...createdEntities
-      .map((entity) =>
-        buildCreateItemTypeFilterClientCommand(
-          entity,
-          newSchema.itemTypesById[entity.relationships.item_type.data.id]
-            .entity,
-        ),
-      )
-      .flat(),
-    ...deletedEntities
-      .map((entity) =>
-        buildDestroyItemTypeFilterClientCommand(
-          entity,
-          oldSchema.itemTypesById[entity.relationships.item_type.data.id]
-            .entity,
-        ),
-      )
-      .flat(),
-    ...keptEntityIds
-      .map((itemTypeFilterId) =>
-        buildUpdateItemTypeFilterClientCommand(
-          newSchema.itemTypeFiltersById[itemTypeFilterId],
-          oldSchema.itemTypeFiltersById[itemTypeFilterId],
-          newSchema.itemTypesById[
-            newSchema.itemTypeFiltersById[itemTypeFilterId].relationships
-              .item_type.data.id
-          ].entity,
-        ),
-      )
-      .flat(),
+    ...createdEntities.flatMap((entity) =>
+      buildCreateItemTypeFilterClientCommand(
+        entity,
+        newSchema.itemTypesById[entity.relationships.item_type.data.id].entity,
+      ),
+    ),
+    ...deletedEntities.flatMap((entity) =>
+      buildDestroyItemTypeFilterClientCommand(
+        entity,
+        oldSchema.itemTypesById[entity.relationships.item_type.data.id].entity,
+      ),
+    ),
+    ...keptEntityIds.flatMap((itemTypeFilterId) =>
+      buildUpdateItemTypeFilterClientCommand(
+        newSchema.itemTypeFiltersById[itemTypeFilterId],
+        oldSchema.itemTypeFiltersById[itemTypeFilterId],
+        newSchema.itemTypesById[
+          newSchema.itemTypeFiltersById[itemTypeFilterId].relationships
+            .item_type.data.id
+        ].entity,
+      ),
+    ),
   ];
 
   if (commands.length === 0) {

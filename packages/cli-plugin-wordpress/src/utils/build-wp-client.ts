@@ -17,8 +17,8 @@ export async function buildWpClient({
   apiUrl,
   discoverUrl,
 }: WpClientType): Promise<WPAPI> {
-  if (!username || !password) {
-    throw new Error(`You need to provide email and password to authenticate!`);
+  if (!(username && password)) {
+    throw new Error('You need to provide email and password to authenticate!');
   }
 
   let wpClient;
@@ -33,7 +33,7 @@ export async function buildWpClient({
     wpClient = await WPAPI.discover(discoverUrl);
     await wpClient.auth({ username, password });
   } else {
-    throw new Error(`You need to provide the URl to your WordPress install!`);
+    throw new Error('You need to provide the URl to your WordPress install!');
   }
 
   return wpClient;

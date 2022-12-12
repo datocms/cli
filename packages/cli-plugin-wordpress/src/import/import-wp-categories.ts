@@ -65,7 +65,7 @@ export default class WpCategories extends BaseStep {
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
-    if (!ctx.wpCategories || !ctx.datoItemTypes.category) {
+    if (!(ctx.wpCategories && ctx.datoItemTypes.category)) {
       throw new Error('This should not happen!');
     }
 
@@ -97,7 +97,7 @@ export default class WpCategories extends BaseStep {
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
-    if (!ctx.wpCategories || !ctx.categoriesMapping) {
+    if (!(ctx.wpCategories && ctx.categoriesMapping)) {
       throw new Error('This should not happen!');
     }
 

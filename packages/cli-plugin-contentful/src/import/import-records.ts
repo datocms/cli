@@ -14,10 +14,10 @@ const linkRecordsAndAssetsLog = 'Link records and assets';
 
 type FieldValue =
   | {
-      [locale: string]: any;
+      [locale: string]: unknown;
     }
   | null
-  | any;
+  | unknown;
 
 export default class ImportRecords extends BaseStep {
   async task(): Promise<Listr> {
@@ -85,13 +85,14 @@ export default class ImportRecords extends BaseStep {
             fieldValue = {};
 
             for (const locale of ctx.locales) {
-              fieldValue[locale] = contentfulContent
-                ? await datoValueForFieldType(
-                    contentfulContent[locale],
-                    datoField.field_type,
-                    ctx.uploadUrlToDatoUploadUrl,
-                  )
-                : null;
+              (fieldValue as Record<string, unknown>)[locale] =
+                contentfulContent
+                  ? await datoValueForFieldType(
+                      contentfulContent[locale],
+                      datoField.field_type,
+                      ctx.uploadUrlToDatoUploadUrl,
+                    )
+                  : null;
             }
           } else {
             fieldValue = contentfulContent
@@ -171,7 +172,7 @@ export default class ImportRecords extends BaseStep {
 
           const contentfulContent = entry.fields[contentfulFieldApiKey];
 
-          if (!contentfulContent || !isLinkType(datoField.field_type)) {
+          if (!(contentfulContent && isLinkType(datoField.field_type))) {
             // Do not update this field
             continue;
           }
@@ -180,13 +181,14 @@ export default class ImportRecords extends BaseStep {
 
           if (datoField.localized) {
             for (const locale of ctx.locales) {
-              fieldValue[locale] = await datoLinkValueForFieldType(
-                contentfulContent[locale],
-                datoField.field_type,
-                ctx.entryIdToDatoItemId,
-                ctx.uploadIdToDatoUploadInfo,
-                ctx.assetBlockId,
-              );
+              (fieldValue as Record<string, unknown>)[locale] =
+                await datoLinkValueForFieldType(
+                  contentfulContent[locale],
+                  datoField.field_type,
+                  ctx.entryIdToDatoItemId,
+                  ctx.uploadIdToDatoUploadInfo,
+                  ctx.assetBlockId,
+                );
             }
           } else {
             fieldValue = await datoLinkValueForFieldType(
@@ -208,7 +210,7 @@ export default class ImportRecords extends BaseStep {
           try {
             notify(`Publish ${datoItemId}...`);
             await this.client.items.publish(datoItemId);
-            notify(`Done!`);
+            notify('Done!');
           } catch {
             notify(
               `Cannot publish record: ${datoItemId}. Contentful allows published records with draft links while DatoCMS doesn't.`,

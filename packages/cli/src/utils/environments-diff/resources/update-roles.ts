@@ -98,10 +98,7 @@ export function updateRole(
   );
 
   if (
-    !positiveItemType &&
-    !negativeItemType &&
-    !positiveUpload &&
-    !negativeUpload
+    !(positiveItemType || negativeItemType || positiveUpload || negativeUpload)
   ) {
     return [];
   }
@@ -139,7 +136,7 @@ export function updateRoles(
   newEnvironmentId: string,
   oldEnvironmentId: string,
 ): Command[] {
-  return roles
-    .map((role) => updateRole(role, newEnvironmentId, oldEnvironmentId))
-    .flat();
+  return roles.flatMap((role) =>
+    updateRole(role, newEnvironmentId, oldEnvironmentId),
+  );
 }

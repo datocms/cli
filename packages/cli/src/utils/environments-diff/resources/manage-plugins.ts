@@ -336,16 +336,14 @@ export function managePlugins(newSchema: Schema, oldSchema: Schema): Command[] {
   );
 
   const commands: Command[] = [
-    ...createdEntities.map(buildCreatePluginClientCommand).flat(),
-    ...deletedEntities.map(buildDestroyPluginClientCommand).flat(),
-    ...keptEntityIds
-      .map((pluginId) =>
-        buildUpdatePluginClientCommand(
-          newSchema.pluginsById[pluginId],
-          oldSchema.pluginsById[pluginId],
-        ),
-      )
-      .flat(),
+    ...createdEntities.flatMap(buildCreatePluginClientCommand),
+    ...deletedEntities.flatMap(buildDestroyPluginClientCommand),
+    ...keptEntityIds.flatMap((pluginId) =>
+      buildUpdatePluginClientCommand(
+        newSchema.pluginsById[pluginId],
+        oldSchema.pluginsById[pluginId],
+      ),
+    ),
   ];
 
   if (commands.length === 0) {

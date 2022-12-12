@@ -102,7 +102,7 @@ describe('Import from Contentful', () => {
     const assetBlock = models.find((m) => m.modular_block);
     expect(assetBlock?.api_key).to.eq('structured_text_asset');
 
-    if (!blogPostModel || !landingModel || !authorModel || !assetBlock) {
+    if (!(blogPostModel && landingModel && authorModel && assetBlock)) {
       return;
     }
 

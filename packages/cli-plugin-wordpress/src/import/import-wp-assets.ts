@@ -70,7 +70,7 @@ export default class WpAssets extends BaseStep {
         wpAssetIdToDatoId[wpMediaItem.id] = upload.id;
         wpAssetUrlToDatoUrl[wpMediaItem.source_url] = upload.url;
 
-        if (wpMediaItem.media_details && wpMediaItem.media_details.sizes) {
+        if (wpMediaItem.media_details?.sizes) {
           for (const thumbName of Object.keys(
             wpMediaItem.media_details.sizes,
           )) {

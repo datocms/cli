@@ -48,10 +48,12 @@ export function finalizeItemType(
         >
       ).filter(
         (attribute) =>
-          !oldItemType ||
-          !isEqual(
-            oldItemType.attributes[attribute],
-            newItemType.attributes[attribute],
+          !(
+            oldItemType &&
+            isEqual(
+              oldItemType.attributes[attribute],
+              newItemType.attributes[attribute],
+            )
           ),
       )
     : ['ordering_direction', 'ordering_meta'];
@@ -137,14 +139,13 @@ export function finalizeItemTypes(
   const createdItemTypeIds = difference(newItemTypeIds, oldItemTypeIds);
   const keptItemTypeIds = intersection(newItemTypeIds, oldItemTypeIds);
 
-  const commands = [...createdItemTypeIds, ...keptItemTypeIds]
-    .map((itemTypeId) =>
+  const commands = [...createdItemTypeIds, ...keptItemTypeIds].flatMap(
+    (itemTypeId) =>
       finalizeItemType(
         newSchema.itemTypesById[itemTypeId],
         oldSchema.itemTypesById[itemTypeId],
       ),
-    )
-    .flat();
+  );
 
   if (commands.length === 0) {
     return [];

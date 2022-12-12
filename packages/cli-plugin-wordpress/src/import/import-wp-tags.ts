@@ -54,7 +54,7 @@ export default class WpTags extends BaseStep {
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
-    if (!ctx.wpTags || !ctx.datoItemTypes.tag) {
+    if (!(ctx.wpTags && ctx.datoItemTypes.tag)) {
       throw new Error('This should not happen!');
     }
 

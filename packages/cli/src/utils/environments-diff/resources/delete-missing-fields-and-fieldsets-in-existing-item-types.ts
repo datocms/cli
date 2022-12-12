@@ -57,22 +57,18 @@ export function deleteMissingFieldsAndFieldsetsInExistingItemType(
   const deletedFieldsetsIds = difference(oldFieldsetIds, newFieldsetIds);
 
   return [
-    ...deletedFieldsetsIds
-      .map((fieldsetId) =>
-        buildDestroyFieldsetClientCommand(
-          oldItemTypeSchema.fieldsetsById[fieldsetId],
-          newItemTypeSchema.entity,
-        ),
-      )
-      .flat(),
-    ...deletedFieldIds
-      .map((fieldId) =>
-        buildDestroyFieldClientCommand(
-          oldItemTypeSchema.fieldsById[fieldId],
-          newItemTypeSchema.entity,
-        ),
-      )
-      .flat(),
+    ...deletedFieldsetsIds.flatMap((fieldsetId) =>
+      buildDestroyFieldsetClientCommand(
+        oldItemTypeSchema.fieldsetsById[fieldsetId],
+        newItemTypeSchema.entity,
+      ),
+    ),
+    ...deletedFieldIds.flatMap((fieldId) =>
+      buildDestroyFieldClientCommand(
+        oldItemTypeSchema.fieldsById[fieldId],
+        newItemTypeSchema.entity,
+      ),
+    ),
   ];
 }
 
@@ -85,14 +81,12 @@ export function deleteMissingFieldsAndFieldsetsInExistingItemTypes(
 
   const keptItemTypeIds = intersection(newItemTypeIds, oldItemTypeIds);
 
-  const destroyCommands = keptItemTypeIds
-    .map((itemTypeId) =>
-      deleteMissingFieldsAndFieldsetsInExistingItemType(
-        newSchema.itemTypesById[itemTypeId],
-        oldSchema.itemTypesById[itemTypeId],
-      ),
-    )
-    .flat();
+  const destroyCommands = keptItemTypeIds.flatMap((itemTypeId) =>
+    deleteMissingFieldsAndFieldsetsInExistingItemType(
+      newSchema.itemTypesById[itemTypeId],
+      oldSchema.itemTypesById[itemTypeId],
+    ),
+  );
 
   if (destroyCommands.length === 0) {
     return [];

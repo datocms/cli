@@ -34,10 +34,8 @@ export function deleteMissingItemTypes(
 
   return [
     buildComment('Destroy models/block models'),
-    ...destroyedItemTypeIds
-      .map((itemTypeId) =>
-        buildDestroyItemTypeClientCommand(oldSchema.itemTypesById[itemTypeId]),
-      )
-      .flat(),
+    ...destroyedItemTypeIds.flatMap((itemTypeId) =>
+      buildDestroyItemTypeClientCommand(oldSchema.itemTypesById[itemTypeId]),
+    ),
   ];
 }

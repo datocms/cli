@@ -26,10 +26,10 @@ export const isLinkType = (datoFieldType: string): boolean => {
 
 export const datoValueForFieldType = async (
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  contentfulValue: any,
+  contentfulValue: unknown,
   fieldType: CmaClient.SimpleSchemaTypes.Field['field_type'],
   uploadUrlToDatoUploadUrl: Context['uploadUrlToDatoUploadUrl'],
-): Promise<any> => {
+): Promise<unknown> => {
   // Fills link and media fields temporarly. They will be valorized once we create all items
   if (['links', 'gallery'].includes(fieldType)) {
     return [];
@@ -63,7 +63,7 @@ export const datoValueForFieldType = async (
   }
 
   if (fieldType === 'string' && Array.isArray(contentfulValue)) {
-    return contentfulValue && contentfulValue.join(', ');
+    return contentfulValue?.join(', ');
   }
 
   if (fieldType === 'json') {
@@ -308,7 +308,7 @@ const generateStructuredTextHandlers = (
         return {
           type: 'block',
           // At the moment the block type accepts only the ID of the block as a string, it doesn't take creating a new block into consideration.
-          item: itemPayload as any as string,
+          item: itemPayload as unknown as string,
         } as Block;
       },
     ),

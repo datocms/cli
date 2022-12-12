@@ -60,7 +60,7 @@ export default class WpAuthors extends BaseStep {
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
-    if (!ctx.wpAuthors || !ctx.datoItemTypes.author) {
+    if (!(ctx.wpAuthors && ctx.datoItemTypes.author)) {
       throw new Error('This should not happen!');
     }
 

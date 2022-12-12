@@ -11,9 +11,9 @@ export async function cfEnvironmentApi({
   contentfulSpaceId,
   contentfulEnvironment = 'master',
 }: ContentfulClientType): Promise<Environment> {
-  if (!contentfulToken || !contentfulSpaceId) {
+  if (!(contentfulToken && contentfulSpaceId)) {
     throw new Error(
-      `You need to provide a read-only Contentful API token and a Contentful space ID!`,
+      'You need to provide a read-only Contentful API token and a Contentful space ID!',
     );
   }
 

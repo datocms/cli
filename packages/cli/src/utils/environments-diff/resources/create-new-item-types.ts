@@ -105,10 +105,8 @@ export function createNewItemTypes(
 
   return [
     buildComment('Create new models/block models'),
-    ...createdItemTypeIds
-      .map((itemTypeId) =>
-        buildCreateItemTypeClientCommand(newSchema.itemTypesById[itemTypeId]),
-      )
-      .flat(),
+    ...createdItemTypeIds.flatMap((itemTypeId) =>
+      buildCreateItemTypeClientCommand(newSchema.itemTypesById[itemTypeId]),
+    ),
   ];
 }

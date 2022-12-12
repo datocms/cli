@@ -81,7 +81,7 @@ export function contentFieldTypeToDatoFieldType(field: ContentFields): string {
       }
 
     case 'Array':
-      switch (field.items && field.items.linkType) {
+      switch (field.items?.linkType) {
         case 'Asset':
           return 'gallery';
         case 'Entry':
@@ -101,10 +101,9 @@ export const findLinkedItemTypesFromContentField = (
   itemTypeMapping: Context['contentTypeIdToDatoItemType'],
   contentfulField: ContentFields,
 ): string[] => {
-  const linkValidation =
-    contentfulField &&
-    contentfulField.validations &&
-    contentfulField.validations.find((val) => val.linkContentType);
+  const linkValidation = contentfulField?.validations?.find(
+    (val) => val.linkContentType,
+  );
 
   if (linkValidation) {
     return linkValidation.linkContentType

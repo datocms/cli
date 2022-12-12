@@ -31,9 +31,11 @@ export default class WpArticles extends BaseStep {
 
   async createArticleModel(ctx: Context): Promise<void> {
     if (
-      !ctx.datoItemTypes.author ||
-      !ctx.datoItemTypes.category ||
-      !ctx.datoItemTypes.tag
+      !(
+        ctx.datoItemTypes.author &&
+        ctx.datoItemTypes.category &&
+        ctx.datoItemTypes.tag
+      )
     ) {
       throw new Error('This should not happen!');
     }
@@ -105,13 +107,15 @@ export default class WpArticles extends BaseStep {
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
     if (
-      !ctx.wpArticles ||
-      !ctx.datoItemTypes.article ||
-      !ctx.wpAssetUrlToDatoUrl ||
-      !ctx.wpAssetIdToDatoId ||
-      !ctx.categoriesMapping ||
-      !ctx.tagsMapping ||
-      !ctx.authorsMapping
+      !(
+        ctx.wpArticles &&
+        ctx.datoItemTypes.article &&
+        ctx.wpAssetUrlToDatoUrl &&
+        ctx.wpAssetIdToDatoId &&
+        ctx.categoriesMapping &&
+        ctx.tagsMapping &&
+        ctx.authorsMapping
+      )
     ) {
       throw new Error('This should not happen!');
     }

@@ -51,7 +51,7 @@ function buildCreateMenuItemClientCommand(
             attributes: attributesToUpdate,
             relationships: Object.fromEntries(
               Object.entries(omit(menuItem.relationships, 'children')).filter(
-                ([key, value]) => !!value.data,
+                ([_key, value]) => !!value.data,
               ),
             ),
           },
@@ -155,7 +155,7 @@ function findSiblings({
   positionGte: number;
 }) {
   const siblings = collection.filter(
-    (entity) => entity.relationships.parent.data?.id == parentId,
+    (entity) => entity.relationships.parent.data?.id === parentId,
   );
 
   return siblings
@@ -183,7 +183,7 @@ function findMaxPosition({
   parentId: string | undefined;
 }) {
   const siblings = collection.filter(
-    (entity) => entity.relationships.parent.data?.id == parentId,
+    (entity) => entity.relationships.parent.data?.id === parentId,
   );
 
   return siblings.reduce((max, e) => Math.max(max, e.attributes.position), 0);
@@ -447,13 +447,13 @@ export function manageMenuItems(
     (menuItemId) => newSchema.menuItemsById[menuItemId],
   );
 
-  const createCommands = createdEntities
-    .map((entity) => buildCreateMenuItemClientCommand(entity))
-    .flat();
+  const createCommands = createdEntities.flatMap((entity) =>
+    buildCreateMenuItemClientCommand(entity),
+  );
 
-  const deleteCommands = deletedEntities
-    .map((entity) => buildDestroyMenuItemClientCommand(entity))
-    .flat();
+  const deleteCommands = deletedEntities.flatMap((entity) =>
+    buildDestroyMenuItemClientCommand(entity),
+  );
 
   const updateCommands = buildUpdateCommands(newSchema, oldSchema);
 

@@ -96,16 +96,14 @@ export function manageUploadFilters(
   );
 
   const commands: Command[] = [
-    ...createdEntities.map(buildCreateUploadFilterClientCommand).flat(),
-    ...deletedEntities.map(buildDestroyUploadFilterClientCommand).flat(),
-    ...keptEntityIds
-      .map((uploadFilterId) =>
-        buildUpdateUploadFilterClientCommand(
-          newSchema.uploadFiltersById[uploadFilterId],
-          oldSchema.uploadFiltersById[uploadFilterId],
-        ),
-      )
-      .flat(),
+    ...createdEntities.flatMap(buildCreateUploadFilterClientCommand),
+    ...deletedEntities.flatMap(buildDestroyUploadFilterClientCommand),
+    ...keptEntityIds.flatMap((uploadFilterId) =>
+      buildUpdateUploadFilterClientCommand(
+        newSchema.uploadFiltersById[uploadFilterId],
+        oldSchema.uploadFiltersById[uploadFilterId],
+      ),
+    ),
   ];
 
   if (commands.length === 0) {

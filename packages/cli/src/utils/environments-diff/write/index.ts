@@ -155,21 +155,19 @@ export function write(
 ) {
   const entityIdsToBeRecreated = getEntityIdsToBeRecreated(commands);
 
-  const nodes = commands
-    .map((command) => {
-      switch (command.type) {
-        case 'apiCallClientCommand': {
-          return writeApiCallClientCommand(command, entityIdsToBeRecreated);
-        }
-        case 'comment': {
-          return buildCommentNode(command);
-        }
-        default: {
-          throw new Error(`Type not handled!`);
-        }
+  const nodes = commands.flatMap((command) => {
+    switch (command.type) {
+      case 'apiCallClientCommand': {
+        return writeApiCallClientCommand(command, entityIdsToBeRecreated);
       }
-    })
-    .flat();
+      case 'comment': {
+        return buildCommentNode(command);
+      }
+      default: {
+        throw new Error('Type not handled!');
+      }
+    }
+  });
 
   const skeleton =
     format === 'ts'
