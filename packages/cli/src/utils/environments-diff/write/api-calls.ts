@@ -453,7 +453,7 @@ export function buildUpdateMenuItemClientCommandNode(
   const [menuItemId, body] = command.arguments;
 
   return makeApiCall(command, [
-    ts.factory.createStringLiteral(menuItemId),
+    fetchNewRef('menuItem', menuItemId, entityIdsToBeRecreated),
     deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
   ]);
 }
