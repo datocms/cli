@@ -84,7 +84,8 @@ export default class BaseStep {
             }
           } finally {
             finished += 1;
-            runningInfo[identifier] = undefined;
+            // rome-ignore lint/performance/noDelete: We need to remove the identifier from the hash
+            delete runningInfo[identifier];
             task.title = `${title} (${finished} of ${items.length}${
               failed > 0 ? `, ${failed} failed` : ''
             })`;
