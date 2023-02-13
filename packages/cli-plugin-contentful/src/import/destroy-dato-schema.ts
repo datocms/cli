@@ -3,7 +3,6 @@ import { ContentTypeProps } from 'contentful-management';
 import { Context } from '../commands/contentful/import';
 import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
-import { isLinkType } from '../utils/item-create-helpers';
 
 const removeValidationsLog = 'Removing validations from fields';
 const destroyModelsLog = 'Destroying Contentful models from DatoCMS';
@@ -71,9 +70,7 @@ Confirm that you want to destroy them?`,
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
-    const itemTypesToDestroyIds = new Set(
-      ctx.itemTypesToDestroy.map((i) => i.id),
-    );
+    const itemTypesToDestroyIds = ctx.itemTypesToDestroy.map((i) => i.id);
 
     await this.runConcurrentlyOver(
       task,
@@ -81,30 +78,47 @@ Confirm that you want to destroy them?`,
       ctx.datoItemTypes,
       (itemType) => itemType.id,
       async (itemType) => {
-        const allFields = await this.client.fields.list(itemType.id);
+        const typeLinksField = (
+          await this.client.fields.list(itemType.id)
+        ).filter((f) =>
+          ['link', 'links', 'structured_text'].includes(f.field_type),
+        );
 
-        for (const field of allFields.filter((f) => isLinkType(f.field_type))) {
-          const containsValidations =
-            field.validators.item_item_type &&
-            (field.validators.item_item_type as string[]).filter((x) =>
-              itemTypesToDestroyIds.has(x),
-            );
+        for (const field of typeLinksField) {
+          let validatorKey;
 
-          if (containsValidations) {
-            await this.client.fields.update(field.id, {
-              validators: { item_item_type: containsValidations },
-            });
+          switch (field.field_type) {
+            case 'link':
+              validatorKey = 'item_item_type';
+              break;
+            case 'links':
+              validatorKey = 'items_item_type';
+              break;
+            case 'structured_text':
+              validatorKey = 'structured_text_links';
+              break;
+            default:
+              throw new Error('Missing field type. This should not happen');
           }
 
-          const containsMultipleValidations =
-            field.validators.item_item_type &&
-            (field.validators.item_item_type as string[]).filter((x) =>
-              itemTypesToDestroyIds.has(x),
-            );
+          const allowedItemTypes = (
+            field.validators[validatorKey] as {
+              item_types: string[];
+            }
+          )?.item_types;
 
-          if (containsMultipleValidations) {
+          const newAllowedItemTypes = allowedItemTypes.filter(
+            (id) => !itemTypesToDestroyIds.includes(id),
+          );
+
+          if (newAllowedItemTypes.length !== allowedItemTypes.length) {
             await this.client.fields.update(field.id, {
-              validators: { items_item_type: containsMultipleValidations },
+              validators: {
+                ...field.validators,
+                [validatorKey]: {
+                  item_types: newAllowedItemTypes,
+                },
+              },
             });
           }
         }
