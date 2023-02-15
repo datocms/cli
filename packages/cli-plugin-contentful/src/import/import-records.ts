@@ -86,7 +86,7 @@ export default class ImportRecords extends BaseStep {
 
             for (const locale of ctx.locales) {
               (fieldValue as Record<string, unknown>)[locale] =
-                contentfulContent
+                contentfulContent?.[locale]
                   ? await datoValueForFieldType(
                       contentfulContent[locale],
                       datoField.field_type,
@@ -95,7 +95,7 @@ export default class ImportRecords extends BaseStep {
                   : null;
             }
           } else {
-            fieldValue = contentfulContent
+            fieldValue = contentfulContent?.[ctx.defaultLocale]
               ? await datoValueForFieldType(
                   contentfulContent[ctx.defaultLocale],
                   datoField.field_type,
