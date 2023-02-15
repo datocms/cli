@@ -173,7 +173,7 @@ type StringValidators = {
   };
   unique?: Record<string, never>;
   enum?: {
-    values: string | undefined;
+    values: string[] | undefined;
   };
   format?: {
     custom_pattern: string | undefined;
@@ -300,7 +300,7 @@ const datoValidatorsForString = (field: ContentFields) => {
 
     if (validation.in) {
       datoValidators.enum = {
-        values: validation.in.toString(),
+        values: validation.in?.map((v) => v.toString()),
       };
     }
 
