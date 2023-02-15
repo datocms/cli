@@ -212,11 +212,12 @@ describe('Import from Contentful', () => {
     );
 
     expect(unpublishedArticle?.meta.status).to.eq('draft');
+    expect(unpublishedArticle?.title).to.have.own.property('en-US');
     expect(unpublishedArticle?.title?.['en-US']).to.eq(
       'Static sites are great',
     );
-    expect(unpublishedArticle?.title).to.have.own.property('en-US');
-    expect(unpublishedArticle?.title).to.not.have.own.property('it');
+    expect(unpublishedArticle?.title).to.have.own.property('it');
+    expect(unpublishedArticle?.title?.['it']).to.eq('');
 
     const publishedArticle = blogPostArticles.find((a) => a.slug === 'hello');
     expect(publishedArticle?.meta.status).to.eq('published');
