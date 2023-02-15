@@ -51,7 +51,7 @@ FLAGS
   --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
   --contentful-environment=<value>                The environment you want to work with
   --contentful-space-id=<value>                   Your Contentful project space ID
-  --contentful-token=<value>                      Your Contentful project read-write API token
+  --contentful-token=<value>                      Your Contentful project read-only API token
   --ignore-errors                                 Ignore errors encountered during import
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
   --only-content-type=<value>                     Exclusively import the specified content types. Specify the content
@@ -67,7 +67,7 @@ DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v1.1.0/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test
