@@ -16,6 +16,7 @@ import { Scheduler } from 'async-scheduler';
 import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import isArrayWithAtLeastOneElement from '../../utils/is-array-with-at-least-one-element';
 import AddValidations from '../../import/add-validations';
+import { getAll } from '../../utils/getAll';
 
 export type StepOptions = {
   client: CmaClient.Client;
@@ -133,8 +134,11 @@ export default class ImportCommand extends CmaClientCommand<
               {
                 title: 'Set locales',
                 task: async (ctx, _task) => {
-                  const cfLocales = await this.cfEnvironmentApi.getLocales();
-                  const rawLocales = cfLocales.items;
+                  const rawLocales = await getAll(
+                    this.cfEnvironmentApi.getLocales.bind(
+                      this.cfEnvironmentApi,
+                    ),
+                  );
 
                   if (!isArrayWithAtLeastOneElement(rawLocales)) {
                     throw new Error('This should not happen');

@@ -3,6 +3,7 @@ import { ContentTypeProps } from 'contentful-management';
 import { Context } from '../commands/contentful/import';
 import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
+import { getAll } from '../utils/getAll';
 
 const removeValidationsLog = 'Removing validations from fields';
 const destroyModelsLog = 'Destroying Contentful models from DatoCMS';
@@ -12,13 +13,15 @@ export default class DestroyDatoSchema extends BaseStep {
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<Listr> {
-    const contentfulTypes = await this.cfEnvironmentApi.getContentTypes();
+    const contentfulTypes = await getAll(
+      this.cfEnvironmentApi.getContentTypes.bind(this.cfEnvironmentApi),
+    );
 
     ctx.contentTypes = this.options.importOnly
-      ? contentfulTypes.items.filter((type) =>
+      ? contentfulTypes.filter((type) =>
           this.options.importOnly?.includes(type.sys.id),
         )
-      : contentfulTypes.items;
+      : contentfulTypes;
 
     ctx.datoItemTypes = await this.client.itemTypes.list();
 
@@ -30,7 +33,7 @@ export default class DestroyDatoSchema extends BaseStep {
       contentfulTypeApiKeys.has(iT.api_key),
     );
 
-    if (!this.autoconfirm) {
+    if (!this.autoconfirm && ctx.itemTypesToDestroy.length > 0) {
       const modelsToDestroyApiKeys = ctx.itemTypesToDestroy.map(
         (m) => m.api_key,
       );

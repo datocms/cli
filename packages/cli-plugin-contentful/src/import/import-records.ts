@@ -8,6 +8,7 @@ import {
   isLinkType,
 } from '../utils/item-create-helpers';
 import { Entry } from 'contentful-management';
+import { getAll } from '../utils/getAll';
 
 const importRecordsLog = 'Import entries from Contentful';
 const linkRecordsAndAssetsLog = 'Link records and assets';
@@ -41,13 +42,15 @@ export default class ImportRecords extends BaseStep {
     ctx.entriesWithLinkField = [];
     ctx.entryIdToDatoItemId = {};
 
-    const rawEntries = await this.cfEnvironmentApi.getEntries();
+    const rawEntries = await getAll(
+      this.cfEnvironmentApi.getEntries.bind(this.cfEnvironmentApi),
+    );
 
     const contentfulEntries = this.options.importOnly
-      ? rawEntries.items.filter((entry) =>
+      ? rawEntries.filter((entry) =>
           this.options.importOnly?.includes(entry.sys.contentType.sys.id),
         )
-      : rawEntries.items;
+      : rawEntries;
 
     if (contentfulEntries.length === 0) {
       task.skip('No entries to import');

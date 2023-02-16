@@ -2,6 +2,7 @@ import BaseStep from './base-step';
 import { Context } from '../commands/contentful/import';
 import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { CmaClient } from '@datocms/cli-utils';
+import { getAll } from '../utils/getAll';
 
 const createAssetsLog = 'Import assets from Contentful';
 
@@ -13,12 +14,14 @@ export default class ImportAssets extends BaseStep {
     ctx.uploadIdToDatoUploadInfo = {};
     ctx.uploadUrlToDatoUploadUrl = {};
 
-    const contentfulAssets = await this.cfEnvironmentApi.getAssets();
+    const contentfulAssets = await getAll(
+      this.cfEnvironmentApi.getAssets.bind(this.cfEnvironmentApi),
+    );
 
     await this.runConcurrentlyOver(
       task,
       createAssetsLog,
-      contentfulAssets.items,
+      contentfulAssets,
       (contentfulAsset) =>
         `Asset ${
           contentfulAsset.fields.file?.[ctx.defaultLocale]?.fileName ||
