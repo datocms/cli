@@ -107,10 +107,11 @@ export const datoLinkValueForFieldType = async (
 
   if (fieldType === 'file') {
     const contentfulUploadValue = contentfulValue as ContentfulSingleLinkData;
+    const datoUpload = uploadIdToDatoUploadInfo[contentfulUploadValue.sys.id];
 
-    return uploadIdToDatoUploadInfo[contentfulUploadValue.sys.id]
+    return datoUpload
       ? {
-          upload_id: uploadIdToDatoUploadInfo[contentfulUploadValue.sys.id].id,
+          upload_id: datoUpload.id,
           alt: null,
           title: null,
           custom_data: {},
@@ -122,9 +123,10 @@ export const datoLinkValueForFieldType = async (
     const contentfulUploadValue = contentfulValue as ContentfulSingleLinkData[];
 
     const uploadData = contentfulUploadValue.map((link): UploadData | null => {
-      return uploadIdToDatoUploadInfo[link.sys.id]
+      const datoUpload = uploadIdToDatoUploadInfo[link.sys.id];
+      return datoUpload
         ? {
-            upload_id: uploadIdToDatoUploadInfo[link.sys.id].id,
+            upload_id: datoUpload.id,
             alt: null,
             title: null,
             custom_data: {},
@@ -261,7 +263,8 @@ const generateStructuredTextHandlers = (
           parentNodeType: linkNodeType,
         });
 
-        const uploadUrl = uploadIdToDatoUploadInfo[node.data.target.sys.id].url;
+        const uploadUrl =
+          uploadIdToDatoUploadInfo[node.data.target.sys.id]?.url || '';
 
         return {
           type: linkNodeType,
@@ -274,7 +277,7 @@ const generateStructuredTextHandlers = (
       (n): n is ContentfulRichTextTypes.AssetLinkBlock =>
         n.nodeType === ContentfulRichTextTypes.BLOCKS.EMBEDDED_ASSET,
       async (node, context) => {
-        const uploadId = uploadIdToDatoUploadInfo[node.data.target.sys.id].id;
+        const uploadId = uploadIdToDatoUploadInfo[node.data.target.sys.id]?.id;
 
         if (!uploadId) {
           return {

@@ -35,43 +35,48 @@ export default class ImportAssets extends BaseStep {
           return;
         }
 
-        const fileMetadata = ctx.locales.reduce(
-          (
-            // eslint-disable-next-line default-param-last
-            acc: CmaClient.SimpleSchemaTypes.UploadCreateSchema['default_field_metadata'] = {},
-            locale: string,
-          ) => {
-            acc[locale] = {
-              title: contentfulAsset.fields.title?.[locale] || null,
-              alt: contentfulAsset.fields.description?.[locale] || null,
-              custom_data: {},
-            };
+        try {
+          const fileMetadata = ctx.locales.reduce(
+            (
+              // eslint-disable-next-line default-param-last
+              acc: CmaClient.SimpleSchemaTypes.UploadCreateSchema['default_field_metadata'] = {},
+              locale: string,
+            ) => {
+              acc[locale] = {
+                title: contentfulAsset.fields.title?.[locale] || null,
+                alt: contentfulAsset.fields.description?.[locale] || null,
+                custom_data: {},
+              };
 
-            return acc;
-          },
-          {},
-        );
+              return acc;
+            },
+            {},
+          );
 
-        const upload = await this.client.uploads.createFromUrl({
-          url: `https:${fileUrl}`,
-          skipCreationIfAlreadyExists: true,
-          onProgress: (info) => {
-            notify(
-              `${info.type} ${
-                'payload' in info && 'progress' in info.payload
-                  ? ` (${info.payload.progress}%)`
-                  : ''
-              }`,
-            );
-          },
-          default_field_metadata: fileMetadata,
-        });
+          const upload = await this.client.uploads.createFromUrl({
+            url: `https:${fileUrl}`,
+            skipCreationIfAlreadyExists: true,
+            onProgress: (info) => {
+              notify(
+                `${info.type} ${
+                  'payload' in info && 'progress' in info.payload
+                    ? ` (${info.payload.progress}%)`
+                    : ''
+                }`,
+              );
+            },
+            default_field_metadata: fileMetadata,
+          });
 
-        ctx.uploadIdToDatoUploadInfo[contentfulAsset.sys.id] = {
-          id: upload.id,
-          url: upload.url,
-        };
-        ctx.uploadUrlToDatoUploadUrl[fileUrl] = upload.url;
+          ctx.uploadIdToDatoUploadInfo[contentfulAsset.sys.id] = {
+            id: upload.id,
+            url: upload.url,
+          };
+          ctx.uploadUrlToDatoUploadUrl[fileUrl] = upload.url;
+        } catch (e) {
+          ctx.uploadIdToDatoUploadInfo[contentfulAsset.sys.id] = null;
+          ctx.uploadUrlToDatoUploadUrl[fileUrl] = '';
+        }
       },
     );
   }

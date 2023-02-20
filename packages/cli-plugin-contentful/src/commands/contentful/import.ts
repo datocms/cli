@@ -54,7 +54,7 @@ export type Context = {
     [key: Asset['sys']['id']]: {
       id: CmaClient.SimpleSchemaTypes.UploadIdentity;
       url: string;
-    };
+    } | null;
   };
   uploadUrlToDatoUploadUrl: Record<string, string>;
 };
