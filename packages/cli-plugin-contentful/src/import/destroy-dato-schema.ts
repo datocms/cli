@@ -7,7 +7,6 @@ import { getAll } from '../utils/getAll';
 
 const removeValidationsLog = 'Removing validations from fields';
 const destroyModelsLog = 'Destroying Contentful models from DatoCMS';
-const destroyUnusedAssetsLog = 'Destroying unused assets from DatoCMS';
 export default class DestroyDatoSchema extends BaseStep {
   async task(
     ctx: Context,
@@ -61,10 +60,6 @@ Confirm that you want to destroy them?`,
         title: destroyModelsLog,
         task: this.destroyModels.bind(this),
         enabled: ctx.itemTypesToDestroy.length > 0,
-      },
-      {
-        title: destroyUnusedAssetsLog,
-        task: this.destroyUnusedAssets.bind(this),
       },
     ]);
   }
@@ -140,42 +135,6 @@ Confirm that you want to destroy them?`,
       (itemType) => itemType.id,
       async (itemType) => {
         await this.client.itemTypes.destroy(itemType);
-      },
-    );
-  }
-
-  async destroyUnusedAssets(
-    _ctx: Context,
-    task: ListrTaskWrapper<Context, ListrRendererFactory>,
-  ): Promise<void> {
-    const uploadsToDestroy = await this.client.uploads.list({
-      'filter[fields][in_use][eq]': 'not_used',
-    });
-
-    if (uploadsToDestroy.length === 0) {
-      task.skip('No unused assets');
-      return;
-    }
-
-    if (!this.autoconfirm) {
-      const confirmed = await task.prompt<boolean>({
-        type: 'Confirm',
-        message:
-          'This action will destroy all unused assets from your media library. Confirm that you want to destroy them?',
-      });
-
-      if (!confirmed) {
-        throw new Error('Asset importing interrupted by user request');
-      }
-    }
-
-    await this.runConcurrentlyOver(
-      task,
-      destroyUnusedAssetsLog,
-      uploadsToDestroy,
-      (upload) => upload.id,
-      async (upload) => {
-        await this.client.uploads.destroy(upload);
       },
     );
   }
