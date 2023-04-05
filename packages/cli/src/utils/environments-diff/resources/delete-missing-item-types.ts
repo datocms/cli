@@ -11,10 +11,7 @@ export function buildDestroyItemTypeClientCommand(
     {
       type: 'apiCallClientCommand',
       call: 'client.itemTypes.destroy',
-      arguments: [
-        itemTypeSchema.entity.id,
-        { skip_menu_items_deletion: 'true' },
-      ],
+      arguments: [itemTypeSchema.entity.id, { skip_menu_items_deletion: true }],
     },
   ];
 }
