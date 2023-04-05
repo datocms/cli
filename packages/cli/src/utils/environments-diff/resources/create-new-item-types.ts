@@ -82,7 +82,7 @@ function buildCreateItemTypeClientCommand(
           },
         },
         {
-          skip_menu_item_creation: 'true',
+          skip_menu_item_creation: true,
         },
       ],
       oldEnvironmentId: itemType.id,
