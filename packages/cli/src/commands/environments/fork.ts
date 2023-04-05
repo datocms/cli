@@ -1,4 +1,4 @@
-import { CmaClientCommand, CmaClient } from '@datocms/cli-utils';
+import { CmaClientCommand, CmaClient, oclif } from '@datocms/cli-utils';
 
 export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description =
@@ -17,20 +17,41 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     },
   ];
 
+  static flags = {
+    ...CmaClientCommand.flags,
+    fast: oclif.Flags.boolean({
+      description:
+        'Run a fast fork. A fast fork reduces processing time, but it also prevents writing to the source environment during the process',
+    }),
+    force: oclif.Flags.boolean({
+      description:
+        'Forces the start of a fast fork, even there are users currently editing records in the environment to copy',
+      dependsOn: ['fast'],
+    }),
+  };
+
   async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
     const { SOURCE_ENVIRONMENT_ID: srcEnvId, NEW_ENVIRONMENT_ID: newEnvId } =
       this.parsedArgs;
+
+    const { fast, force } = this.parsedFlags;
 
     try {
       const sourceEnv = await this.client.environments.find(srcEnvId);
 
       this.startSpinner(
-        `Creating a fork of "${sourceEnv.id}" called "${newEnvId}"`,
+        `Starting a ${fast ? 'fast ' : ''}fork of "${
+          sourceEnv.id
+        }" called "${newEnvId}"`,
       );
 
-      const environment = await this.client.environments.fork(sourceEnv.id, {
-        id: newEnvId,
-      });
+      const environment = await this.client.environments.fork(
+        sourceEnv.id,
+        {
+          id: newEnvId,
+        },
+        { fast, force },
+      );
 
       this.stopSpinner();
 
@@ -52,6 +73,18 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
             `To delete the environment, run "${this.config.bin} environments:destroy ${newEnvId}"`,
           ],
         });
+      }
+
+      if (
+        e instanceof CmaClient.ApiError &&
+        e.findError('ACTIVE_EDITING_SESSIONS')
+      ) {
+        this.error(
+          'Cannot proceed with a fast fork of the environment, as some users are currently editing records',
+          {
+            suggestions: ['To proceed anyway, use the --force flag'],
+          },
+        );
       }
 
       throw e;

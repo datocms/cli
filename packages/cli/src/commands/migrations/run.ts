@@ -1,4 +1,4 @@
-import { CmaClientCommand, oclif } from '@datocms/cli-utils';
+import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
   Client,
   ApiError,
@@ -32,6 +32,16 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       description:
         'Simulate the execution of the migrations, without making any actual change',
     }),
+    'fast-fork': oclif.Flags.boolean({
+      description:
+        'Run a fast fork. A fast fork reduces processing time, but it also prevents writing to the source environment during the process',
+      dependsOn: ['destination'],
+    }),
+    force: oclif.Flags.boolean({
+      description:
+        'Forces the start of a fast fork, even there are users currently editing records in the environment to copy',
+      dependsOn: ['fast'],
+    }),
     'migrations-dir': oclif.Flags.string({
       description: 'Directory where script migrations are stored',
     }),
@@ -57,6 +67,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     const {
       'dry-run': dryRun,
       'in-place': inPlace,
+      'fast-fork': fastFork,
+      force,
       source: sourceEnvId,
       destination: rawDestinationEnvId,
     } = this.parsedFlags;
@@ -128,6 +140,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         destinationEnvId,
         allEnvironments,
         dryRun,
+        fastFork,
+        force,
       );
     }
 
@@ -305,33 +319,58 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     destinationEnvId: string,
     allEnvironments: SimpleSchemaTypes.Environment[],
     dryRun: boolean,
+    fastFork: boolean,
+    force: boolean,
   ) {
-    this.startSpinner(
-      `Creating a fork of "${sourceEnv.id}" environment called "${destinationEnvId}"`,
-    );
+    try {
+      this.startSpinner(
+        `Creating a fork of "${sourceEnv.id}" environment called "${destinationEnvId}"`,
+      );
 
-    const existingEnvironment = allEnvironments.find(
-      (env) => env.id === destinationEnvId,
-    );
+      const existingEnvironment = allEnvironments.find(
+        (env) => env.id === destinationEnvId,
+      );
 
-    if (existingEnvironment) {
-      this.error(`Environment "${destinationEnvId}" already exists!`, {
-        suggestions: [
-          `To execute the migrations inside the existing environment, run "${this.config.bin} migrations:run --source=${destinationEnvId} --in-place"`,
-          `To delete the environment, run "${this.config.bin} environments:destroy ${destinationEnvId}"`,
-        ],
-      });
+      if (existingEnvironment) {
+        this.error(`Environment "${destinationEnvId}" already exists!`, {
+          suggestions: [
+            `To execute the migrations inside the existing environment, run "${this.config.bin} migrations:run --source=${destinationEnvId} --in-place"`,
+            `To delete the environment, run "${this.config.bin} environments:destroy ${destinationEnvId}"`,
+          ],
+        });
+      }
+
+      if (!dryRun) {
+        await this.client.environments.fork(
+          sourceEnv.id,
+          {
+            id: destinationEnvId,
+          },
+          {
+            fast: fastFork,
+            force,
+          },
+        );
+      }
+
+      this.stopSpinner();
+
+      return dryRun ? sourceEnv.id : destinationEnvId;
+    } catch (e) {
+      if (
+        e instanceof CmaClient.ApiError &&
+        e.findError('ACTIVE_EDITING_SESSIONS')
+      ) {
+        this.error(
+          'Cannot proceed with a fast fork of the environment, as some users are currently editing records',
+          {
+            suggestions: ['To proceed anyway, use the --force flag'],
+          },
+        );
+      }
+
+      throw e;
     }
-
-    if (!dryRun) {
-      await this.client.environments.fork(sourceEnv.id, {
-        id: destinationEnvId,
-      });
-    }
-
-    this.stopSpinner();
-
-    return dryRun ? sourceEnv.id : destinationEnvId;
   }
 
   private async fetchAlreadyRunMigrationScripts(
