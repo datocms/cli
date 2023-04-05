@@ -113,7 +113,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [lib/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/environments/destroy.js)_
+_See code: [lib/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/environments/destroy.js)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -122,7 +122,7 @@ Creates a new sandbox environment by forking an existing one
 ```
 USAGE
   $ datocms environments:fork [SOURCE_ENVIRONMENT_ID] [NEW_ENVIRONMENT_ID] [--json] [--config-file <value>] [--profile
-    <value>] [--api-token <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS]
+    <value>] [--api-token <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--force --fast]
 
 ARGUMENTS
   SOURCE_ENVIRONMENT_ID  The environment to copy
@@ -131,6 +131,10 @@ ARGUMENTS
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a DatoCMS project
   --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --fast                                          Run a fast fork. A fast fork reduces processing time, but it also
+                                                  prevents writing to the source environment during the process
+  --force                                         Forces the start of a fast fork, even there are users currently
+                                                  editing records in the environment to copy
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
   --profile=<value>                               Use settings of profile in datocms.config.js
 
@@ -141,7 +145,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [lib/commands/environments/fork.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/environments/fork.js)_
+_See code: [lib/commands/environments/fork.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/environments/fork.js)_
 
 ## `datocms environments:index`
 
@@ -215,7 +219,7 @@ ALIASES
   $ datocms environments:list
 ```
 
-_See code: [lib/commands/environments/list.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/environments/list.js)_
+_See code: [lib/commands/environments/list.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/environments/list.js)_
 
 ## `datocms environments:primary`
 
@@ -239,7 +243,7 @@ DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [lib/commands/environments/primary.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/environments/primary.js)_
+_See code: [lib/commands/environments/primary.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/environments/primary.js)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -266,7 +270,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [lib/commands/environments/promote.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/environments/promote.js)_
+_See code: [lib/commands/environments/promote.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/environments/promote.js)_
 
 ## `datocms help [COMMAND]`
 
@@ -310,7 +314,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [lib/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/maintenance/off.js)_
+_See code: [lib/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/maintenance/off.js)_
 
 ## `datocms maintenance:on`
 
@@ -336,7 +340,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [lib/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/maintenance/on.js)_
+_See code: [lib/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/maintenance/on.js)_
 
 ## `datocms migrations:new NAME`
 
@@ -386,7 +390,7 @@ DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [lib/commands/migrations/new.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/migrations/new.js)_
+_See code: [lib/commands/migrations/new.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/migrations/new.js)_
 
 ## `datocms migrations:run`
 
@@ -395,8 +399,8 @@ Run migration scripts that have not run yet
 ```
 USAGE
   $ datocms migrations:run [--json] [--config-file <value>] [--profile <value>] [--api-token <value>] [--log-level
-    NONE|BASIC|BODY|BODY_AND_HEADERS] [--source <value>] [--destination <value> | --in-place] [--dry-run]
-    [--migrations-dir <value>] [--migrations-model <value>] [--migrations-tsconfig <value>]
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--source <value>] [--dry-run] [--fast-fork [--destination <value> | --in-place]]
+    [--force ] [--migrations-dir <value>] [--migrations-model <value>] [--migrations-tsconfig <value>]
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a DatoCMS project
@@ -404,6 +408,10 @@ FLAGS
   --destination=<value>                           Specify the name of the new forked environment
   --dry-run                                       Simulate the execution of the migrations, without making any actual
                                                   change
+  --fast-fork                                     Run a fast fork. A fast fork reduces processing time, but it also
+                                                  prevents writing to the source environment during the process
+  --force                                         Forces the start of a fast fork, even there are users currently
+                                                  editing records in the environment to copy
   --in-place                                      Run the migrations in the --source environment, without forking
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
   --migrations-dir=<value>                        Directory where script migrations are stored
@@ -419,7 +427,7 @@ DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [lib/commands/migrations/run.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/migrations/run.js)_
+_See code: [lib/commands/migrations/run.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/migrations/run.js)_
 
 ## `datocms plugins`
 
@@ -506,7 +514,7 @@ DESCRIPTION
   Lists official DatoCMS CLI plugins
 ```
 
-_See code: [lib/commands/plugins/available.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/plugins/available.js)_
+_See code: [lib/commands/plugins/available.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/plugins/available.js)_
 
 ## `datocms plugins:inspect PLUGIN...`
 
@@ -711,7 +719,7 @@ DESCRIPTION
   Remove a profile from DatoCMS config file
 ```
 
-_See code: [lib/commands/profile/remove.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/profile/remove.js)_
+_See code: [lib/commands/profile/remove.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/profile/remove.js)_
 
 ## `datocms profile:set PROFILE_ID`
 
@@ -741,5 +749,5 @@ DESCRIPTION
   Add/update profile configuration in DatoCMS config file
 ```
 
-_See code: [lib/commands/profile/set.js](https://github.com/datocms/cli/blob/v1.0.22/packages/cli/lib/commands/profile/set.js)_
+_See code: [lib/commands/profile/set.js](https://github.com/datocms/cli/blob/v1.1.3/packages/cli/lib/commands/profile/set.js)_
 <!-- commandsstop -->
