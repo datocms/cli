@@ -40,7 +40,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     force: oclif.Flags.boolean({
       description:
         'Forces the start of a fast fork, even there are users currently editing records in the environment to copy',
-      dependsOn: ['fast'],
+      dependsOn: ['fast-fork'],
     }),
     'migrations-dir': oclif.Flags.string({
       description: 'Directory where script migrations are stored',
