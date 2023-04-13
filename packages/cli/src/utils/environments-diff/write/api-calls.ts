@@ -3,7 +3,7 @@ import * as Types from '../types';
 import { createJsonLiteral } from '../utils';
 import * as Utils from '@datocms/rest-client-utils';
 import {} from './get-entity-ids-to-be-recreated';
-import { SimpleSchemaTypes } from '@datocms/cma-client-node';
+import { CmaClient } from '@datocms/cli-utils';
 import { upperFirst, omit } from 'lodash';
 
 type PossibleMapping = keyof Types.EntityIdsToBeRecreated;
@@ -119,15 +119,17 @@ function deserializeAndReplaceNewIdsInBody(
           case 'title_field':
           case 'image_preview_field':
           case 'excerpt_field': {
-            const fieldRef = value as SimpleSchemaTypes.FieldData;
+            const fieldRef = value as CmaClient.SimpleSchemaTypes.FieldData;
             return fetchNewRef('field', fieldRef, entityIdsToBeRecreated);
           }
           case 'item_type': {
-            const itemTypeRef = value as SimpleSchemaTypes.ItemTypeData;
+            const itemTypeRef =
+              value as CmaClient.SimpleSchemaTypes.ItemTypeData;
             return fetchNewRef('itemType', itemTypeRef, entityIdsToBeRecreated);
           }
           case 'item_type_filter': {
-            const itemTypeRef = value as SimpleSchemaTypes.ItemTypeData;
+            const itemTypeRef =
+              value as CmaClient.SimpleSchemaTypes.ItemTypeData;
             return fetchNewRef(
               'itemTypeFilter',
               itemTypeRef,
@@ -135,15 +137,18 @@ function deserializeAndReplaceNewIdsInBody(
             );
           }
           case 'workflow': {
-            const workflowRef = value as SimpleSchemaTypes.WorkflowData;
+            const workflowRef =
+              value as CmaClient.SimpleSchemaTypes.WorkflowData;
             return fetchNewRef('workflow', workflowRef, entityIdsToBeRecreated);
           }
           case 'fieldset': {
-            const fieldsetRef = value as SimpleSchemaTypes.FieldsetData;
+            const fieldsetRef =
+              value as CmaClient.SimpleSchemaTypes.FieldsetData;
             return fetchNewRef('fieldset', fieldsetRef, entityIdsToBeRecreated);
           }
           case 'parent': {
-            const menuItemRef = value as SimpleSchemaTypes.MenuItemData;
+            const menuItemRef =
+              value as CmaClient.SimpleSchemaTypes.MenuItemData;
             return fetchNewRef('menuItem', menuItemRef, entityIdsToBeRecreated);
           }
           default: {

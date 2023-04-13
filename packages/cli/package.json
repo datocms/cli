@@ -30,6 +30,7 @@
     "@oclif/plugin-not-found": "^2.3.1",
     "@oclif/plugin-plugins": "^2.0.1",
     "@oclif/plugin-warn-if-update-available": "^2.0.4",
+    "@datocms/rest-client-utils": "^1",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "prettier": "^2.7.1",
