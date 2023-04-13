@@ -7,5 +7,5 @@
 ```
 const cliUtils = require('@datocms/cli-utils');
 
-// TODO: DEMONSTRATE API
+// TODO: DEMONSTRATE API!
 ```
