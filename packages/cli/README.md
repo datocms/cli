@@ -23,7 +23,7 @@ $ datocms COMMAND
 running command...
 
 $ datocms (--version)
-@datocms/cli/0.1.6 darwin-x64 node-v14.19.1
+@datocms/cli/0.1.6 darwin-x64 node-v16.20.0
 
 $ datocms --help [COMMAND]
 USAGE
