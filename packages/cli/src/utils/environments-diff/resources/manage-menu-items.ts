@@ -432,6 +432,48 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
   }
 }
 
+function sortByDepth(entities: CmaClient.SchemaTypes.MenuItem[]) {
+  type Node = {
+    entity: CmaClient.SchemaTypes.MenuItem;
+    children: Node[];
+    depth: number;
+  };
+
+  const nodes: Node[] = entities.map((entity) => ({
+    entity,
+    children: [],
+    depth: 0,
+  }));
+  const map: Record<string, Node> = nodes.reduce(
+    (acc, node) => ({ ...acc, [node.entity.id]: node }),
+    {},
+  );
+  const tree: Node[] = [];
+
+  nodes.forEach((node) => {
+    const parentId = node.entity.relationships.parent.data?.id;
+    if (parentId && entities.find((e) => e.id === parentId)) {
+      map[parentId].children.push(node);
+    } else {
+      tree.push(node);
+    }
+  });
+
+  const sortedNodes: Node[] = [];
+
+  function visit(node: Node, depth: number) {
+    node.depth = depth;
+    sortedNodes.push(node);
+    node.children.forEach((child) => visit(child, depth + 1));
+  }
+
+  tree.forEach((node) => visit(node, 0));
+
+  return sortedNodes
+    .sort((a, b) => a.depth - b.depth)
+    .map((node) => node.entity);
+}
+
 export function manageMenuItems(
   newSchema: Schema,
   oldSchema: Schema,
@@ -447,7 +489,7 @@ export function manageMenuItems(
     (menuItemId) => newSchema.menuItemsById[menuItemId],
   );
 
-  const createCommands = createdEntities.flatMap((entity) =>
+  const createCommands = sortByDepth(createdEntities).flatMap((entity) =>
     buildCreateMenuItemClientCommand(entity),
   );
 
