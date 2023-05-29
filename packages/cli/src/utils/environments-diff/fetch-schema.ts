@@ -20,19 +20,22 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
     client.uploadFilters.rawList(),
   ]);
 
-  const allFields = siteResponse.included!.filter(
+  const includedResources = siteResponse.included || [];
+
+  const allFields = includedResources.filter(
     (x): x is CmaClient.SchemaTypes.Field => x.type === 'field',
   );
+
   const allFieldsets: CmaClient.SchemaTypes.Fieldset[] =
-    siteResponse.included!.filter(
+    includedResources.filter(
       (x): x is CmaClient.SchemaTypes.Fieldset => x.type === 'fieldset',
     );
 
   return {
     siteEntity: siteResponse.data,
     itemTypesById: Object.fromEntries(
-      siteResponse
-        .included!.filter(
+      includedResources
+        .filter(
           (x): x is CmaClient.SchemaTypes.ItemType => x.type === 'item_type',
         )
         .map((itemType) => [
