@@ -36,6 +36,7 @@ USAGE
 <!-- commands -->
 * [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
 * [`datocms projects:create NEW_PROJECT_NAME`](#datocms-projectscreate-new_project_name)
+* [`datocms projects:list`](#datocms-projectslist)
 * [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 * [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
 * [`datocms environments:index`](#datocms-environmentsindex)
@@ -124,6 +125,44 @@ DESCRIPTION
 ```
 
 _See code: [lib/commands/projects/create.js](https://github.com/datocms/cli/blob/v1.1.9/packages/cli/lib/commands/projects/create.js)_
+
+## `datocms projects:list`
+
+Lists all projects belonging to one account or organization. To authorize the request you need to provide your email, password, and one-time code (if you abilitated
+the two factor authentication)
+
+```
+USAGE
+  $ datocms projects:list [--email <value>] [--password <value>] [--otp-code <value>] [--organization-id <value>]
+    [--config-file <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--profile <value>] [ --json ]
+    [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  | [--csv | --no-truncate]] [--no-header | ]
+
+FLAGS
+  --email=<value>                                 Specify your account email
+  --password=<value>                              Specify your password
+  --otp-code=<value>                              If you activated the two factor authentication, you need to specify the
+                                                  one time password provided by your authentication service
+  --organization-id=<value>                       The ID of the organization in which to perform every API request
+  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
+  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --profile=<value>                               Use settings of profile in datocms.config.js
+  --columns=<value>                               only show provided columns (comma-separated)
+  --filter=<value>                                filter property by partial string matching, ex: name=foo
+  --sort=<value>                                  property to sort by (prepend '-' for descending)
+  --no-header                                     hide table header from output
+  --no-truncate                                   do not truncate output to fit screen
+  --output=<option>                               output in a more machine friendly format
+                                                  <options: csv|json|yaml>
+  
+GLOBAL FLAGS
+  --csv                                           Format output as csv [alias: --output=csv]
+  --json                                          Format output as json [alias: --output=json]
+
+DESCRIPTION
+  Lists all projects belonging to one account or organization.
+```
+
+_See code: [lib/commands/projects/list.js](https://github.com/datocms/cli/blob/v1.1.9/packages/cli/lib/commands/projects/list.js)_
 
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
