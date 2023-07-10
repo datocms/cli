@@ -35,7 +35,7 @@ USAGE
 
 <!-- commands -->
 * [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
-* [`datocms projects:create`](#datocms-projects-create)
+* [`datocms projects:create NEW_PROJECT_NAME`](#datocms-projectscreate-new_project_name)
 * [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 * [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
 * [`datocms environments:index`](#datocms-environmentsindex)
@@ -91,12 +91,12 @@ _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomp
 
 ## `datocms projects:create NEW_PROJECT_NAME`
 
-Creates a new DatoCMS project. To authorize the request you need to provide your email, password, and one-time code (if you abilitated the 
-two factor authentication)
+Creates a new DatoCMS project. To authorize the request you need to provide your email, password, and one-time code (if you abilitated 
+the two factor authentication)
 
 ```
 USAGE
-  $ datocms projects:create [NEW_PROJECT_NAME] [--email <value>] [--password <value>] [--otp-code <value>]
+  $ datocms projects:create [NEW_PROJECT_NAME] [--email <value>] [--password <value>] [--otp-code <value>] [--organization-id <value>]
     [--config-file <value>] [--internal-subdomain <value>] [--template-id <value>]
     [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--profile <value>] [--json]
 
@@ -104,10 +104,11 @@ ARGUMENTS
   NEW_PROJECT_NAME                                The name of the new project to generate
 
 FLAGS
-  --email=<value>                                 Specify your account or organization email
+  --email=<value>                                 Specify your account email
   --password=<value>                              Specify your password
   --otp-code=<value>                              If you activated the two factor authentication, you need to specify the
                                                   one time password provided by your authentication service
+  --organization-id=<value>                       The ID of the organization in which to perform every API request
   --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
   --internal-subdomain=<value>                    You can specify the internal subdomain of your new project, otherwise
                                                   a slugified version of the project name will be set
@@ -119,10 +120,10 @@ GLOBAL FLAGS
   --json  Format output as json.
 
 DESCRIPTION
-  Creates a new sandbox environment by forking an existing one
+  Creates a new blank project or a new project from a template.
 ```
 
-_See code: [lib/commands/environments/fork.js](https://github.com/datocms/cli/blob/v1.1.9/packages/cli/lib/commands/environments/fork.js)_
+_See code: [lib/commands/projects/create.js](https://github.com/datocms/cli/blob/v1.1.9/packages/cli/lib/commands/projects/create.js)_
 
 
 ## `datocms environments:destroy ENVIRONMENT_ID`

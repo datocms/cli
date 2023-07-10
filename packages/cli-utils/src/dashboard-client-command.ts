@@ -26,6 +26,9 @@ export abstract class DashboardClientCommand<
     'otp-code': Flags.string({
       description: 'OTP code',
     }),
+    'organization-id': Flags.string({
+      description: 'The organization ID in which to perform every API request',
+    }),
     'log-level': Flags.enum<LogLevelFlagEnum>({
       options: logLevelOptions,
       description: 'Level of logging for performed API calls',
@@ -44,14 +47,19 @@ export abstract class DashboardClientCommand<
     email: string;
     password: string;
     otpCode?: string | undefined;
+    organizationId?: string | undefined;
     baseUrl: string | undefined;
     logLevel: LogLevel;
   } {
-    const email = this.parsedFlags['email'] || process.env['EMAIL'];
+    const email = this.parsedFlags['email'] || this.datoProfileConfig?.email;
 
     const password = this.parsedFlags['password'] || process.env['PASSWORD'];
 
     const otpCode = this.parsedFlags['otp-code'];
+
+    const organizationId =
+      this.parsedFlags['organization-id'] ||
+      this.datoProfileConfig?.organizationId;
 
     const baseUrl =
       this.parsedFlags['base-url'] || this.datoProfileConfig?.baseUrl;
@@ -75,6 +83,7 @@ export abstract class DashboardClientCommand<
     return {
       email,
       password,
+      organizationId,
       otpCode,
       baseUrl,
       logLevel,
@@ -84,7 +93,7 @@ export abstract class DashboardClientCommand<
   protected async buildClient(
     config: Partial<ClientConfigOptions> = {},
   ): Promise<Client> {
-    const { email, password, otpCode, baseUrl, logLevel } =
+    const { email, password, otpCode, baseUrl, logLevel, organizationId } =
       this.buildBaseClientInitializationOptions();
 
     const loggedOutclient = buildDashboardClient({ apiToken: null });
@@ -101,6 +110,7 @@ export abstract class DashboardClientCommand<
 
     return buildDashboardClient({
       apiToken: session.data.id,
+      organization: organizationId,
       baseUrl,
       logLevel,
       logFn: (message) => {

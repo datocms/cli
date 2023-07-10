@@ -3,6 +3,8 @@ import { get } from 'lodash';
 
 export type ProfileConfig = {
   baseUrl?: string;
+  email?: string;
+  organizationId?: string;
   logLevel?: 'NONE' | 'BASIC' | 'BODY' | 'BODY_AND_HEADERS';
   migrations?: {
     directory?: string;
@@ -16,7 +18,7 @@ export type Config = {
   profiles: Record<string, ProfileConfig>;
 };
 
-function isProfileConfig(thing: any): thing is ProfileConfig {
+function isProfileConfig(thing: unknown): thing is ProfileConfig {
   if (typeof thing !== 'object' || !thing) {
     return false;
   }
@@ -24,6 +26,8 @@ function isProfileConfig(thing: any): thing is ProfileConfig {
   for (const key of [
     'apiToken',
     'baseUrl',
+    'email',
+    'organizationId',
     'logLevel',
     'migrations.directory',
     'migrations.modelApiKey',
@@ -39,16 +43,12 @@ function isProfileConfig(thing: any): thing is ProfileConfig {
   return true;
 }
 
-function isConfig(thing: any): thing is Config {
-  if (typeof thing !== 'object' || !thing) {
+function isConfig(thing: unknown): thing is Config {
+  if (typeof thing !== 'object' || !thing || !('profiles' in thing)) {
     return false;
   }
 
-  if (!('profiles' in thing)) {
-    return false;
-  }
-
-  const { profiles } = thing;
+  const { profiles } = thing as { profiles?: unknown };
 
   if (typeof profiles !== 'object' || !profiles) {
     return false;
