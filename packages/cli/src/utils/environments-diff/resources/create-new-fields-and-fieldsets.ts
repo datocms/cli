@@ -2,7 +2,6 @@ import {
   difference,
   intersection,
   isEqual,
-  omit,
   pick,
   sortBy,
   without,
@@ -16,18 +15,29 @@ import {
 } from '../utils';
 import { buildComment } from './comments';
 
-const defaultValuesForFieldAttribute: Partial<CmaClient.SchemaTypes.FieldAttributes> =
-  {
+function buildDefaultValues(
+  site: CmaClient.SchemaTypes.Site,
+): Partial<CmaClient.SchemaTypes.FieldAttributes> {
+  return {
     hint: null,
     localized: false,
-    default_value: null,
+    default_value:
+      site.attributes.locales.length === 1
+        ? null
+        : Object.fromEntries(
+            site.attributes.locales.map((locale) => [locale, null]),
+          ),
     validators: {},
   };
+}
 
 export function buildCreateFieldClientCommand(
+  site: CmaClient.SchemaTypes.Site,
   itemType: CmaClient.SchemaTypes.ItemType,
   field: CmaClient.SchemaTypes.Field,
 ): Command[] {
+  const defaultValues = buildDefaultValues(site);
+
   const attributesToPick = without(
     (
       Object.keys(field.attributes) as Array<
@@ -35,10 +45,7 @@ export function buildCreateFieldClientCommand(
       >
     ).filter(
       (attribute) =>
-        !isEqual(
-          defaultValuesForFieldAttribute[attribute],
-          field.attributes[attribute],
-        ),
+        !isEqual(defaultValues[attribute], field.attributes[attribute]),
     ),
     'appeareance',
   );
@@ -125,6 +132,7 @@ export function buildCreateFieldsetClientCommand(
 }
 
 export function buildCreateFieldClientCommands(
+  site: CmaClient.SchemaTypes.Site,
   itemType: CmaClient.SchemaTypes.ItemType,
   fields: CmaClient.SchemaTypes.Field[],
 ): Command[] {
@@ -140,9 +148,11 @@ export function buildCreateFieldClientCommands(
 
   return [
     ...nonSlugFields.flatMap(
-      buildCreateFieldClientCommand.bind(null, itemType),
+      buildCreateFieldClientCommand.bind(null, site, itemType),
     ),
-    ...slugFields.flatMap(buildCreateFieldClientCommand.bind(null, itemType)),
+    ...slugFields.flatMap(
+      buildCreateFieldClientCommand.bind(null, site, itemType),
+    ),
   ];
 }
 
@@ -156,6 +166,7 @@ export function buildCreateFieldsetClientCommands(
 }
 
 function createNewFieldsAndFieldsetsInItemType(
+  newSite: CmaClient.SchemaTypes.Site,
   newItemTypeSchema: ItemTypeInfo,
   oldItemTypeSchema?: ItemTypeInfo,
 ): Command[] {
@@ -184,7 +195,11 @@ function createNewFieldsAndFieldsetsInItemType(
       newItemTypeSchema.entity,
       fieldsetsToCreate,
     ),
-    ...buildCreateFieldClientCommands(newItemTypeSchema.entity, fieldsToCreate),
+    ...buildCreateFieldClientCommands(
+      newSite,
+      newItemTypeSchema.entity,
+      fieldsToCreate,
+    ),
   ];
 }
 
@@ -201,6 +216,7 @@ export function createNewFieldsAndFieldsets(
   const commands = [...createdItemTypeIds, ...keptItemTypeIds].flatMap(
     (itemTypeId) =>
       createNewFieldsAndFieldsetsInItemType(
+        newSchema.siteEntity,
         newSchema.itemTypesById[itemTypeId],
         oldSchema.itemTypesById[itemTypeId],
       ),
