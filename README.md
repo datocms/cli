@@ -11,3 +11,13 @@ DatoCMS CLI tool for managing DatoCMS projects, environments and schemas.
 <img src="https://www.datocms.com/images/full_logo.svg" height="60">
 </a>
 <br /><br />
+
+## Development
+
+After checking out the repo, run the following:
+
+```
+npm install
+lerna bootstrap
+npm run build
+```

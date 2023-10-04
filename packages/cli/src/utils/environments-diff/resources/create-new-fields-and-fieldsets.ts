@@ -21,6 +21,7 @@ function buildDefaultValues(
   return {
     hint: null,
     localized: false,
+    deep_filtering_enabled: false,
     default_value:
       site.attributes.locales.length === 1
         ? null
