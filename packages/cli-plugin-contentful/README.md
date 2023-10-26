@@ -67,7 +67,7 @@ DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v1.1.4/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v1.2.2/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test
