@@ -8,6 +8,9 @@ import {
 import { Flags } from '@oclif/core';
 import { DatoProfileConfigCommand } from './dato-profile-config-command';
 import * as chalk from 'chalk';
+import { fetch as ponyfillFetch } from '@whatwg-node/fetch';
+
+const fetchFn = typeof fetch === 'undefined' ? ponyfillFetch : fetch;
 
 export const logLevelMap = {
   NONE: LogLevel.NONE,
@@ -89,6 +92,7 @@ export abstract class CmaClientCommand<
         this.log(chalk.gray(message));
       },
       ...config,
+      fetchFn,
     });
   }
 

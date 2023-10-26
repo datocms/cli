@@ -18,8 +18,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cma-client-node": "^2.2.5",
+    "@datocms/cma-client-node": "*",
     "@oclif/core": "^1",
+    "@whatwg-node/fetch": "^0.9.14",
     "chalk": "^4",
     "dotenv": "^16.0.1",
     "lodash": "^4.17.21"

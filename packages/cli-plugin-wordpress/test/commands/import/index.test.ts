@@ -1,6 +1,7 @@
 import { expect } from '@oclif/test';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
 import { CmaClient } from '@datocms/cli-utils';
+import { fetch } from '@whatwg-node/fetch';
 import ImportCommand from '../../../src/commands/wordpress/import';
 
 describe('Import from WP', () => {
@@ -36,6 +37,7 @@ describe('Import from WP', () => {
     process.env.DATOCMS_API_TOKEN = datoApiToken;
     const client = CmaClient.buildClient({
       apiToken: datoApiToken,
+      fetchFn: fetch,
     });
 
     await client.itemTypes.create({ name: 'WP Page', api_key: 'wp_page' });

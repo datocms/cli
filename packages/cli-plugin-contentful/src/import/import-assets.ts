@@ -73,7 +73,7 @@ export default class ImportAssets extends BaseStep {
             url: upload.url,
           };
           ctx.uploadUrlToDatoUploadUrl[fileUrl] = upload.url;
-        } catch (e) {
+        } catch (_e) {
           ctx.uploadIdToDatoUploadInfo[contentfulAsset.sys.id] = null;
           ctx.uploadUrlToDatoUploadUrl[fileUrl] = '';
         }

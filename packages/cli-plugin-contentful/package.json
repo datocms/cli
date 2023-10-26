@@ -58,6 +58,7 @@
     "@types/humps": "^2.0.1",
     "@types/listr": "^0.14.4",
     "@types/pluralize": "^0.0.29",
+    "@whatwg-node/fetch": "^0.9.14",
     "dotenv": "^16.0.2",
     "oclif": "^3"
   },
