@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as Types from '../types';
-import { parseAstFromCode, writeCodeFromAst } from '../utils';
+import { isBase64Id, parseAstFromCode, writeCodeFromAst } from '../utils';
 import { Options, format as prettier } from 'prettier';
 import * as ApiCommands from './api-calls';
 import { buildCommentNode } from './comments';
@@ -176,7 +176,7 @@ export function write(
 
       export default async function(client: Client): Promise<void> {
         ${Object.entries(entityIdsToBeRecreated)
-          .filter((pair) => pair[1].length > 0)
+          .filter((pair) => pair[1].filter((id) => !isBase64Id(id)).length > 0)
           .map(
             ([entityType]) =>
               `const new${upperFirst(
@@ -191,7 +191,7 @@ export function write(
       : `
       module.exports = async function (client) {
         ${Object.entries(entityIdsToBeRecreated)
-          .filter((pair) => pair[1].length > 0)
+          .filter((pair) => pair[1].filter((id) => !isBase64Id(id)).length > 0)
           .map(([entityType]) => `const new${upperFirst(entityType)}s = {};`)
           .join('\n')}
       }

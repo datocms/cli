@@ -12,6 +12,7 @@ import {
   buildFieldsetTitle,
   buildFieldTitle,
   buildItemTypeTitle,
+  isBase64Id,
 } from '../utils';
 import { buildComment } from './comments';
 
@@ -68,6 +69,7 @@ export function buildCreateFieldClientCommand(
         {
           data: {
             type: 'field',
+            id: isBase64Id(field.id) ? field.id : undefined,
             attributes: attributesToUpdate,
             ...(field.relationships.fieldset.data
               ? { relationships: pick(field.relationships, 'fieldset') }
@@ -123,6 +125,7 @@ export function buildCreateFieldsetClientCommand(
         {
           data: {
             type: 'fieldset',
+            id: isBase64Id(fieldset.id) ? fieldset.id : undefined,
             attributes: attributesToUpdate,
           },
         },

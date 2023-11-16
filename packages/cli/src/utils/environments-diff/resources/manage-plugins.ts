@@ -6,7 +6,7 @@ import {
   Schema,
   UpdatePluginClientCommand,
 } from '../types';
-import { buildPluginTitle } from '../utils';
+import { buildPluginTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 function buildCreatePluginClientCommand(
@@ -21,6 +21,7 @@ function buildCreatePluginClientCommand(
       {
         data: {
           type: 'plugin',
+          id: isBase64Id(plugin.id) ? plugin.id : undefined,
           attributes: plugin.attributes.package_name
             ? pick(plugin.attributes, 'package_name')
             : plugin.meta.version === '1'

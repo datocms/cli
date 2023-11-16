@@ -97,7 +97,7 @@ export function parseAstFromCode(code: string) {
   return sourceFile;
 }
 
-export function writeCodeFromAst(nodes: ts.NodeArray<any>) {
+export function writeCodeFromAst(nodes: ts.NodeArray<ts.Node>) {
   const printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
     removeComments: false,
@@ -181,4 +181,13 @@ export function createJsonLiteral(
   }
 
   throw new Error(`Don't know how to handle ${element}`);
+}
+
+function isPositiveInteger(id: string) {
+  const n = Math.floor(Number(id));
+  return n !== Infinity && String(n) === id && n >= 0;
+}
+
+export function isBase64Id(id: string) {
+  return id.length === 22 && !isPositiveInteger(id);
 }

@@ -1,7 +1,7 @@
-import { difference, intersection, isEqual, pick } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
-import { Command, CreateWorkflowClientCommand, Schema } from '../types';
-import { buildWorkflowTitle } from '../utils';
+import { difference, intersection, isEqual, pick } from 'lodash';
+import { Command, Schema } from '../types';
+import { buildWorkflowTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 function buildCreateWorkflowClientCommand(
@@ -16,6 +16,7 @@ function buildCreateWorkflowClientCommand(
         {
           data: {
             type: 'workflow',
+            id: isBase64Id(workflow.id) ? workflow.id : undefined,
             attributes: workflow.attributes,
           },
         },
