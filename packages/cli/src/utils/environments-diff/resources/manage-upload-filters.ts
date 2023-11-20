@@ -1,7 +1,7 @@
-import { difference, intersection, isEqual, pick } from 'lodash';
+import { difference, intersection, isEqual } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
 import { Command, Schema } from '../types';
-import { buildUploadFilterTitle } from '../utils';
+import { buildUploadFilterTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 function buildCreateUploadFilterClientCommand(
@@ -16,6 +16,7 @@ function buildCreateUploadFilterClientCommand(
         {
           data: {
             type: 'upload_filter',
+            id: isBase64Id(uploadFilter.id) ? uploadFilter.id : undefined,
             attributes: uploadFilter.attributes,
           },
         },

@@ -10,7 +10,7 @@ import {
 } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
 import { Command, Schema, UpdateMenuItemClientCommand } from '../types';
-import { buildMenuItemTitle, buildItemTypeTitle } from '../utils';
+import { buildMenuItemTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 const defaultValuesForMenuItemAttribute: Partial<CmaClient.SchemaTypes.MenuItemAttributes> =
@@ -48,6 +48,7 @@ function buildCreateMenuItemClientCommand(
         {
           data: {
             type: 'menu_item',
+            id: isBase64Id(menuItem.id) ? menuItem.id : undefined,
             attributes: attributesToUpdate,
             relationships: Object.fromEntries(
               Object.entries(omit(menuItem.relationships, 'children')).filter(
@@ -296,7 +297,7 @@ function updateState({
   });
 }
 
-function debugState(
+export function debugState(
   message: string,
   state: CmaClient.SchemaTypes.MenuItem[],
   rawRoots: CmaClient.SchemaTypes.MenuItem[] = state.filter(

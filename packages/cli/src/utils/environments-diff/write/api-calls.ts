@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import * as Types from '../types';
-import { createJsonLiteral } from '../utils';
+import { createJsonLiteral, isBase64Id } from '../utils';
 import * as Utils from '@datocms/rest-client-utils';
 import {} from './get-entity-ids-to-be-recreated';
 import { CmaClient } from '@datocms/cli-utils';
@@ -13,16 +13,18 @@ function assignToMapping(
   oldEnvironmentId: string,
   expression: ts.Expression,
 ): ts.Node {
-  return ts.factory.createExpressionStatement(
-    ts.factory.createBinaryExpression(
-      ts.factory.createElementAccessExpression(
-        ts.factory.createIdentifier(`new${upperFirst(kind)}s`),
-        ts.factory.createStringLiteral(oldEnvironmentId),
-      ),
-      ts.SyntaxKind.EqualsToken,
-      expression,
-    ),
-  );
+  return isBase64Id(oldEnvironmentId)
+    ? expression
+    : ts.factory.createExpressionStatement(
+        ts.factory.createBinaryExpression(
+          ts.factory.createElementAccessExpression(
+            ts.factory.createIdentifier(`new${upperFirst(kind)}s`),
+            ts.factory.createStringLiteral(oldEnvironmentId),
+          ),
+          ts.SyntaxKind.EqualsToken,
+          expression,
+        ),
+      );
 }
 
 function makeApiCall(
@@ -43,7 +45,8 @@ function fetchNewId(
   oldEnvironmentId: string,
   entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Expression {
-  return entityIdsToBeRecreated[kind].includes(oldEnvironmentId)
+  return entityIdsToBeRecreated[kind].includes(oldEnvironmentId) &&
+    !isBase64Id(oldEnvironmentId)
     ? ts.factory.createPropertyAccessExpression(
         ts.factory.createElementAccessExpression(
           ts.factory.createIdentifier(`new${upperFirst(kind)}s`),
@@ -65,7 +68,7 @@ function fetchNewRef<T extends { id: string; type: string }>(
 
   const id = typeof oldRefOrId === 'string' ? oldRefOrId : oldRefOrId.id;
 
-  if (!entityIdsToBeRecreated[kind].includes(id)) {
+  if (!entityIdsToBeRecreated[kind].includes(id) || isBase64Id(id)) {
     return createJsonLiteral(oldRefOrId);
   }
 
@@ -75,89 +78,104 @@ function fetchNewRef<T extends { id: string; type: string }>(
   );
 }
 
-function deserializeBody(body: Record<string, unknown>) {
-  return createJsonLiteral(
-    omit(Utils.deserializeResponseBody(body), 'type', 'id'),
-  );
-}
-
-function deserializeAndReplaceNewIdsInBody(
+function deserializeBody(
   body: Record<string, unknown>,
   entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  options?: { replaceNewIdsInBody?: boolean; omitEntityId?: boolean },
 ): ts.Expression {
   return createJsonLiteral(
-    omit(Utils.deserializeResponseBody(body), 'type', 'id'),
-    {
-      replace: (rawPath, value): ts.Expression | undefined => {
-        const path = rawPath
-          .map((c) => (typeof c === 'string' ? c : '*'))
-          .join('.');
+    options?.omitEntityId
+      ? omit(Utils.deserializeResponseBody(body), 'type', 'id')
+      : omit(Utils.deserializeResponseBody(body), 'type'),
+    options?.replaceNewIdsInBody
+      ? {
+          replace: (rawPath, value): ts.Expression | undefined => {
+            const path = rawPath
+              .map((c) => (typeof c === 'string' ? c : '*'))
+              .join('.');
 
-        switch (path) {
-          case 'validators.slug_title_field.title_field_id': {
-            const fieldId = value as string;
-            return fetchNewId('field', fieldId, entityIdsToBeRecreated);
-          }
-          case 'validators.rich_text_blocks.item_types':
-          case 'validators.structured_text_blocks.item_types':
-          case 'validators.structured_text_links.item_types':
-          case 'validators.item_item_type.item_types':
-          case 'validators.items_item_type.item_types': {
-            const itemTypeIds = value as string[];
-            return ts.factory.createArrayLiteralExpression(
-              itemTypeIds.map((itemTypeId) =>
-                fetchNewId('itemType', itemTypeId, entityIdsToBeRecreated),
-              ),
-            );
-          }
-          case 'appearance.editor':
-          case 'appearance.addons.*.id': {
-            const pluginId = value as string;
-            return fetchNewId('plugin', pluginId, entityIdsToBeRecreated);
-          }
-          case 'ordering_field':
-          case 'title_field':
-          case 'image_preview_field':
-          case 'excerpt_field': {
-            const fieldRef = value as CmaClient.SimpleSchemaTypes.FieldData;
-            return fetchNewRef('field', fieldRef, entityIdsToBeRecreated);
-          }
-          case 'item_type': {
-            const itemTypeRef =
-              value as CmaClient.SimpleSchemaTypes.ItemTypeData;
-            return fetchNewRef('itemType', itemTypeRef, entityIdsToBeRecreated);
-          }
-          case 'item_type_filter': {
-            const itemTypeRef =
-              value as CmaClient.SimpleSchemaTypes.ItemTypeData;
-            return fetchNewRef(
-              'itemTypeFilter',
-              itemTypeRef,
-              entityIdsToBeRecreated,
-            );
-          }
-          case 'workflow': {
-            const workflowRef =
-              value as CmaClient.SimpleSchemaTypes.WorkflowData;
-            return fetchNewRef('workflow', workflowRef, entityIdsToBeRecreated);
-          }
-          case 'fieldset': {
-            const fieldsetRef =
-              value as CmaClient.SimpleSchemaTypes.FieldsetData;
-            return fetchNewRef('fieldset', fieldsetRef, entityIdsToBeRecreated);
-          }
-          case 'parent': {
-            const menuItemRef =
-              value as CmaClient.SimpleSchemaTypes.MenuItemData;
-            return fetchNewRef('menuItem', menuItemRef, entityIdsToBeRecreated);
-          }
-          default: {
-            // leave as it is
-            return undefined;
-          }
+            switch (path) {
+              case 'validators.slug_title_field.title_field_id': {
+                const fieldId = value as string;
+                return fetchNewId('field', fieldId, entityIdsToBeRecreated);
+              }
+              case 'validators.rich_text_blocks.item_types':
+              case 'validators.structured_text_blocks.item_types':
+              case 'validators.structured_text_links.item_types':
+              case 'validators.item_item_type.item_types':
+              case 'validators.items_item_type.item_types': {
+                const itemTypeIds = value as string[];
+                return ts.factory.createArrayLiteralExpression(
+                  itemTypeIds.map((itemTypeId) =>
+                    fetchNewId('itemType', itemTypeId, entityIdsToBeRecreated),
+                  ),
+                );
+              }
+              case 'appearance.editor':
+              case 'appearance.addons.*.id': {
+                const pluginId = value as string;
+                return fetchNewId('plugin', pluginId, entityIdsToBeRecreated);
+              }
+              case 'ordering_field':
+              case 'title_field':
+              case 'image_preview_field':
+              case 'excerpt_field': {
+                const fieldRef = value as CmaClient.SimpleSchemaTypes.FieldData;
+                return fetchNewRef('field', fieldRef, entityIdsToBeRecreated);
+              }
+              case 'item_type': {
+                const itemTypeRef =
+                  value as CmaClient.SimpleSchemaTypes.ItemTypeData;
+                return fetchNewRef(
+                  'itemType',
+                  itemTypeRef,
+                  entityIdsToBeRecreated,
+                );
+              }
+              case 'item_type_filter': {
+                const itemTypeRef =
+                  value as CmaClient.SimpleSchemaTypes.ItemTypeData;
+                return fetchNewRef(
+                  'itemTypeFilter',
+                  itemTypeRef,
+                  entityIdsToBeRecreated,
+                );
+              }
+              case 'workflow': {
+                const workflowRef =
+                  value as CmaClient.SimpleSchemaTypes.WorkflowData;
+                return fetchNewRef(
+                  'workflow',
+                  workflowRef,
+                  entityIdsToBeRecreated,
+                );
+              }
+              case 'fieldset': {
+                const fieldsetRef =
+                  value as CmaClient.SimpleSchemaTypes.FieldsetData;
+                return fetchNewRef(
+                  'fieldset',
+                  fieldsetRef,
+                  entityIdsToBeRecreated,
+                );
+              }
+              case 'parent': {
+                const menuItemRef =
+                  value as CmaClient.SimpleSchemaTypes.MenuItemData;
+                return fetchNewRef(
+                  'menuItem',
+                  menuItemRef,
+                  entityIdsToBeRecreated,
+                );
+              }
+              default: {
+                // leave as it is
+                return undefined;
+              }
+            }
+          },
         }
-      },
-    },
+      : undefined,
   );
 }
 
@@ -169,7 +187,9 @@ export function buildCreateFieldClientCommandNode(
 
   const apiCall = makeApiCall(command, [
     fetchNewRef('itemType', itemTypeId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
 
   return assignToMapping('field', command.oldEnvironmentId, apiCall);
@@ -183,7 +203,10 @@ export function buildUpdateFieldClientCommandNode(
 
   return makeApiCall(command, [
     fetchNewRef('field', fieldId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -203,7 +226,9 @@ export function buildCreateFieldsetClientCommandNode(
 
   const apiCall = makeApiCall(command, [
     fetchNewRef('itemType', itemTypeId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
 
   return assignToMapping('fieldset', command.oldEnvironmentId, apiCall);
@@ -217,7 +242,10 @@ export function buildUpdateFieldsetClientCommandNode(
 
   return makeApiCall(command, [
     fetchNewRef('fieldset', fieldsetId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -235,7 +263,9 @@ export function buildCreateItemTypeClientCommandNode(
 ): ts.Node {
   const [body, queryParams] = command.arguments;
   const apiCall = makeApiCall(command, [
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
     createJsonLiteral(queryParams),
   ]);
   return assignToMapping('itemType', command.oldEnvironmentId, apiCall);
@@ -249,7 +279,10 @@ export function buildUpdateItemTypeClientCommandNode(
 
   return makeApiCall(command, [
     fetchNewRef('itemType', itemTypeId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -266,21 +299,21 @@ export function buildDestroyItemTypeClientCommandNode(
 
 export function buildCreateUploadFilterClientCommandNode(
   command: Types.CreateUploadFilterClientCommand,
-  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [body] = command.arguments;
-  return makeApiCall(command, [deserializeBody(body)]);
+  return makeApiCall(command, [deserializeBody(body, entityIdsToBeRecreated)]);
 }
 
 export function buildUpdateUploadFilterClientCommandNode(
   command: Types.UpdateUploadFilterClientCommand,
-  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [uploadFilterId, body] = command.arguments;
 
   return makeApiCall(command, [
     ts.factory.createStringLiteral(uploadFilterId),
-    deserializeBody(body),
+    deserializeBody(body, entityIdsToBeRecreated, { omitEntityId: true }),
   ]);
 }
 
@@ -298,7 +331,9 @@ export function buildCreateItemTypeFilterClientCommandNode(
 ): ts.Node {
   const [body] = command.arguments;
   const apiCall = makeApiCall(command, [
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
   return assignToMapping('itemTypeFilter', command.oldEnvironmentId, apiCall);
 }
@@ -311,7 +346,10 @@ export function buildUpdateItemTypeFilterClientCommandNode(
 
   return makeApiCall(command, [
     ts.factory.createStringLiteral(itemTypeFilterId),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -332,7 +370,9 @@ export function buildCreateWorkflowClientCommandNode(
   const [body] = command.arguments;
 
   const apiCall = makeApiCall(command, [
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
 
   return assignToMapping('workflow', command.oldEnvironmentId, apiCall);
@@ -346,7 +386,10 @@ export function buildUpdateWorkflowClientCommandNode(
 
   return makeApiCall(command, [
     ts.factory.createStringLiteral(workflowId),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -365,7 +408,9 @@ export function buildCreatePluginClientCommandNode(
   const [body] = command.arguments;
 
   const apiCall = makeApiCall(command, [
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
 
   return assignToMapping('plugin', command.oldEnvironmentId, apiCall);
@@ -379,7 +424,10 @@ export function buildUpdatePluginClientCommandNode(
 
   return makeApiCall(command, [
     fetchNewRef('plugin', pluginId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -397,7 +445,10 @@ export function buildUpdateSiteClientCommandNode(
 ): ts.Node {
   const [body] = command.arguments;
   return makeApiCall(command, [
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 
@@ -446,7 +497,9 @@ export function buildCreateMenuItemClientCommandNode(
 ): ts.Node {
   const [body] = command.arguments;
   const apiCall = makeApiCall(command, [
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
   return assignToMapping('menuItem', command.oldEnvironmentId, apiCall);
 }
@@ -459,7 +512,10 @@ export function buildUpdateMenuItemClientCommandNode(
 
   return makeApiCall(command, [
     fetchNewRef('menuItem', menuItemId, entityIdsToBeRecreated),
-    deserializeAndReplaceNewIdsInBody(body, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
   ]);
 }
 

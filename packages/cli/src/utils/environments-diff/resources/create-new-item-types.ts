@@ -1,7 +1,7 @@
 import { difference, isEqual, pick, without } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
 import { Command, ItemTypeInfo, Schema } from '../types';
-import { buildItemTypeTitle } from '../utils';
+import { buildItemTypeTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 const defaultValuesForItemTypeAttribute: Partial<CmaClient.SchemaTypes.ItemTypeAttributes> =
@@ -75,6 +75,7 @@ function buildCreateItemTypeClientCommand(
         {
           data: {
             type: 'item_type',
+            id: isBase64Id(itemType.id) ? itemType.id : undefined,
             attributes: attributesToUpdate,
             ...(itemType.relationships.workflow.data
               ? { relationships: pick(itemType.relationships, 'workflow') }

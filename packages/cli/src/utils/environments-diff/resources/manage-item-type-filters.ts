@@ -1,7 +1,11 @@
 import { difference, intersection, isEqual, pick } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
 import { Command, Schema } from '../types';
-import { buildItemTypeFilterTitle, buildItemTypeTitle } from '../utils';
+import {
+  buildItemTypeFilterTitle,
+  buildItemTypeTitle,
+  isBase64Id,
+} from '../utils';
 import { buildComment } from './comments';
 
 function buildCreateItemTypeFilterClientCommand(
@@ -21,6 +25,7 @@ function buildCreateItemTypeFilterClientCommand(
         {
           data: {
             type: 'item_type_filter',
+            id: isBase64Id(itemTypeFilter.id) ? itemTypeFilter.id : undefined,
             attributes: itemTypeFilter.attributes,
             relationships: itemTypeFilter.relationships,
           },
