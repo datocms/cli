@@ -1,7 +1,5 @@
 <!--datocms-autoinclude-header start-->
-<a href="https://www.datocms.com/">
-<img src="https://www.datocms.com/images/full_logo.svg" height="60">
-</a>
+<a href="https://www.datocms.com/"><img src="https://www.datocms.com/images/full_logo.svg" height="60"></a>
 
 👉 [Visit the DatoCMS homepage](https://www.datocms.com) or see [What is DatoCMS?](#what-is-datocms)
 <!--datocms-autoinclude-header end-->
@@ -24,13 +22,10 @@ lerna bootstrap
 npm run build
 ```
 
------------------
-
 <!--datocms-autoinclude-footer start-->
+-----------------
 # What is DatoCMS?
-<a href="https://www.datocms.com/">
-<img src="https://www.datocms.com/images/full_logo.svg" height="60">
-</a>
+<a href="https://www.datocms.com/"><img src="https://www.datocms.com/images/full_logo.svg" height="60"></a>
 
 [DatoCMS](https://www.datocms.com/) is the REST & GraphQL Headless CMS for the modern web.
 
