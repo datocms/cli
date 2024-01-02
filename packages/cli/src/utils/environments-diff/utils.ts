@@ -1,5 +1,5 @@
-import * as ts from 'typescript';
 import { CmaClient } from '@datocms/cli-utils';
+import * as ts from 'typescript';
 
 export function buildFieldsetTitle(fieldset: CmaClient.SchemaTypes.Fieldset) {
   return `fieldset "${fieldset.attributes.title}"`;
@@ -19,7 +19,8 @@ const fieldTypeName: Record<string, string> = {
   lat_lon: 'Geolocation',
   link: 'Single link',
   links: 'Multiple links',
-  rich_text: 'Modular content',
+  rich_text: 'Modular Content (Multiple blocks)',
+  single_block: 'Modular Content (Single block)',
   seo: 'SEO meta tags',
   slug: 'Slug',
   string: 'Single-line string',

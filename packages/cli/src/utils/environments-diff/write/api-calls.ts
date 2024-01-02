@@ -1,10 +1,10 @@
+import { CmaClient } from '@datocms/cli-utils';
+import * as Utils from '@datocms/rest-client-utils';
+import { omit, upperFirst } from 'lodash';
 import * as ts from 'typescript';
 import * as Types from '../types';
 import { createJsonLiteral, isBase64Id } from '../utils';
-import * as Utils from '@datocms/rest-client-utils';
 import {} from './get-entity-ids-to-be-recreated';
-import { CmaClient } from '@datocms/cli-utils';
-import { upperFirst, omit } from 'lodash';
 
 type PossibleMapping = keyof Types.EntityIdsToBeRecreated;
 
@@ -100,6 +100,7 @@ function deserializeBody(
                 return fetchNewId('field', fieldId, entityIdsToBeRecreated);
               }
               case 'validators.rich_text_blocks.item_types':
+              case 'validators.single_block_blocks.item_types':
               case 'validators.structured_text_blocks.item_types':
               case 'validators.structured_text_links.item_types':
               case 'validators.item_item_type.item_types':
