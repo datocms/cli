@@ -1,4 +1,4 @@
-import { CmaClientCommand, CmaClient, oclif } from '@datocms/cli-utils';
+import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 
 export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description =

@@ -5,6 +5,7 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
   const [
     siteResponse,
     menuItemsResponse,
+    schemaMenuItemsResponse,
     pluginsResponse,
     workflowsResponse,
     itemTypeFiltersResponse,
@@ -14,6 +15,7 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
       include: 'item_types,item_types.fields,item_types.fieldsets',
     }),
     client.menuItems.rawList(),
+    client.schemaMenuItems.rawList(),
     client.plugins.rawList(),
     client.workflows.rawList(),
     client.itemTypeFilters.rawList(),
@@ -61,6 +63,12 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
     ),
     menuItemsById: Object.fromEntries(
       menuItemsResponse.data.map((menuItem) => [menuItem.id, menuItem]),
+    ),
+    schemaMenuItemsById: Object.fromEntries(
+      schemaMenuItemsResponse.data.map((schemaMenuItem) => [
+        schemaMenuItem.id,
+        schemaMenuItem,
+      ]),
     ),
     pluginsById: Object.fromEntries(
       pluginsResponse.data.map((plugin) => [plugin.id, plugin]),

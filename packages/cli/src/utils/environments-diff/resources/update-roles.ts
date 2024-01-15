@@ -1,5 +1,5 @@
-import { differenceWith, isEqual, omit, result } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
+import { differenceWith, isEqual } from 'lodash';
 import {
   Command,
   RoleItemTypePermission,

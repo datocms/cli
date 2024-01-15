@@ -1,6 +1,6 @@
-import { expect } from '@oclif/test';
-import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
 import { CmaClient } from '@datocms/cli-utils';
+import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
+import { expect } from '@oclif/test';
 import { fetch } from '@whatwg-node/fetch';
 import ImportCommand from '../../../src/commands/wordpress/import';
 

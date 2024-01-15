@@ -1,8 +1,8 @@
-import BaseStep from './base-step';
-import { Context } from '../commands/contentful/import';
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { CmaClient } from '@datocms/cli-utils';
+import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
+import BaseStep from './base-step';
 
 const createAssetsLog = 'Import assets from Contentful';
 
@@ -38,8 +38,9 @@ export default class ImportAssets extends BaseStep {
         try {
           const fileMetadata = ctx.locales.reduce(
             (
-              // eslint-disable-next-line default-param-last
-              acc: CmaClient.SimpleSchemaTypes.UploadCreateSchema['default_field_metadata'] = {},
+              acc: NonNullable<
+                CmaClient.SimpleSchemaTypes.UploadCreateSchema['default_field_metadata']
+              >,
               locale: string,
             ) => {
               acc[locale] = {

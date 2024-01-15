@@ -1,6 +1,6 @@
-import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
-import BaseStep from './base-step';
+import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { Context } from '../commands/wordpress/import';
+import BaseStep from './base-step';
 
 const retrieveTitle = 'Retrieve assets from WordPress';
 const createTitle = 'Upload assets to DatoCMS';

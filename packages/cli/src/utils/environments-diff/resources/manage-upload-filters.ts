@@ -1,5 +1,5 @@
-import { difference, intersection, isEqual } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
+import { difference, intersection, isEqual } from 'lodash';
 import { Command, Schema } from '../types';
 import { buildUploadFilterTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';

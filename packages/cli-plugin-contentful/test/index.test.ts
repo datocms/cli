@@ -1,10 +1,10 @@
-import { expect } from '@oclif/test';
-import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
-import ImportCommand from '../src/commands/contentful/import';
 import { CmaClient } from '@datocms/cli-utils';
+import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
+import { expect } from '@oclif/test';
 import { StructuredText } from 'datocms-structured-text-utils';
-import { UploadData } from '../src/utils/item-create-helpers';
 import get from 'lodash/get';
+import ImportCommand from '../src/commands/contentful/import';
+import { UploadData } from '../src/utils/item-create-helpers';
 interface BlogPostType extends CmaClient.SimpleSchemaTypes.Item {
   author: CmaClient.SimpleSchemaTypes.ItemIdentity | null;
   title: { 'en-US': string | null; it?: string | null };
@@ -217,7 +217,7 @@ describe('Import from Contentful', () => {
       'Static sites are great',
     );
     expect(unpublishedArticle?.title).to.have.own.property('it');
-    expect(unpublishedArticle?.title?.['it']).to.eq('');
+    expect(unpublishedArticle?.title?.it).to.eq('');
 
     const publishedArticle = blogPostArticles.find((a) => a.slug === 'hello');
     expect(publishedArticle?.meta.status).to.eq('published');
@@ -229,7 +229,6 @@ describe('Import from Contentful', () => {
     expect(publishedArticle?.gallery[0].upload_id).to.eq(video?.id);
     expect(publishedArticle?.location).to.deep.equal({
       latitude: 52.52,
-      // eslint-disable-next-line unicorn/numeric-separators-style
       longitude: 13.40495,
     });
     expect(publishedArticle?.body).to.include(`${computerImage?.url}`);

@@ -1,9 +1,8 @@
-import { Context, StepOptions } from '../commands/wordpress/import';
 import { CmaClient } from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
 import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import WPAPI from 'wpapi';
-import { WPRequest } from 'wpapi';
+import WPAPI, { WPRequest } from 'wpapi';
+import { Context, StepOptions } from '../commands/wordpress/import';
 
 export default class BaseStep {
   protected options: StepOptions;
@@ -108,7 +107,6 @@ export default class BaseStep {
 
     try {
       response = await this.scheduler.enqueue(async () => {
-        // eslint-disable-next-line no-return-await
         return await requestPromise;
       });
     } catch (e) {

@@ -7,6 +7,7 @@ export type EntityIdsToBeRecreated = {
   plugin: string[];
   workflow: string[];
   menuItem: string[];
+  schemaMenuItem: string[];
   itemTypeFilter: string[];
 };
 
@@ -20,6 +21,7 @@ export type Schema = {
   siteEntity: CmaClient.SchemaTypes.Site;
   itemTypesById: Record<string, ItemTypeInfo>;
   menuItemsById: Record<string, CmaClient.SchemaTypes.MenuItem>;
+  schemaMenuItemsById: Record<string, CmaClient.SchemaTypes.SchemaMenuItem>;
   pluginsById: Record<string, CmaClient.SchemaTypes.Plugin>;
   workflowsById: Record<string, CmaClient.SchemaTypes.Workflow>;
   itemTypeFiltersById: Record<string, CmaClient.SchemaTypes.ItemTypeFilter>;
@@ -225,6 +227,25 @@ export type DestroyMenuItemClientCommand = {
   arguments: Parameters<CmaClient.Client['menuItems']['rawDestroy']>;
 };
 
+export type CreateSchemaMenuItemClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.schemaMenuItems.create';
+  arguments: Parameters<CmaClient.Client['schemaMenuItems']['rawCreate']>;
+  oldEnvironmentId: string;
+};
+
+export type UpdateSchemaMenuItemClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.schemaMenuItems.update';
+  arguments: Parameters<CmaClient.Client['schemaMenuItems']['rawUpdate']>;
+};
+
+export type DestroySchemaMenuItemClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.schemaMenuItems.destroy';
+  arguments: Parameters<CmaClient.Client['schemaMenuItems']['rawDestroy']>;
+};
+
 export type ClientApiCallCommand =
   | CreateFieldClientCommand
   | UpdateFieldClientCommand
@@ -251,6 +272,9 @@ export type ClientApiCallCommand =
   | CreateMenuItemClientCommand
   | UpdateMenuItemClientCommand
   | DestroyMenuItemClientCommand
+  | CreateSchemaMenuItemClientCommand
+  | UpdateSchemaMenuItemClientCommand
+  | DestroySchemaMenuItemClientCommand
   | UpdateSiteClientCommand;
 
 export type Command = Comment | ClientApiCallCommand;

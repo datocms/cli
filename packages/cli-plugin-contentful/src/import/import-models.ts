@@ -1,7 +1,7 @@
-import BaseStep from './base-step';
-import { Context } from '../commands/contentful/import';
 import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import { Context } from '../commands/contentful/import';
 import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
+import BaseStep from './base-step';
 
 const importModelsLog = 'Import models from Contentful';
 

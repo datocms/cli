@@ -1,9 +1,9 @@
-import { difference, intersection } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
+import { difference, intersection } from 'lodash';
 import { Command, ItemTypeInfo, Schema } from '../types';
 import {
-  buildFieldsetTitle,
   buildFieldTitle,
+  buildFieldsetTitle,
   buildItemTypeTitle,
 } from '../utils';
 import { buildComment } from './comments';

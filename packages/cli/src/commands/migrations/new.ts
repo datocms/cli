@@ -1,22 +1,11 @@
-import { oclif, CmaClientCommand, CmaClient } from '@datocms/cli-utils';
-import { dirname, extname, join, relative, resolve } from 'path';
-import { findNearestFile } from '../../utils/find-nearest-file';
-import { camelCase } from 'lodash';
-import { writeFile } from 'fs/promises';
-import * as mkdirp from 'mkdirp';
 import { readFileSync } from 'fs';
+import { dirname, extname, join, relative, resolve } from 'path';
+import { CmaClientCommand, oclif } from '@datocms/cli-utils';
+import { writeFile } from 'fs/promises';
+import { camelCase } from 'lodash';
+import * as mkdirp from 'mkdirp';
 import { diffEnvironments } from '../../utils/environments-diff';
-
-type ItemTypeInfo = {
-  entity: CmaClient.SchemaTypes.ItemType;
-  fieldsByApiKey: Record<string, CmaClient.SchemaTypes.Field>;
-  fieldsetsByTitle: Record<string, CmaClient.SchemaTypes.Fieldset>;
-};
-
-type Schema = {
-  siteEntity: CmaClient.SchemaTypes.Site;
-  itemTypesByApiKey: Record<string, ItemTypeInfo>;
-};
+import { findNearestFile } from '../../utils/find-nearest-file';
 
 const jsTemplate = `
 'use strict';

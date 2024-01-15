@@ -1,5 +1,5 @@
-import { difference, intersection, isEqual, omit, pick } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
+import { difference, intersection, isEqual, omit, pick } from 'lodash';
 import {
   Command,
   CreatePluginClientCommand,

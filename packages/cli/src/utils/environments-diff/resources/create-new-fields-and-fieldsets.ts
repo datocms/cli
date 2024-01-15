@@ -1,3 +1,4 @@
+import { CmaClient } from '@datocms/cli-utils';
 import {
   difference,
   intersection,
@@ -6,11 +7,10 @@ import {
   sortBy,
   without,
 } from 'lodash';
-import { CmaClient } from '@datocms/cli-utils';
 import { Command, ItemTypeInfo, Schema } from '../types';
 import {
-  buildFieldsetTitle,
   buildFieldTitle,
+  buildFieldsetTitle,
   buildItemTypeTitle,
   isBase64Id,
 } from '../utils';

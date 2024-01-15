@@ -1,5 +1,5 @@
-import * as ts from 'typescript';
 import { CmaClient } from '@datocms/cli-utils';
+import * as ts from 'typescript';
 
 export function buildFieldsetTitle(fieldset: CmaClient.SchemaTypes.Fieldset) {
   return `fieldset "${fieldset.attributes.title}"`;
@@ -30,6 +30,20 @@ const fieldTypeName: Record<string, string> = {
 
 export function buildMenuItemTitle(menuItem: CmaClient.SchemaTypes.MenuItem) {
   return `menu item "${menuItem.attributes.label}"`;
+}
+
+export function buildSchemaMenuItemTitle(
+  schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
+  itemType: CmaClient.SchemaTypes.ItemType | undefined,
+) {
+  const context =
+    schemaMenuItem.attributes.kind === 'item_type' ? 'model' : 'block';
+
+  const name = itemType
+    ? `for ${buildItemTypeTitle(itemType)}`
+    : `"${schemaMenuItem.attributes.label}"`;
+
+  return `${context} schema menu item ${name}`;
 }
 
 export function buildWorkflowTitle(workflow: CmaClient.SchemaTypes.Workflow) {

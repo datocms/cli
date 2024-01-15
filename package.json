@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "format": "rome check packages --apply-suggested && rome format --write packages",
-    "lint": "rome ci packages",
+    "format": "biome check packages --apply && biome format --write packages",
+    "lint": "biome ci packages",
     "build": "lerna run build",
     "publish": "lerna run test && npm run build && lerna publish",
     "publish-next": "npm run build && lerna publish --dist-tag next"
@@ -22,7 +22,7 @@
     "mocha": "^9",
     "oclif": "^3",
     "rimraf": "^3.0.2",
-    "rome": "^11.0.0",
+    "@biomejs/biome": "1.2.2",
     "ts-node": "^10.2.1",
     "tslib": "^2.3.1",
     "typescript": "~4.5.0"
@@ -30,7 +30,7 @@
   "version": "0.0.1",
   "lint-staged": {
     "packages/**/*.{js,jsx,ts,tsx}": [
-      "rome ci"
+      "biome ci"
     ]
   },
   "husky": {

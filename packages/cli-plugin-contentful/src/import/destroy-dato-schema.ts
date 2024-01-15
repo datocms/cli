@@ -1,9 +1,9 @@
-import BaseStep from './base-step';
 import { ContentTypeProps } from 'contentful-management';
-import { Context } from '../commands/contentful/import';
 import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
+import { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
+import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
+import BaseStep from './base-step';
 
 const removeValidationsLog = 'Removing validations from fields';
 const destroyModelsLog = 'Destroying Contentful models from DatoCMS';
