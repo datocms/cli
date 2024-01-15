@@ -16,7 +16,7 @@ export type Config = {
   profiles: Record<string, ProfileConfig>;
 };
 
-function isProfileConfig(thing: any): thing is ProfileConfig {
+function isProfileConfig(thing: unknown): thing is ProfileConfig {
   if (typeof thing !== 'object' || !thing) {
     return false;
   }
@@ -39,7 +39,7 @@ function isProfileConfig(thing: any): thing is ProfileConfig {
   return true;
 }
 
-function isConfig(thing: any): thing is Config {
+function isConfig(thing: unknown): thing is Config {
   if (typeof thing !== 'object' || !thing) {
     return false;
   }
@@ -48,7 +48,7 @@ function isConfig(thing: any): thing is Config {
     return false;
   }
 
-  const { profiles } = thing;
+  const { profiles } = thing as any;
 
   if (typeof profiles !== 'object' || !profiles) {
     return false;

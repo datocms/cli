@@ -1,4 +1,4 @@
-import { CmaClientCommand, CmaClient } from '@datocms/cli-utils';
+import { CmaClient, CmaClientCommand } from '@datocms/cli-utils';
 
 export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description = 'Destroys a sandbox environment';

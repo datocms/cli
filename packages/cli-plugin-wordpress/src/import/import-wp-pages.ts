@@ -1,13 +1,13 @@
-import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
-import convertToRegExp from '../utils/escape-string-regexp';
 import { CmaClient } from '@datocms/cli-utils';
+import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { Context } from '../commands/wordpress/import';
-import BaseStep from './base-step';
 import {
   createSlugField,
   createStringField,
   createTextField,
 } from '../utils/build-fields';
+import convertToRegExp from '../utils/escape-string-regexp';
+import BaseStep from './base-step';
 
 const retrieveTitle = 'Retrieve pages from WordPress';
 const createTitle = 'Import pages to DatoCMS';

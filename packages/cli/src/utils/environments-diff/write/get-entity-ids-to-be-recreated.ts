@@ -46,6 +46,13 @@ export function getEntityIdsToBeRecreated(
           command.call === 'client.menuItems.create',
       )
       .map((command) => command.oldEnvironmentId),
+    schemaMenuItem: commands
+      .filter(
+        (command): command is Types.CreateSchemaMenuItemClientCommand =>
+          command.type === 'apiCallClientCommand' &&
+          command.call === 'client.schemaMenuItems.create',
+      )
+      .map((command) => command.oldEnvironmentId),
     itemTypeFilter: commands
       .filter(
         (command): command is Types.CreateItemTypeFilterClientCommand =>

@@ -1,11 +1,11 @@
+import { dirname, join, relative, resolve } from 'path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
-  Client,
   ApiError,
+  Client,
   SimpleSchemaTypes,
 } from '@datocms/cli-utils/lib/cma-client-node';
 import { access, readdir } from 'fs/promises';
-import { dirname, join, relative, resolve } from 'path';
 import { register as registerTsNode } from 'ts-node';
 import { findNearestFile } from '../../utils/find-nearest-file';
 

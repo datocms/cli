@@ -1,5 +1,5 @@
-import { isEqual, omit, pick } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
+import { isEqual, omit, pick } from 'lodash';
 import { Command, Schema } from '../types';
 import { buildComment } from './comments';
 

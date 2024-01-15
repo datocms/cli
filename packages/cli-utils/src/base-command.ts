@@ -1,6 +1,6 @@
 import { CliUx, Command } from '@oclif/core';
+import { FlagInput, ParserOutput } from '@oclif/core/lib/interfaces';
 import { get } from 'lodash';
-import { ParserOutput, FlagInput } from '@oclif/core/lib/interfaces';
 
 type InferredFlagsType<T> = T extends FlagInput<infer F>
   ? F & {
@@ -27,7 +27,6 @@ export abstract class BaseCommand<
     this.parsedArgs = this.parsedOutput?.args ?? {};
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   protected toErrorJson(err: any): any {
     return { error: { message: err.message, ...err } };
   }

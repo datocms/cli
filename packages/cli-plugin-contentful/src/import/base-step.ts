@@ -1,7 +1,7 @@
 import { CmaClient } from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { Environment } from 'contentful-management';
+import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { Context, StepOptions } from '../commands/contentful/import';
 
 export default class BaseStep {
@@ -84,7 +84,6 @@ export default class BaseStep {
             }
           } finally {
             finished += 1;
-            // rome-ignore lint/performance/noDelete: We need to remove the identifier from the hash
             delete runningInfo[identifier];
             task.title = `${title} (${finished} of ${items.length}${
               failed > 0 ? `, ${failed} failed` : ''

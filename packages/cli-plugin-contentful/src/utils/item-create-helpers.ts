@@ -1,22 +1,22 @@
 import { CmaClient } from '@datocms/cli-utils';
-import { Context } from '../commands/contentful/import';
 import {
-  richTextToStructuredText as rawRichTextToStructuredText,
-  visitChildren,
-  Handler,
   ContentfulRichTextTypes,
+  Handler,
   liftAssets,
   makeHandler,
+  richTextToStructuredText as rawRichTextToStructuredText,
+  visitChildren,
   wrapInParagraph,
 } from 'datocms-contentful-to-structured-text';
 import {
-  allowedChildren,
   Block,
   Document as StructuredTextDocument,
   Link,
-  linkNodeType,
   Node,
+  allowedChildren,
+  linkNodeType,
 } from 'datocms-structured-text-utils';
+import { Context } from '../commands/contentful/import';
 
 export const isLinkType = (datoFieldType: string): boolean => {
   return ['file', 'gallery', 'link', 'links', 'structured_text'].includes(
@@ -25,7 +25,6 @@ export const isLinkType = (datoFieldType: string): boolean => {
 };
 
 export const datoValueForFieldType = async (
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   contentfulValue: unknown,
   fieldType: CmaClient.SimpleSchemaTypes.Field['field_type'],
   uploadUrlToDatoUploadUrl: Context['uploadUrlToDatoUploadUrl'],

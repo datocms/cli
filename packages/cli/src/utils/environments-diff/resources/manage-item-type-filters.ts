@@ -1,5 +1,5 @@
-import { difference, intersection, isEqual, pick } from 'lodash';
 import { CmaClient } from '@datocms/cli-utils';
+import { difference, intersection, isEqual, pick } from 'lodash';
 import { Command, Schema } from '../types';
 import {
   buildItemTypeFilterTitle,

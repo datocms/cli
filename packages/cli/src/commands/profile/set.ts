@@ -1,8 +1,8 @@
 import {
   DatoConfigCommand,
+  LogLevelFlagEnum,
   ProfileConfig,
   logLevelOptions,
-  LogLevelFlagEnum,
   oclif,
 } from '@datocms/cli-utils';
 import { camelCase } from 'lodash';

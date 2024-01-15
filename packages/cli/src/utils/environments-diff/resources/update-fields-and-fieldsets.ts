@@ -1,3 +1,4 @@
+import { CmaClient } from '@datocms/cli-utils';
 import {
   cloneDeep,
   difference,
@@ -5,10 +6,8 @@ import {
   isEqual,
   pick,
   sortBy,
-  update,
   without,
 } from 'lodash';
-import { CmaClient } from '@datocms/cli-utils';
 import {
   Command,
   ItemTypeInfo,
@@ -17,8 +16,8 @@ import {
   UpdateFieldsetClientCommand,
 } from '../types';
 import {
-  buildFieldsetTitle,
   buildFieldTitle,
+  buildFieldsetTitle,
   buildItemTypeTitle,
 } from '../utils';
 import { buildComment } from './comments';
@@ -329,6 +328,7 @@ function generateInitialState({
   return state;
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 function debugState(
   message: string,
   state: Array<CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset>,

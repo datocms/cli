@@ -1,10 +1,5 @@
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
-import { cfEnvironmentApi } from '../../utils/build-contentful-client';
-import DestroyDatoSchema from '../../import/destroy-dato-schema';
-import ImportModels from '../../import/import-models';
-import ImportFields from '../../import/import-fields';
-import ImportAssets from '../../import/import-assets';
-import ImportRecords from '../../import/import-records';
+import { Scheduler } from 'async-scheduler';
 import {
   Asset,
   ContentFields,
@@ -12,11 +7,16 @@ import {
   Entry,
   Environment,
 } from 'contentful-management';
-import { Scheduler } from 'async-scheduler';
-import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
-import isArrayWithAtLeastOneElement from '../../utils/is-array-with-at-least-one-element';
+import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import AddValidations from '../../import/add-validations';
+import DestroyDatoSchema from '../../import/destroy-dato-schema';
+import ImportAssets from '../../import/import-assets';
+import ImportFields from '../../import/import-fields';
+import ImportModels from '../../import/import-models';
+import ImportRecords from '../../import/import-records';
+import { cfEnvironmentApi } from '../../utils/build-contentful-client';
 import { getAll } from '../../utils/getAll';
+import isArrayWithAtLeastOneElement from '../../utils/is-array-with-at-least-one-element';
 
 export type StepOptions = {
   client: CmaClient.Client;

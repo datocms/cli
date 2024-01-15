@@ -7,108 +7,93 @@ import {
   omit,
   pick,
   sortBy,
-  without,
 } from 'lodash';
-import { Command, Schema, UpdateMenuItemClientCommand } from '../types';
-import { buildMenuItemTitle, isBase64Id } from '../utils';
+import { Command, Schema, UpdateSchemaMenuItemClientCommand } from '../types';
+import { buildSchemaMenuItemTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
-const defaultValuesForMenuItemAttribute: Partial<CmaClient.SchemaTypes.MenuItemAttributes> =
-  {
-    external_url: null,
-    open_in_new_tab: false,
-  };
-
-function buildCreateMenuItemClientCommand(
-  menuItem: CmaClient.SchemaTypes.MenuItem,
+function buildCreateSchemaMenuItemClientCommand(
+  schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
+  itemType: CmaClient.SchemaTypes.ItemType | undefined,
 ): Command[] {
-  const attributesToPick = (
-    Object.keys(menuItem.attributes) as Array<
-      keyof CmaClient.SchemaTypes.MenuItemAttributes
-    >
-  ).filter(
-    (attribute) =>
-      !isEqual(
-        defaultValuesForMenuItemAttribute[attribute],
-        menuItem.attributes[attribute],
-      ),
-  );
-
-  const attributesToUpdate = pick(
-    menuItem.attributes,
-    without(attributesToPick, 'position'),
-  );
+  const attributesToUpdate = omit(schemaMenuItem.attributes, ['position']);
 
   return [
-    buildComment(`Create ${buildMenuItemTitle(menuItem)}`),
+    buildComment(
+      `Create ${buildSchemaMenuItemTitle(schemaMenuItem, itemType)}`,
+    ),
     {
       type: 'apiCallClientCommand',
-      call: 'client.menuItems.create',
+      call: 'client.schemaMenuItems.create',
       arguments: [
         {
           data: {
-            type: 'menu_item',
-            id: isBase64Id(menuItem.id) ? menuItem.id : undefined,
+            type: 'schema_menu_item',
+            id: isBase64Id(schemaMenuItem.id) ? schemaMenuItem.id : undefined,
             attributes: attributesToUpdate,
             relationships: Object.fromEntries(
-              Object.entries(omit(menuItem.relationships, 'children')).filter(
-                ([_key, value]) => !!value.data,
-              ),
+              Object.entries(
+                omit(schemaMenuItem.relationships, 'children'),
+              ).filter(([_key, value]) => !!value.data),
             ),
           },
         },
       ],
-      oldEnvironmentId: menuItem.id,
+      oldEnvironmentId: schemaMenuItem.id,
     },
   ];
 }
 
-function buildDestroyMenuItemClientCommand(
-  menuItem: CmaClient.SchemaTypes.MenuItem,
+function buildDestroySchemaMenuItemClientCommand(
+  schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
+  itemType: CmaClient.SchemaTypes.ItemType | undefined,
 ): Command[] {
   return [
-    buildComment(`Delete ${buildMenuItemTitle(menuItem)}`),
+    buildComment(
+      `Delete ${buildSchemaMenuItemTitle(schemaMenuItem, itemType)}`,
+    ),
     {
       type: 'apiCallClientCommand',
-      call: 'client.menuItems.destroy',
-      arguments: [menuItem.id],
+      call: 'client.schemaMenuItems.destroy',
+      arguments: [schemaMenuItem.id],
     },
   ];
 }
 
-function buildUpdateMenuItemClientCommand(
-  newMenuItem: CmaClient.SchemaTypes.MenuItem,
-  oldMenuItem: CmaClient.SchemaTypes.MenuItem | undefined,
+function buildUpdateSchemaMenuItemClientCommand(
+  newSchemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
+  oldSchemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem | undefined,
+  newItemType: CmaClient.SchemaTypes.ItemType | undefined,
 ): Command[] {
-  const attributesToUpdate = oldMenuItem
+  const attributesToUpdate = oldSchemaMenuItem
     ? pick(
-        newMenuItem.attributes,
+        newSchemaMenuItem.attributes,
         (
-          Object.keys(newMenuItem.attributes) as Array<
-            keyof CmaClient.SchemaTypes.MenuItemAttributes
+          Object.keys(newSchemaMenuItem.attributes) as Array<
+            keyof CmaClient.SchemaTypes.SchemaMenuItemAttributes
           >
         ).filter(
           (attribute) =>
             !isEqual(
-              oldMenuItem.attributes[attribute],
-              newMenuItem.attributes[attribute],
+              oldSchemaMenuItem.attributes[attribute],
+              newSchemaMenuItem.attributes[attribute],
             ),
         ),
       )
-    : pick(newMenuItem.attributes, 'position');
+    : pick(newSchemaMenuItem.attributes, 'position');
 
-  const relationshipsToUpdate = oldMenuItem
+  const relationshipsToUpdate = oldSchemaMenuItem
     ? pick(
-        newMenuItem.relationships,
+        newSchemaMenuItem.relationships,
         (
-          Object.keys(omit(newMenuItem.relationships, 'children')) as Array<
-            keyof CmaClient.SchemaTypes.MenuItemRelationships
-          >
+          Object.keys(
+            omit(newSchemaMenuItem.relationships, 'children'),
+          ) as Array<keyof CmaClient.SchemaTypes.SchemaMenuItemRelationships>
         ).filter(
           (attribute) =>
             !isEqual(
-              oldMenuItem.relationships[attribute],
-              newMenuItem.relationships[attribute],
+              oldSchemaMenuItem.relationships[attribute],
+              newSchemaMenuItem.relationships[attribute],
             ),
         ),
       )
@@ -122,16 +107,18 @@ function buildUpdateMenuItemClientCommand(
   }
 
   return [
-    buildComment(`Update ${buildMenuItemTitle(newMenuItem)}`),
+    buildComment(
+      `Update ${buildSchemaMenuItemTitle(newSchemaMenuItem, newItemType)}`,
+    ),
     {
       type: 'apiCallClientCommand',
-      call: 'client.menuItems.update',
+      call: 'client.schemaMenuItems.update',
       arguments: [
-        newMenuItem.id,
+        newSchemaMenuItem.id,
         {
           data: {
-            type: 'menu_item',
-            id: newMenuItem.id,
+            type: 'schema_menu_item',
+            id: newSchemaMenuItem.id,
             attributes: attributesToUpdate,
             ...(relationshipsToUpdate &&
             Object.keys(relationshipsToUpdate).length > 0
@@ -150,8 +137,8 @@ function findSiblings({
   parentId,
   positionGte,
 }: {
-  of: CmaClient.SchemaTypes.MenuItem;
-  collection: CmaClient.SchemaTypes.MenuItem[];
+  of: CmaClient.SchemaTypes.SchemaMenuItem;
+  collection: CmaClient.SchemaTypes.SchemaMenuItem[];
   parentId: string | undefined;
   positionGte: number;
 }) {
@@ -168,8 +155,8 @@ function findChildren({
   of: entity,
   collection,
 }: {
-  of: CmaClient.SchemaTypes.MenuItem;
-  collection: CmaClient.SchemaTypes.MenuItem[];
+  of: CmaClient.SchemaTypes.SchemaMenuItem;
+  collection: CmaClient.SchemaTypes.SchemaMenuItem[];
 }) {
   return collection.filter(
     (e) => e.relationships.parent.data?.id === entity.id,
@@ -180,7 +167,7 @@ function findMaxPosition({
   collection,
   parentId,
 }: {
-  collection: CmaClient.SchemaTypes.MenuItem[];
+  collection: CmaClient.SchemaTypes.SchemaMenuItem[];
   parentId: string | undefined;
 }) {
   const siblings = collection.filter(
@@ -195,9 +182,9 @@ function generateInitialState({
   createdEntities,
   deletedEntities,
 }: {
-  oldKeptEntities: CmaClient.SchemaTypes.MenuItem[];
-  createdEntities: CmaClient.SchemaTypes.MenuItem[];
-  deletedEntities: CmaClient.SchemaTypes.MenuItem[];
+  oldKeptEntities: CmaClient.SchemaTypes.SchemaMenuItem[];
+  createdEntities: CmaClient.SchemaTypes.SchemaMenuItem[];
+  deletedEntities: CmaClient.SchemaTypes.SchemaMenuItem[];
 }) {
   const state = oldKeptEntities.map(cloneDeep);
 
@@ -244,8 +231,8 @@ function updateState({
   updateCommand,
   state,
 }: {
-  updateCommand: UpdateMenuItemClientCommand;
-  state: CmaClient.SchemaTypes.MenuItem[];
+  updateCommand: UpdateSchemaMenuItemClientCommand;
+  state: CmaClient.SchemaTypes.SchemaMenuItem[];
 }) {
   const entityId = updateCommand.arguments[0];
 
@@ -267,15 +254,15 @@ function updateState({
       ? updateCommand.arguments[1].data.attributes.position!
       : entityPositionBeforeUpdate;
 
-  // console.log('entityParentIdBeforeUpdate', entityParentIdBeforeUpdate);
-  // console.log('entityPositionBeforeUpdate', entityPositionBeforeUpdate);
-  // console.log('entityParentIdAfterUpdate', entityParentIdAfterUpdate);
-  // console.log('entityPositionAfterUpdate', entityPositionAfterUpdate);
+  console.log('entityParentIdBeforeUpdate', entityParentIdBeforeUpdate);
+  console.log('entityPositionBeforeUpdate', entityPositionBeforeUpdate);
+  console.log('entityParentIdAfterUpdate', entityParentIdAfterUpdate);
+  console.log('entityPositionAfterUpdate', entityPositionAfterUpdate);
 
   entityInState.attributes.position = entityPositionAfterUpdate;
 
   entityInState.relationships.parent.data = entityParentIdAfterUpdate
-    ? { id: entityParentIdAfterUpdate, type: 'menu_item' }
+    ? { id: entityParentIdAfterUpdate, type: 'schema_menu_item' }
     : null;
 
   findSiblings({
@@ -299,8 +286,9 @@ function updateState({
 
 export function debugState(
   message: string,
-  state: CmaClient.SchemaTypes.MenuItem[],
-  rawRoots: CmaClient.SchemaTypes.MenuItem[] = state.filter(
+  state: CmaClient.SchemaTypes.SchemaMenuItem[],
+  newSchema: Schema,
+  rawRoots: CmaClient.SchemaTypes.SchemaMenuItem[] = state.filter(
     (entity) => !entity.relationships.parent.data,
   ),
   level = 0,
@@ -312,15 +300,20 @@ export function debugState(
   const roots = sortBy(rawRoots, (e) => e.attributes.position);
 
   roots.forEach((root) => {
+    const itemType = root.relationships.item_type.data
+      ? newSchema.itemTypesById[root.relationships.item_type.data.id].entity
+      : undefined;
+
     console.log(
-      `${'  '.repeat(level)}${root.attributes.position}. ${
-        root.attributes.label
-      } (${root.id})`,
+      `${'  '.repeat(level)}${
+        root.attributes.position
+      }. ${buildSchemaMenuItemTitle(root, itemType)} (${root.id})`,
     );
 
     debugState(
       '',
       state,
+      newSchema,
       state.filter(
         (entity) => entity.relationships.parent.data?.id === root.id,
       ),
@@ -330,19 +323,20 @@ export function debugState(
 }
 
 function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
-  const oldEntityIds = Object.keys(oldSchema.menuItemsById);
-  const newEntityIds = Object.keys(newSchema.menuItemsById);
+  const oldEntityIds = Object.keys(oldSchema.schemaMenuItemsById);
+
+  const newEntityIds = Object.keys(newSchema.schemaMenuItemsById);
 
   const oldKeptEntities = intersection(oldEntityIds, newEntityIds).map(
-    (menuItemId) => oldSchema.menuItemsById[menuItemId],
+    (schemaMenuItemId) => oldSchema.schemaMenuItemsById[schemaMenuItemId],
   );
 
   const deletedEntities = difference(oldEntityIds, newEntityIds).map(
-    (menuItemId) => oldSchema.menuItemsById[menuItemId],
+    (schemaMenuItemId) => oldSchema.schemaMenuItemsById[schemaMenuItemId],
   );
 
   const createdEntities = difference(newEntityIds, oldEntityIds).map(
-    (menuItemId) => newSchema.menuItemsById[menuItemId],
+    (schemaMenuItemId) => newSchema.schemaMenuItemsById[schemaMenuItemId],
   );
 
   function run(mode: 'smart' | 'dumb') {
@@ -352,8 +346,12 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
       createdEntities,
     });
 
+    debugState(`INITIAL (${mode})`, state, newSchema);
+
     const sortedEntitiesToProcess = sortBy(
-      newEntityIds.map((menuItemId) => newSchema.menuItemsById[menuItemId]),
+      newEntityIds.map(
+        (schemaMenuItemId) => newSchema.schemaMenuItemsById[schemaMenuItemId],
+      ),
       (entity) => {
         if (mode === 'dumb') {
           return entity.attributes.position;
@@ -382,30 +380,37 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
       },
     );
 
-    // debugState(`INITIAL (${mode})`, state);
-
     let commands: Command[] = [];
 
     while (sortedEntitiesToProcess.length > 0) {
       const entityToProcess = sortedEntitiesToProcess.shift()!;
+      const itemType = entityToProcess.relationships.item_type.data
+        ? newSchema.itemTypesById[
+            entityToProcess.relationships.item_type.data.id
+          ].entity
+        : undefined;
+
       const entityInState = state.find(
         (e) => e.id === entityToProcess.id && e.type === entityToProcess.type,
       )!;
 
-      const entityCommands = buildUpdateMenuItemClientCommand(
+      const entityCommands = buildUpdateSchemaMenuItemClientCommand(
         entityToProcess,
         entityInState,
+        itemType,
       );
 
       commands = [...commands, ...entityCommands];
 
-      // console.log(`\nProcesso ${entityToProcess.attributes.label}`);
+      console.log(
+        `\nProcesso ${buildSchemaMenuItemTitle(entityToProcess, itemType)}`,
+      );
 
       entityCommands
         .filter(
-          (c): c is UpdateMenuItemClientCommand =>
+          (c): c is UpdateSchemaMenuItemClientCommand =>
             c.type === 'apiCallClientCommand' &&
-            c.call === 'client.menuItems.update',
+            c.call === 'client.schemaMenuItems.update',
         )
         .forEach((updateCommand) =>
           updateState({
@@ -414,9 +419,9 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
           }),
         );
 
-      // if (entityCommands.length > 0) {
-      //   debugState('RESULT', state);
-      // }
+      if (entityCommands.length > 0) {
+        debugState(`RESULT (${mode})`, state, newSchema);
+      }
     }
 
     return commands;
@@ -433,9 +438,9 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
   }
 }
 
-function sortByDepth(entities: CmaClient.SchemaTypes.MenuItem[]) {
+function sortByDepth(entities: CmaClient.SchemaTypes.SchemaMenuItem[]) {
   type Node = {
-    entity: CmaClient.SchemaTypes.MenuItem;
+    entity: CmaClient.SchemaTypes.SchemaMenuItem;
     children: Node[];
     depth: number;
   };
@@ -475,27 +480,37 @@ function sortByDepth(entities: CmaClient.SchemaTypes.MenuItem[]) {
     .map((node) => node.entity);
 }
 
-export function manageMenuItems(
+export function manageSchemaMenuItems(
   newSchema: Schema,
   oldSchema: Schema,
 ): Command[] {
-  const oldEntityIds = Object.keys(oldSchema.menuItemsById);
-  const newEntityIds = Object.keys(newSchema.menuItemsById);
+  const oldEntityIds = Object.keys(oldSchema.schemaMenuItemsById);
+  const newEntityIds = Object.keys(newSchema.schemaMenuItemsById);
 
-  const deletedEntities = difference(oldEntityIds, newEntityIds).map(
-    (menuItemId) => oldSchema.menuItemsById[menuItemId],
-  );
+  const deletedEntities = difference(oldEntityIds, newEntityIds)
+    .map((schemaMenuItemId) => oldSchema.schemaMenuItemsById[schemaMenuItemId])
+    .filter((schemaMenuItem) => !schemaMenuItem.relationships.item_type.data);
 
-  const createdEntities = difference(newEntityIds, oldEntityIds).map(
-    (menuItemId) => newSchema.menuItemsById[menuItemId],
-  );
+  const createdEntities = difference(newEntityIds, oldEntityIds)
+    .map((schemaMenuItemId) => newSchema.schemaMenuItemsById[schemaMenuItemId])
+    .filter((schemaMenuItem) => !schemaMenuItem.relationships.item_type.data);
 
   const createCommands = sortByDepth(createdEntities).flatMap((entity) =>
-    buildCreateMenuItemClientCommand(entity),
+    buildCreateSchemaMenuItemClientCommand(
+      entity,
+      entity.relationships.item_type.data
+        ? oldSchema.itemTypesById[entity.relationships.item_type.data.id].entity
+        : undefined,
+    ),
   );
 
   const deleteCommands = deletedEntities.flatMap((entity) =>
-    buildDestroyMenuItemClientCommand(entity),
+    buildDestroySchemaMenuItemClientCommand(
+      entity,
+      entity.relationships.item_type.data
+        ? oldSchema.itemTypesById[entity.relationships.item_type.data.id].entity
+        : undefined,
+    ),
   );
 
   const updateCommands = buildUpdateCommands(newSchema, oldSchema);
@@ -510,5 +525,5 @@ export function manageMenuItems(
     return [];
   }
 
-  return [buildComment('Manage menu items'), ...commands];
+  return [buildComment('Manage schema menu items'), ...commands];
 }

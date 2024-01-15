@@ -1,14 +1,14 @@
 import {
   ApiError,
-  buildClient,
   Client,
   ClientConfigOptions,
   LogLevel,
+  buildClient,
 } from '@datocms/cma-client-node';
 import { Flags } from '@oclif/core';
-import { DatoProfileConfigCommand } from './dato-profile-config-command';
-import * as chalk from 'chalk';
 import { fetch as ponyfillFetch } from '@whatwg-node/fetch';
+import * as chalk from 'chalk';
+import { DatoProfileConfigCommand } from './dato-profile-config-command';
 
 const fetchFn = typeof fetch === 'undefined' ? ponyfillFetch : fetch;
 

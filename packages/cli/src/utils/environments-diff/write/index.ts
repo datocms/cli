@@ -1,11 +1,11 @@
+import { upperFirst } from 'lodash';
+import { Options, format as prettier } from 'prettier';
 import * as ts from 'typescript';
 import * as Types from '../types';
 import { isBase64Id, parseAstFromCode, writeCodeFromAst } from '../utils';
-import { Options, format as prettier } from 'prettier';
 import * as ApiCommands from './api-calls';
 import { buildCommentNode } from './comments';
 import { getEntityIdsToBeRecreated } from './get-entity-ids-to-be-recreated';
-import { upperFirst } from 'lodash';
 
 function writeApiCallClientCommand(
   command: Types.ClientApiCallCommand,
@@ -134,6 +134,21 @@ function writeApiCallClientCommand(
       );
     case 'client.menuItems.destroy':
       return ApiCommands.buildDestroyMenuItemClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.schemaMenuItems.create':
+      return ApiCommands.buildCreateSchemaMenuItemClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.schemaMenuItems.update':
+      return ApiCommands.buildUpdateSchemaMenuItemClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.schemaMenuItems.destroy':
+      return ApiCommands.buildDestroySchemaMenuItemClientCommandNode(
         command,
         entityIdsToBeRecreated,
       );

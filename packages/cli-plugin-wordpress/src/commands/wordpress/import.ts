@@ -1,15 +1,15 @@
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
-import { buildWpClient } from '../../utils/build-wp-client';
-import * as WPAPI from 'wpapi';
-import { Listr, ListrTaskWrapper, ListrRendererFactory } from 'listr2';
-import DestroySchema from '../../import/destroy-dato-schema';
-import ImportWpAssets from '../../import/import-wp-assets';
-import ImportCategories from '../../import/import-wp-categories';
-import ImportTags from '../../import/import-wp-tags';
-import ImportAuthors from '../../import/import-wp-authors';
-import ImportPages from '../../import/import-wp-pages';
-import ImportArticles from '../../import/import-wp-articles';
 import { Scheduler } from 'async-scheduler';
+import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import * as WPAPI from 'wpapi';
+import DestroySchema from '../../import/destroy-dato-schema';
+import ImportArticles from '../../import/import-wp-articles';
+import ImportWpAssets from '../../import/import-wp-assets';
+import ImportAuthors from '../../import/import-wp-authors';
+import ImportCategories from '../../import/import-wp-categories';
+import ImportPages from '../../import/import-wp-pages';
+import ImportTags from '../../import/import-wp-tags';
+import { buildWpClient } from '../../utils/build-wp-client';
 
 export type StepOptions = {
   client: CmaClient.Client;

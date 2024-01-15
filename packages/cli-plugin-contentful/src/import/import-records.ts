@@ -1,14 +1,14 @@
-import BaseStep from './base-step';
-import { Context } from '../commands/contentful/import';
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import { CmaClient } from '@datocms/cli-utils';
+import { Entry } from 'contentful-management';
+import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import { Context } from '../commands/contentful/import';
+import { getAll } from '../utils/getAll';
 import {
-  datoValueForFieldType,
   datoLinkValueForFieldType,
+  datoValueForFieldType,
   isLinkType,
 } from '../utils/item-create-helpers';
-import { Entry } from 'contentful-management';
-import { getAll } from '../utils/getAll';
+import BaseStep from './base-step';
 
 const importRecordsLog = 'Import entries from Contentful';
 const linkRecordsAndAssetsLog = 'Link records and assets';

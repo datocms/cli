@@ -1,10 +1,10 @@
+import { CmaClient } from '@datocms/cli-utils';
+import * as Utils from '@datocms/rest-client-utils';
+import { omit, upperFirst } from 'lodash';
 import * as ts from 'typescript';
 import * as Types from '../types';
 import { createJsonLiteral, isBase64Id } from '../utils';
-import * as Utils from '@datocms/rest-client-utils';
 import {} from './get-entity-ids-to-be-recreated';
-import { CmaClient } from '@datocms/cli-utils';
-import { upperFirst, omit } from 'lodash';
 
 type PossibleMapping = keyof Types.EntityIdsToBeRecreated;
 
@@ -160,11 +160,15 @@ function deserializeBody(
                 );
               }
               case 'parent': {
-                const menuItemRef =
-                  value as CmaClient.SimpleSchemaTypes.MenuItemData;
+                const menuItemOrSchemaMenuItemRef = value as
+                  | CmaClient.SimpleSchemaTypes.MenuItemData
+                  | CmaClient.SimpleSchemaTypes.SchemaMenuItemData;
+
                 return fetchNewRef(
-                  'menuItem',
-                  menuItemRef,
+                  menuItemOrSchemaMenuItemRef.type === 'menu_item'
+                    ? 'menuItem'
+                    : 'schemaMenuItem',
+                  menuItemOrSchemaMenuItemRef,
                   entityIdsToBeRecreated,
                 );
               }
@@ -525,4 +529,42 @@ export function buildDestroyMenuItemClientCommandNode(
 ): ts.Node {
   const [menuItemId] = command.arguments;
   return makeApiCall(command, [ts.factory.createStringLiteral(menuItemId)]);
+}
+
+export function buildCreateSchemaMenuItemClientCommandNode(
+  command: Types.CreateSchemaMenuItemClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  const apiCall = makeApiCall(command, [
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
+  ]);
+  return assignToMapping('schemaMenuItem', command.oldEnvironmentId, apiCall);
+}
+
+export function buildUpdateSchemaMenuItemClientCommandNode(
+  command: Types.UpdateSchemaMenuItemClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [schemaMenuItemId, body] = command.arguments;
+
+  return makeApiCall(command, [
+    fetchNewRef('schemaMenuItem', schemaMenuItemId, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
+  ]);
+}
+
+export function buildDestroySchemaMenuItemClientCommandNode(
+  command: Types.DestroySchemaMenuItemClientCommand,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [schemaMenuItemId] = command.arguments;
+  return makeApiCall(command, [
+    ts.factory.createStringLiteral(schemaMenuItemId),
+  ]);
 }

@@ -1,8 +1,8 @@
-import { Flags } from '@oclif/core';
-import { Config, readConfig } from './config';
 import { relative, resolve } from 'path';
+import { Flags } from '@oclif/core';
 import { writeFile } from 'fs/promises';
 import { BaseCommand } from './base-command';
+import { Config, readConfig } from './config';
 
 export abstract class DatoConfigCommand<
   T extends typeof DatoConfigCommand.flags,

@@ -1,16 +1,16 @@
-import BaseStep from './base-step';
+import { CmaClient } from '@datocms/cli-utils';
+import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import { Context } from '../commands/contentful/import';
 import {
-  toFieldApiKey,
   contentFieldTypeToDatoFieldType,
   findLinkedItemTypesFromContentField,
+  findOrCreateStructuredTextAssetBlock,
   isMultipleLinksField,
   isSingleLinkField,
   isTitleField,
-  findOrCreateStructuredTextAssetBlock,
+  toFieldApiKey,
 } from '../utils/item-type-create-helpers';
-import { Context } from '../commands/contentful/import';
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { CmaClient } from '@datocms/cli-utils';
+import BaseStep from './base-step';
 
 const createFieldsLog = 'Import fields';
 

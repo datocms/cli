@@ -1,8 +1,8 @@
-import { decamelize } from 'humps';
-import { ContentFields, ContentTypeProps } from 'contentful-management';
 import { CmaClient } from '@datocms/cli-utils';
-import { Context } from '../commands/contentful/import';
+import { ContentFields, ContentTypeProps } from 'contentful-management';
 import { format } from 'date-fns-tz';
+import { decamelize } from 'humps';
+import { Context } from '../commands/contentful/import';
 
 const assetBlockFieldApiKey = 'file';
 const assetBlockApiKey = 'structured_text_asset';
@@ -254,8 +254,6 @@ export default function contentfulFieldValidatorsToDato(
         default:
           return datoValidatorsForString(field);
       }
-
-    case 'Boolean':
     default:
       return {};
   }
@@ -273,7 +271,6 @@ const datoValidatorsForString = (field: ContentFields) => {
   }
 
   for (const validation of field.validations) {
-    // eslint-disable-next-line unicorn/explicit-length-check
     if (validation.size) {
       datoValidators.length = {};
 
@@ -419,7 +416,6 @@ const datoValidatorsForArray = (field: ContentFields) => {
   }
 
   for (const validation of field.validations) {
-    // eslint-disable-next-line unicorn/explicit-length-check
     if (validation.size) {
       datoValidators.size = {};
 
