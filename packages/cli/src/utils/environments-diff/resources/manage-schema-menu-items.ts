@@ -346,7 +346,7 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
       createdEntities,
     });
 
-    debugState(`INITIAL (${mode})`, state, newSchema);
+    // debugState(`INITIAL (${mode})`, state, newSchema);
 
     const sortedEntitiesToProcess = sortBy(
       newEntityIds.map(
@@ -402,9 +402,9 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
 
       commands = [...commands, ...entityCommands];
 
-      console.log(
-        `\nProcesso ${buildSchemaMenuItemTitle(entityToProcess, itemType)}`,
-      );
+      // console.log(
+      //   `\nProcesso ${buildSchemaMenuItemTitle(entityToProcess, itemType)}`,
+      // );
 
       entityCommands
         .filter(
@@ -419,9 +419,9 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
           }),
         );
 
-      if (entityCommands.length > 0) {
-        debugState(`RESULT (${mode})`, state, newSchema);
-      }
+      // if (entityCommands.length > 0) {
+      //   debugState(`RESULT (${mode})`, state, newSchema);
+      // }
     }
 
     return commands;
