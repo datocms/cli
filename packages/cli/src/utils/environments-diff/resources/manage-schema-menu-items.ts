@@ -254,10 +254,10 @@ function updateState({
       ? updateCommand.arguments[1].data.attributes.position!
       : entityPositionBeforeUpdate;
 
-  console.log('entityParentIdBeforeUpdate', entityParentIdBeforeUpdate);
-  console.log('entityPositionBeforeUpdate', entityPositionBeforeUpdate);
-  console.log('entityParentIdAfterUpdate', entityParentIdAfterUpdate);
-  console.log('entityPositionAfterUpdate', entityPositionAfterUpdate);
+  // console.log('entityParentIdBeforeUpdate', entityParentIdBeforeUpdate);
+  // console.log('entityPositionBeforeUpdate', entityPositionBeforeUpdate);
+  // console.log('entityParentIdAfterUpdate', entityParentIdAfterUpdate);
+  // console.log('entityPositionAfterUpdate', entityPositionAfterUpdate);
 
   entityInState.attributes.position = entityPositionAfterUpdate;
 
