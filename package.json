@@ -33,6 +33,7 @@
       "biome ci"
     ]
   },
+  "files": [],
   "husky": {
     "hooks": {
       "pre-commit": "./node_modules/.bin/lint-staged"
