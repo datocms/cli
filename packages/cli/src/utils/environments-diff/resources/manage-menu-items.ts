@@ -501,8 +501,8 @@ export function manageMenuItems(
   const updateCommands = buildUpdateCommands(newSchema, oldSchema);
 
   const commands: Command[] = [
-    ...createCommands,
     ...deleteCommands,
+    ...createCommands,
     ...updateCommands,
   ];
 
