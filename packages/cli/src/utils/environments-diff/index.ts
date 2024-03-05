@@ -44,8 +44,8 @@ export async function diffEnvironments({
     ...manageUploadFilters(newSchema, oldSchema),
     ...deleteMissingItemTypes(newSchema, oldSchema),
     ...createNewItemTypes(newSchema, oldSchema),
+    ...deleteMissingFieldsAndFieldsetsInExistingItemTypes(newSchema, oldSchema), // FIXME
     ...createNewFieldsAndFieldsets(newSchema, oldSchema),
-    ...deleteMissingFieldsAndFieldsetsInExistingItemTypes(newSchema, oldSchema),
     ...updateFieldsAndFieldsets(newSchema, oldSchema),
     ...finalizeItemTypes(newSchema, oldSchema),
     ...manageItemTypeFilters(newSchema, oldSchema),
