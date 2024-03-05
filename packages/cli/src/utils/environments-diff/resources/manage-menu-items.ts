@@ -201,18 +201,6 @@ function generateInitialState({
 }) {
   const state = oldKeptEntities.map(cloneDeep);
 
-  createdEntities.forEach((entity) => {
-    const newEntity = cloneDeep(entity);
-
-    newEntity.attributes.position =
-      findMaxPosition({
-        collection: state,
-        parentId: entity.relationships.parent.data?.id,
-      }) + 1;
-
-    state.push(newEntity);
-  });
-
   deletedEntities.forEach((deletedEntity) => {
     findSiblings({
       of: deletedEntity,
@@ -233,6 +221,18 @@ function generateInitialState({
           }) + 1;
       },
     );
+  });
+
+  createdEntities.forEach((entity) => {
+    const newEntity = cloneDeep(entity);
+
+    newEntity.attributes.position =
+      findMaxPosition({
+        collection: state,
+        parentId: entity.relationships.parent.data?.id,
+      }) + 1;
+
+    state.push(newEntity);
   });
 
   return state;
