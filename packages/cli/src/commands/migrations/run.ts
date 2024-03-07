@@ -1,4 +1,4 @@
-import { dirname, join, relative, resolve } from 'path';
+import { basename, dirname, join, relative, resolve } from 'path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
   ApiError,
@@ -7,7 +7,6 @@ import {
 } from '@datocms/cli-utils/lib/cma-client-node';
 import { access, readdir } from 'fs/promises';
 import { register as registerTsNode } from 'ts-node';
-import { findNearestFile } from '../../utils/find-nearest-file';
 
 const MIGRATION_FILE_REGEXP = /^\d+.*\.(js|ts)$/;
 
@@ -228,7 +227,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         this.registeredTsNode = true;
         registerTsNode({
           project:
-            migrationsTsconfig || (await findNearestFile('tsconfig.json')),
+            migrationsTsconfig || join(basename(__dirname), 'empty-tsconfig'),
         });
       }
 
