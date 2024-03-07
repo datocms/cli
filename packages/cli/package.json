@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli",
-  "version": "1.3.4",
+  "version": "2.0.0-alpha.0",
   "description": "CLI to interact with DatoCMS APIs",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
