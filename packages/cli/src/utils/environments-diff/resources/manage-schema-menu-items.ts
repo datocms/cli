@@ -97,7 +97,7 @@ function buildUpdateSchemaMenuItemClientCommand(
             ),
         ),
       )
-    : null;
+    : omit(newSchemaMenuItem.relationships, 'children', 'item_type');
 
   if (
     Object.keys(attributesToUpdate).length === 0 &&
@@ -190,6 +190,8 @@ function generateInitialState({
 
   createdEntities.forEach((entity) => {
     const newEntity = cloneDeep(entity);
+
+    newEntity.relationships.parent.data = null;
 
     newEntity.attributes.position =
       findMaxPosition({

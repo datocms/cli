@@ -43,6 +43,7 @@ export const attributesToIgnoreOnBlockModels: Array<
 
 function buildCreateItemTypeClientCommand(
   itemTypeSchema: ItemTypeInfo,
+  schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
 ): Command[] {
   const itemType = itemTypeSchema.entity;
 
@@ -84,6 +85,7 @@ function buildCreateItemTypeClientCommand(
         },
         {
           skip_menu_item_creation: true,
+          schema_menu_item_id: schemaMenuItem.id,
         },
       ],
       oldEnvironmentId: itemType.id,
@@ -106,8 +108,15 @@ export function createNewItemTypes(
 
   return [
     buildComment('Create new models/block models'),
-    ...createdItemTypeIds.flatMap((itemTypeId) =>
-      buildCreateItemTypeClientCommand(newSchema.itemTypesById[itemTypeId]),
-    ),
+    ...createdItemTypeIds.flatMap((itemTypeId) => {
+      const schemaMenuItem = Object.values(newSchema.schemaMenuItemsById).find(
+        (item) => item.relationships.item_type.data?.id === itemTypeId,
+      )!;
+
+      return buildCreateItemTypeClientCommand(
+        newSchema.itemTypesById[itemTypeId],
+        schemaMenuItem,
+      );
+    }),
   ];
 }
