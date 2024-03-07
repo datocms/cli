@@ -18,7 +18,8 @@
     "/bin",
     "/lib",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/empty-tsconfig.json"
   ],
   "publishConfig": {
     "access": "public"

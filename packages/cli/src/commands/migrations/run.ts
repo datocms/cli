@@ -227,7 +227,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         this.registeredTsNode = true;
         registerTsNode({
           project:
-            migrationsTsconfig || join(basename(__dirname), 'empty-tsconfig'),
+            migrationsTsconfig ||
+            join(__dirname, '..', '..', '..', 'empty-tsconfig'),
         });
       }
 
