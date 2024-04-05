@@ -1,8 +1,8 @@
-import { CmaClient } from '@datocms/cli-utils';
-import { ContentFields, ContentTypeProps } from 'contentful-management';
+import type { CmaClient } from '@datocms/cli-utils';
+import type { ContentFields, ContentTypeProps } from 'contentful-management';
 import { format } from 'date-fns-tz';
 import { decamelize } from 'humps';
-import { Context } from '../commands/contentful/import';
+import type { Context } from '../commands/contentful/import';
 
 const assetBlockFieldApiKey = 'file';
 const assetBlockApiKey = 'structured_text_asset';
@@ -124,12 +124,11 @@ export const findOrCreateStructuredTextAssetBlock = async (
   // DatoCMS does not handle assets in Structured Text like Contentful does, so
   // we need to create a modular block with a file field to allow assets in Structured text
 
-  let contentfulAssetModularBlock;
+  let contentfulAssetModularBlock: CmaClient.SimpleSchemaTypes.ItemType;
 
   try {
-    contentfulAssetModularBlock = await datoClient.itemTypes.find(
-      assetBlockApiKey,
-    );
+    contentfulAssetModularBlock =
+      await datoClient.itemTypes.find(assetBlockApiKey);
   } catch {
     contentfulAssetModularBlock = await datoClient.itemTypes.create({
       name: 'Structured Text asset',

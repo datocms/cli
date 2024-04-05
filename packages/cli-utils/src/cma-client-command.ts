@@ -1,7 +1,7 @@
 import {
   ApiError,
-  Client,
-  ClientConfigOptions,
+  type Client,
+  type ClientConfigOptions,
   LogLevel,
   buildClient,
 } from '@datocms/cma-client-node';

@@ -1,4 +1,4 @@
-import { CmaClient, CmaClientCommand } from '@datocms/cli-utils';
+import { type CmaClient, CmaClientCommand } from '@datocms/cli-utils';
 
 export default class Command extends CmaClientCommand<typeof Command.flags> {
   static description = 'Take a project out of maintenance mode';

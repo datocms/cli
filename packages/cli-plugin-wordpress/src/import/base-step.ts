@@ -1,8 +1,9 @@
-import { CmaClient } from '@datocms/cli-utils';
-import { Scheduler } from 'async-scheduler';
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import WPAPI, { WPRequest } from 'wpapi';
-import { Context, StepOptions } from '../commands/wordpress/import';
+import type { CmaClient } from '@datocms/cli-utils';
+import type { Scheduler } from 'async-scheduler';
+import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import type WPAPI from 'wpapi';
+import type { WPRequest } from 'wpapi';
+import type { Context, StepOptions } from '../commands/wordpress/import';
 
 export default class BaseStep {
   protected options: StepOptions;
@@ -103,7 +104,7 @@ export default class BaseStep {
     page = 1,
     retryCount = 1,
   ): Promise<T[]> {
-    let response;
+    let response: any;
 
     try {
       response = await this.scheduler.enqueue(async () => {

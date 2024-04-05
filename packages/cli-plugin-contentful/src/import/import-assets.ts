@@ -1,6 +1,6 @@
-import { CmaClient } from '@datocms/cli-utils';
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/contentful/import';
+import type { CmaClient } from '@datocms/cli-utils';
+import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import type { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
 import BaseStep from './base-step';
 

@@ -1,4 +1,4 @@
-import { BasicQueryOptions, Collection } from 'contentful-management';
+import type { BasicQueryOptions, Collection } from 'contentful-management';
 
 export async function getAll<Resource, ResourceProps>(
   fn: (

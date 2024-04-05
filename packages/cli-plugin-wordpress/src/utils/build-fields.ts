@@ -1,4 +1,4 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { titleize } from 'inflected';
 
 export async function createSlugField(

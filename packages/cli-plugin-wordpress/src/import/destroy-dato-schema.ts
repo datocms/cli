@@ -1,5 +1,5 @@
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/wordpress/import';
+import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import type { Context } from '../commands/wordpress/import';
 import BaseStep from './base-step';
 
 export default class DestroyDatoSchema extends BaseStep {

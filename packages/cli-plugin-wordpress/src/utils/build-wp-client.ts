@@ -21,7 +21,7 @@ export async function buildWpClient({
     throw new Error('You need to provide email and password to authenticate!');
   }
 
-  let wpClient;
+  let wpClient: WPAPI;
 
   if (apiUrl) {
     wpClient = new WPAPI({

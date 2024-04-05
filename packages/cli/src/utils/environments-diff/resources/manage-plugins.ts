@@ -1,6 +1,6 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { difference, intersection, isEqual, omit, pick } from 'lodash';
-import {
+import type {
   Command,
   CreatePluginClientCommand,
   Schema,
@@ -25,14 +25,14 @@ function buildCreatePluginClientCommand(
           attributes: plugin.attributes.package_name
             ? pick(plugin.attributes, 'package_name')
             : plugin.meta.version === '1'
-            ? omit(plugin.attributes, 'parameters')
-            : omit(
-                plugin.attributes,
-                'parameter_definitions',
-                'field_types',
-                'plugin_type',
-                'parameters',
-              ),
+              ? omit(plugin.attributes, 'parameters')
+              : omit(
+                  plugin.attributes,
+                  'parameter_definitions',
+                  'field_types',
+                  'plugin_type',
+                  'parameters',
+                ),
         },
       },
     ],

@@ -1,7 +1,7 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import {
   ContentfulRichTextTypes,
-  Handler,
+  type Handler,
   liftAssets,
   makeHandler,
   richTextToStructuredText as rawRichTextToStructuredText,
@@ -9,14 +9,14 @@ import {
   wrapInParagraph,
 } from 'datocms-contentful-to-structured-text';
 import {
-  Block,
-  Document as StructuredTextDocument,
-  Link,
-  Node,
+  type Block,
+  type Link,
+  type Node,
+  type Document as StructuredTextDocument,
   allowedChildren,
   linkNodeType,
 } from 'datocms-structured-text-utils';
-import { Context } from '../commands/contentful/import';
+import type { Context } from '../commands/contentful/import';
 
 export const isLinkType = (datoFieldType: string): boolean => {
   return ['file', 'gallery', 'link', 'links', 'structured_text'].includes(

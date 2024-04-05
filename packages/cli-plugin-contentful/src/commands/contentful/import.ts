@@ -1,13 +1,17 @@
-import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
+import { type CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
-import {
+import type {
   Asset,
   ContentFields,
   ContentType,
   Entry,
   Environment,
 } from 'contentful-management';
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import {
+  Listr,
+  type ListrRendererFactory,
+  type ListrTaskWrapper,
+} from 'listr2';
 import AddValidations from '../../import/add-validations';
 import DestroyDatoSchema from '../../import/destroy-dato-schema';
 import ImportAssets from '../../import/import-assets';

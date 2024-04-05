@@ -1,5 +1,5 @@
-import { CmaClient } from '@datocms/cli-utils';
-import { Schema } from './types';
+import type { CmaClient } from '@datocms/cli-utils';
+import type { Schema } from './types';
 
 export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
   const [

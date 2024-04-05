@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { Comment } from '../types';
+import type { Comment } from '../types';
 
 export function buildCommentNode(comment: Comment): ts.Node {
   return ts.factory.createCallExpression(

@@ -1,7 +1,11 @@
-import { CmaClient } from '@datocms/cli-utils';
-import { Entry } from 'contentful-management';
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/contentful/import';
+import type { CmaClient } from '@datocms/cli-utils';
+import type { Entry } from 'contentful-management';
+import {
+  Listr,
+  type ListrRendererFactory,
+  type ListrTaskWrapper,
+} from 'listr2';
+import type { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
 import {
   datoLinkValueForFieldType,

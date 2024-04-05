@@ -1,7 +1,11 @@
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import * as WPAPI from 'wpapi';
+import {
+  Listr,
+  type ListrRendererFactory,
+  type ListrTaskWrapper,
+} from 'listr2';
+import type * as WPAPI from 'wpapi';
 import DestroySchema from '../../import/destroy-dato-schema';
 import ImportArticles from '../../import/import-wp-articles';
 import ImportWpAssets from '../../import/import-wp-assets';

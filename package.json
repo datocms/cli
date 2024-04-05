@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "format": "biome check packages --apply && biome format --write packages",
+    "format": "biome check packages --apply-unsafe && biome format --write packages",
     "lint": "biome ci packages",
     "build": "lerna run build",
     "publish": "lerna run test && npm run build && lerna publish",
@@ -22,7 +22,7 @@
     "mocha": "^9",
     "oclif": "^3",
     "rimraf": "^3.0.2",
-    "@biomejs/biome": "1.2.2",
+    "@biomejs/biome": "1.6.4",
     "ts-node": "^10.2.1",
     "tslib": "^2.3.1",
     "typescript": "~4.5.0"

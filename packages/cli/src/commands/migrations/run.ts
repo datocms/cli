@@ -1,11 +1,11 @@
-import { basename, dirname, join, relative, resolve } from 'path';
+import { access, readdir } from 'node:fs/promises';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
   ApiError,
-  Client,
-  SimpleSchemaTypes,
+  type Client,
+  type SimpleSchemaTypes,
 } from '@datocms/cli-utils/lib/cma-client-node';
-import { access, readdir } from 'fs/promises';
 import { register as registerTsNode } from 'ts-node';
 
 const MIGRATION_FILE_REGEXP = /^\d+.*\.(js|ts)$/;
@@ -238,9 +238,9 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         typeof exportedThing === 'function'
           ? exportedThing
           : 'default' in exportedThing &&
-            typeof exportedThing.default === 'function'
-          ? exportedThing.default
-          : undefined;
+              typeof exportedThing.default === 'function'
+            ? exportedThing.default
+            : undefined;
 
       if (!migration) {
         this.error('The script does not export a valid migration function');

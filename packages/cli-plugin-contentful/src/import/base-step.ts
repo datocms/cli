@@ -1,8 +1,8 @@
-import { CmaClient } from '@datocms/cli-utils';
-import { Scheduler } from 'async-scheduler';
-import { Environment } from 'contentful-management';
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context, StepOptions } from '../commands/contentful/import';
+import type { CmaClient } from '@datocms/cli-utils';
+import type { Scheduler } from 'async-scheduler';
+import type { Environment } from 'contentful-management';
+import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import type { Context, StepOptions } from '../commands/contentful/import';
 
 export default class BaseStep {
   protected options: StepOptions;

@@ -1,7 +1,7 @@
 import {
   DatoConfigCommand,
-  LogLevelFlagEnum,
-  ProfileConfig,
+  type LogLevelFlagEnum,
+  type ProfileConfig,
   logLevelOptions,
   oclif,
 } from '@datocms/cli-utils';

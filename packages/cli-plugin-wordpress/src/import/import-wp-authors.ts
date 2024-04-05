@@ -1,5 +1,9 @@
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/wordpress/import';
+import {
+  Listr,
+  type ListrRendererFactory,
+  type ListrTaskWrapper,
+} from 'listr2';
+import type { Context } from '../commands/wordpress/import';
 import {
   createSlugField,
   createStringField,

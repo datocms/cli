@@ -1,4 +1,4 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import * as ts from 'typescript';
 
 export function buildFieldsetTitle(fieldset: CmaClient.SchemaTypes.Fieldset) {
@@ -200,7 +200,7 @@ export function createJsonLiteral(
 
 function isPositiveInteger(id: string) {
   const n = Math.floor(Number(id));
-  return n !== Infinity && String(n) === id && n >= 0;
+  return n !== Number.POSITIVE_INFINITY && String(n) === id && n >= 0;
 }
 
 export function isBase64Id(id: string) {

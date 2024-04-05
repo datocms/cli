@@ -1,4 +1,4 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import {
   cloneDeep,
   difference,
@@ -9,7 +9,7 @@ import {
   sortBy,
   without,
 } from 'lodash';
-import { Command, Schema, UpdateMenuItemClientCommand } from '../types';
+import type { Command, Schema, UpdateMenuItemClientCommand } from '../types';
 import { buildMenuItemTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
@@ -445,10 +445,9 @@ function sortByDepth(entities: CmaClient.SchemaTypes.MenuItem[]) {
     children: [],
     depth: 0,
   }));
-  const map: Record<string, Node> = nodes.reduce(
-    (acc, node) => ({ ...acc, [node.entity.id]: node }),
-    {},
-  );
+
+  const map = Object.fromEntries(nodes.map((node) => [node.entity.id, node]));
+
   const tree: Node[] = [];
 
   nodes.forEach((node) => {

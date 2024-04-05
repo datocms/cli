@@ -1,5 +1,9 @@
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/wordpress/import';
+import {
+  Listr,
+  type ListrRendererFactory,
+  type ListrTaskWrapper,
+} from 'listr2';
+import type { Context } from '../commands/wordpress/import';
 import BaseStep from './base-step';
 
 const retrieveTitle = 'Retrieve assets from WordPress';
@@ -80,9 +84,8 @@ export default class WpAssets extends BaseStep {
               source_url: sourceUrl,
             } = wpMediaItem.media_details.sizes[thumbName];
 
-            wpAssetUrlToDatoUrl[
-              sourceUrl
-            ] = `${upload.url}?w=${width}&h=${height}&fit=crop`;
+            wpAssetUrlToDatoUrl[sourceUrl] =
+              `${upload.url}?w=${width}&h=${height}&fit=crop`;
           }
         }
       },

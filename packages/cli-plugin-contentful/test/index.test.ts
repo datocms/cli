@@ -1,10 +1,10 @@
 import { CmaClient } from '@datocms/cli-utils';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
 import { expect } from '@oclif/test';
-import { StructuredText } from 'datocms-structured-text-utils';
+import type { StructuredText } from 'datocms-structured-text-utils';
 import get from 'lodash/get';
 import ImportCommand from '../src/commands/contentful/import';
-import { UploadData } from '../src/utils/item-create-helpers';
+import type { UploadData } from '../src/utils/item-create-helpers';
 interface BlogPostType extends CmaClient.SimpleSchemaTypes.Item {
   author: CmaClient.SimpleSchemaTypes.ItemIdentity | null;
   title: { 'en-US': string | null; it?: string | null };

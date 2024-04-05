@@ -1,5 +1,5 @@
 import { CliUx, Command } from '@oclif/core';
-import { FlagInput, ParserOutput } from '@oclif/core/lib/interfaces';
+import type { FlagInput, ParserOutput } from '@oclif/core/lib/interfaces';
 import { get } from 'lodash';
 
 type InferredFlagsType<T> = T extends FlagInput<infer F>

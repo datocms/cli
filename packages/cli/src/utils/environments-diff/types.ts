@@ -1,4 +1,4 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 
 export type EntityIdsToBeRecreated = {
   field: string[];

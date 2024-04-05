@@ -1,8 +1,8 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import * as Utils from '@datocms/rest-client-utils';
 import { omit, upperFirst } from 'lodash';
 import * as ts from 'typescript';
-import * as Types from '../types';
+import type * as Types from '../types';
 import { createJsonLiteral, isBase64Id } from '../utils';
 import {} from './get-entity-ids-to-be-recreated';
 

@@ -1,4 +1,4 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import {
   cloneDeep,
   difference,
@@ -8,7 +8,7 @@ import {
   sortBy,
   without,
 } from 'lodash';
-import {
+import type {
   Command,
   ItemTypeInfo,
   Schema,

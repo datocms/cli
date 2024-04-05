@@ -1,5 +1,5 @@
-import { dirname, join, resolve } from 'path';
-import { access } from 'fs/promises';
+import { access } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
 
 export async function findNearestFile(
   fileName: string,

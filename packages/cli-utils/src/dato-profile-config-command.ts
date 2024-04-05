@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core';
-import { ProfileConfig } from './config';
+import type { ProfileConfig } from './config';
 import { DatoConfigCommand } from './dato-config-command';
 
 export abstract class DatoProfileConfigCommand<

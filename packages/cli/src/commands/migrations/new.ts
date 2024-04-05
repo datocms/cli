@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
-import { dirname, extname, join, relative, resolve } from 'path';
+import { readFileSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
+import { dirname, extname, join, relative, resolve } from 'node:path';
 import { CmaClientCommand, oclif } from '@datocms/cli-utils';
-import { writeFile } from 'fs/promises';
 import { camelCase } from 'lodash';
 import * as mkdirp from 'mkdirp';
 import { diffEnvironments } from '../../utils/environments-diff';
@@ -151,10 +151,10 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     const format: 'js' | 'ts' = template
       ? (extname(template).split('.').pop()! as 'js' | 'ts')
       : this.parsedFlags.js
-      ? ('js' as const)
-      : this.parsedFlags.ts || isTsProject
-      ? ('ts' as const)
-      : ('js' as const);
+        ? ('js' as const)
+        : this.parsedFlags.ts || isTsProject
+          ? ('ts' as const)
+          : ('js' as const);
 
     const migrationFilePath = join(
       migrationsDir,
@@ -189,8 +189,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       return template
         ? readFileSync(template, 'utf-8')
         : format === 'js'
-        ? jsTemplate
-        : tsTemplate;
+          ? jsTemplate
+          : tsTemplate;
     }
 
     const allEnvironments = await this.client.environments.list();

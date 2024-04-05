@@ -1,4 +1,4 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { resolveConfig } from 'prettier';
 import { fetchSchema } from './fetch-schema';
 import { createNewFieldsAndFieldsets } from './resources/create-new-fields-and-fieldsets';

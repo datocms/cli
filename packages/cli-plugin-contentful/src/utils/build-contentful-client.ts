@@ -1,4 +1,8 @@
-import { ClientAPI, Environment, createClient } from 'contentful-management';
+import {
+  type ClientAPI,
+  type Environment,
+  createClient,
+} from 'contentful-management';
 
 type ContentfulClientType = {
   contentfulToken: string | undefined;

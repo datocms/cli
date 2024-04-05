@@ -1,5 +1,5 @@
-import { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/contentful/import';
+import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
+import type { Context } from '../commands/contentful/import';
 import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
 import BaseStep from './base-step';
 

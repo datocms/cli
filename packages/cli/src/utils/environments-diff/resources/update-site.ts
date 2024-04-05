@@ -1,6 +1,6 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { isEqual, omit, pick } from 'lodash';
-import { Command, Schema } from '../types';
+import type { Command, Schema } from '../types';
 import { buildComment } from './comments';
 
 export function updateSite(newSchema: Schema, oldSchema: Schema): Command[] {

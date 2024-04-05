@@ -1,7 +1,7 @@
 import { upperFirst } from 'lodash';
-import { Options, format as prettier } from 'prettier';
+import { type Options, format as prettier } from 'prettier';
 import * as ts from 'typescript';
-import * as Types from '../types';
+import type * as Types from '../types';
 import { isBase64Id, parseAstFromCode, writeCodeFromAst } from '../utils';
 import * as ApiCommands from './api-calls';
 import { buildCommentNode } from './comments';

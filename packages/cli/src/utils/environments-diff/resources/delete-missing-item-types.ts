@@ -1,5 +1,5 @@
 import { difference } from 'lodash';
-import { Command, ItemTypeInfo, Schema } from '../types';
+import type { Command, ItemTypeInfo, Schema } from '../types';
 import { buildItemTypeTitle } from '../utils';
 import { buildComment } from './comments';
 

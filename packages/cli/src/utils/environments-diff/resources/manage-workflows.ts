@@ -1,6 +1,6 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { difference, intersection, isEqual, pick } from 'lodash';
-import { Command, Schema } from '../types';
+import type { Command, Schema } from '../types';
 import { buildWorkflowTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 

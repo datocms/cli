@@ -1,6 +1,6 @@
-import { CmaClient } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { differenceWith, isEqual } from 'lodash';
-import {
+import type {
   Command,
   RoleItemTypePermission,
   RoleUploadPermission,
@@ -13,9 +13,16 @@ function omitNullProperties<T extends Record<string, unknown>>(
   hash: T,
 ): Omit<T, 'environment'> {
   return Object.entries(hash).reduce(
-    (result, [key, value]) =>
-      !value || key === 'environment' ? result : { ...result, [key]: value },
-    {} as T,
+    (result, [key, value]) => {
+      if (!value || key === 'environment') {
+        return result;
+      }
+
+      (result as Record<string, unknown>)[key] = value;
+
+      return result;
+    },
+    {} as Omit<T, 'environment'>,
   );
 }
 

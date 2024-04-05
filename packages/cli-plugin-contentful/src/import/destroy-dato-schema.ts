@@ -1,6 +1,10 @@
-import { ContentTypeProps } from 'contentful-management';
-import { Listr, ListrRendererFactory, ListrTaskWrapper } from 'listr2';
-import { Context } from '../commands/contentful/import';
+import type { ContentTypeProps } from 'contentful-management';
+import {
+  Listr,
+  type ListrRendererFactory,
+  type ListrTaskWrapper,
+} from 'listr2';
+import type { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
 import { toItemTypeApiKey } from '../utils/item-type-create-helpers';
 import BaseStep from './base-step';
@@ -83,7 +87,7 @@ Confirm that you want to destroy them?`,
         );
 
         for (const field of typeLinksField) {
-          let validatorKey;
+          let validatorKey: string;
 
           switch (field.field_type) {
             case 'link':
