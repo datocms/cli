@@ -195,9 +195,7 @@ export function buildUpdateFieldsetClientCommand(
 function getFieldsetId(
   entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
 ) {
-  return entity.type === 'field'
-    ? entity.relationships.fieldset.data?.id
-    : undefined;
+  return isField(entity) ? entity.relationships.fieldset.data?.id : undefined;
 }
 
 function findSiblings({
@@ -216,13 +214,13 @@ function findSiblings({
   const siblings = fieldsetId
     ? collection.filter(
         (entity) =>
-          entity.type === 'field' &&
+          isField(entity) &&
           entity.relationships.fieldset.data?.id === fieldsetId,
       )
     : collection.filter(
         (entity) =>
-          (entity.type === 'field' && !entity.relationships.fieldset.data) ||
-          entity.type === 'fieldset',
+          (isField(entity) && !entity.relationships.fieldset.data) ||
+          isFieldset(entity),
       );
 
   return siblings
@@ -257,16 +255,28 @@ function findMaxPosition({
   const siblings = fieldsetId
     ? collection.filter(
         (entity) =>
-          entity.type === 'field' &&
+          isField(entity) &&
           entity.relationships.fieldset.data?.id === fieldsetId,
       )
     : collection.filter(
         (entity) =>
-          (entity.type === 'field' && !entity.relationships.fieldset.data) ||
-          entity.type === 'fieldset',
+          (isField(entity) && !entity.relationships.fieldset.data) ||
+          isFieldset(entity),
       );
 
   return siblings.reduce((max, e) => Math.max(max, e.attributes.position), 0);
+}
+
+function isFieldset(
+  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
+): entity is CmaClient.SchemaTypes.Fieldset {
+  return entity.type === 'fieldset';
+}
+
+function isField(
+  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
+): entity is CmaClient.SchemaTypes.Field {
+  return entity.type === 'field';
 }
 
 function generateInitialState({
@@ -286,16 +296,18 @@ function generateInitialState({
 }) {
   const state = oldKeptEntities.map(cloneDeep);
 
-  createdEntities.forEach((entity) => {
+  [
+    ...createdEntities.filter(isFieldset),
+    ...createdEntities.filter(isField),
+  ].forEach((entity) => {
     const newEntity = cloneDeep(entity);
 
     newEntity.attributes.position =
       findMaxPosition({
         collection: state,
-        fieldsetId:
-          entity.type === 'field'
-            ? entity.relationships.fieldset.data?.id
-            : undefined,
+        fieldsetId: isField(entity)
+          ? entity.relationships.fieldset.data?.id
+          : undefined,
       }) + 1;
 
     state.push(newEntity);
@@ -311,7 +323,7 @@ function generateInitialState({
       entity.attributes.position -= 1;
     });
 
-    if (deletedEntity.type === 'fieldset') {
+    if (isFieldset(deletedEntity)) {
       findChildren({ of: deletedEntity, collection: state }).forEach(
         (entityInState) => {
           entityInState.relationships.fieldset.data = null;
@@ -338,8 +350,8 @@ function debugState(
   const roots = sortBy(
     state.filter(
       (entity) =>
-        (entity.type === 'field' && !entity.relationships.fieldset.data) ||
-        entity.type === 'fieldset',
+        (isField(entity) && !entity.relationships.fieldset.data) ||
+        isFieldset(entity),
     ),
     (e) => e.attributes.position,
   );
@@ -355,7 +367,7 @@ function debugState(
       const children = sortBy(
         state.filter(
           (entity) =>
-            entity.type === 'field' &&
+            isField(entity) &&
             entity.relationships.fieldset.data?.id === root.id,
         ),
         (e) => e.attributes.position,
@@ -528,7 +540,7 @@ export function updateFieldsAndFieldsetsInItemType(
 
         if (
           entityInState.type === 'field' &&
-          entity.type === 'field' &&
+          isField(entity) &&
           entityInState.relationships.fieldset.data?.id !==
             entity.relationships.fieldset.data?.id
         ) {
