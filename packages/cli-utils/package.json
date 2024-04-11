@@ -10,10 +10,7 @@
   "directories": {
     "lib": "lib"
   },
-  "files": [
-    "lib",
-    "src"
-  ],
+  "files": ["lib", "src"],
   "publishConfig": {
     "access": "public"
   },
