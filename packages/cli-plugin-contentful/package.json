@@ -1,8 +1,12 @@
 {
   "name": "@datocms/cli-plugin-contentful",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Plugin for DatoCMS CLI to import projects from Contentful to DatoCMS",
-  "keywords": ["contentful", "datocms", "import"],
+  "keywords": [
+    "contentful",
+    "datocms",
+    "import"
+  ],
   "engines": {
     "node": ">=12.0.0"
   },
@@ -11,7 +15,11 @@
   "license": "MIT",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.js",
-  "files": ["/lib", "/npm-shrinkwrap.json", "/oclif.manifest.json"],
+  "files": [
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
   "publishConfig": {
     "access": "public"
   },

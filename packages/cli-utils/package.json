@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-utils",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Utils for DatoCMS CLI",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
@@ -10,7 +10,10 @@
   "directories": {
     "lib": "lib"
   },
-  "files": ["lib", "src"],
+  "files": [
+    "lib",
+    "src"
+  ],
   "publishConfig": {
     "access": "public"
   },
