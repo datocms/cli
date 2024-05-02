@@ -127,6 +127,7 @@ function deserializeBody(
               case 'item_type': {
                 const itemTypeRef =
                   value as CmaClient.SimpleSchemaTypes.ItemTypeData;
+
                 return fetchNewRef(
                   'itemType',
                   itemTypeRef,
@@ -136,6 +137,7 @@ function deserializeBody(
               case 'item_type_filter': {
                 const itemTypeRef =
                   value as CmaClient.SimpleSchemaTypes.ItemTypeData;
+
                 return fetchNewRef(
                   'itemTypeFilter',
                   itemTypeRef,
@@ -145,6 +147,7 @@ function deserializeBody(
               case 'workflow': {
                 const workflowRef =
                   value as CmaClient.SimpleSchemaTypes.WorkflowData;
+
                 return fetchNewRef(
                   'workflow',
                   workflowRef,
@@ -154,6 +157,7 @@ function deserializeBody(
               case 'fieldset': {
                 const fieldsetRef =
                   value as CmaClient.SimpleSchemaTypes.FieldsetData;
+
                 return fetchNewRef(
                   'fieldset',
                   fieldsetRef,
@@ -469,6 +473,10 @@ export function buildUpdateRoleClientCommandNode(
           const path = rawPath
             .map((c) => (typeof c === 'string' ? c : '*'))
             .join('.');
+
+          if (!value) {
+            return undefined;
+          }
 
           switch (path) {
             case 'positive_item_type_permissions.add.*.item_type':
