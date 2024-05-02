@@ -94,6 +94,10 @@ function deserializeBody(
               .map((c) => (typeof c === 'string' ? c : '*'))
               .join('.');
 
+            if (!value) {
+              return undefined;
+            }
+
             switch (path) {
               case 'validators.slug_title_field.title_field_id': {
                 const fieldId = value as string;
