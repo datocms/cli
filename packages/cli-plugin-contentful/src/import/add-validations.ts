@@ -1,3 +1,4 @@
+import type { ContentFields, KeyValueMap } from 'contentful-management';
 import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context } from '../commands/contentful/import';
 import contentfulFieldValidatorsToDato from '../utils/item-type-create-helpers';
@@ -13,22 +14,33 @@ export default class AddValidations extends BaseStep {
     await this.runConcurrentlyOver(
       task,
       AddValidationsLog,
-      ctx.contentfulFields,
-      (field) => `Add validations to ${field.id}`,
-      async (contentfulField) => {
-        const datoField = Object.values(ctx.contentTypeIdToDatoFields)
-          .flat()
-          .find((f) => f[contentfulField.id])?.[contentfulField.id];
+      Object.keys(ctx.contentTypeIdToContentfulFields),
+      (contentfulContentTypeId) =>
+        `Add validations to ${contentfulContentTypeId}`,
+      async (contentfulContentTypeId) => {
+        const contentTypeIdToContentfulFields =
+          ctx.contentTypeIdToContentfulFields[contentfulContentTypeId];
 
-        if (!datoField) {
-          throw new Error('Missing field. This should not happen');
+        for (const [contentfulFieldId, contentfulField] of Object.entries(
+          contentTypeIdToContentfulFields,
+        )) {
+          const datoField =
+            ctx.contentTypeIdToDatoFields[contentfulContentTypeId][
+              contentfulFieldId
+            ];
+
+          if (!datoField) {
+            throw new Error('Missing field. This should not happen');
+          }
+
+          const newValidators = contentfulFieldValidatorsToDato(
+            contentfulField as ContentFields<KeyValueMap>,
+          );
+
+          await this.client.fields.update(datoField.id, {
+            validators: { ...datoField.validators, ...newValidators },
+          });
         }
-
-        const newValidators = contentfulFieldValidatorsToDato(contentfulField);
-
-        await this.client.fields.update(datoField.id, {
-          validators: { ...datoField.validators, ...newValidators },
-        });
       },
     );
   }

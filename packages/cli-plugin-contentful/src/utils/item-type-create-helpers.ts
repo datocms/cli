@@ -107,9 +107,9 @@ export const findLinkedItemTypesFromContentField = (
 
   if (linkValidation) {
     return linkValidation.linkContentType
-      ? linkValidation.linkContentType.map(
-          (contentTypeId) => itemTypeMapping[contentTypeId].id,
-        )
+      ? linkValidation.linkContentType
+          .map((contentTypeId) => itemTypeMapping[contentTypeId]?.id)
+          .filter((x) => !!x)
       : [];
   }
 

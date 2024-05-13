@@ -20,7 +20,7 @@ export default class ImportFields extends BaseStep {
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
     ctx.contentTypeIdToDatoFields = {};
-    ctx.contentfulFields = [];
+    ctx.contentTypeIdToContentfulFields = {};
 
     if (!this.options.skipContent) {
       ctx.assetBlockId = await findOrCreateStructuredTextAssetBlock(
@@ -42,6 +42,7 @@ export default class ImportFields extends BaseStep {
         }
 
         ctx.contentTypeIdToDatoFields[contentTypeId] = {};
+        ctx.contentTypeIdToContentfulFields[contentTypeId] = {};
 
         for (const contentfulField of contentType.fields) {
           const position = contentType.fields.indexOf(contentfulField);
@@ -109,7 +110,9 @@ export default class ImportFields extends BaseStep {
           ctx.contentTypeIdToDatoFields[contentTypeId][contentfulField.id] =
             datoField;
 
-          ctx.contentfulFields = [...ctx.contentfulFields, contentfulField];
+          ctx.contentTypeIdToContentfulFields[contentTypeId][
+            contentfulField.id
+          ] = contentfulField;
         }
       },
     );

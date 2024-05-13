@@ -49,7 +49,11 @@ export type Context = {
       [key: ContentFields['id']]: CmaClient.SimpleSchemaTypes.Field;
     };
   };
-  contentfulFields: ContentFields[];
+  contentTypeIdToContentfulFields: {
+    [key: ContentType['sys']['id']]: {
+      [key: ContentFields['id']]: ContentFields;
+    };
+  };
   entriesWithLinkField: Entry[];
   entryIdToDatoItemId: {
     [k: Entry['sys']['id']]: CmaClient.SimpleSchemaTypes.ItemIdentity;
