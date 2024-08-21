@@ -1,4 +1,5 @@
 import type { CmaClient } from '@datocms/cli-utils';
+import got from 'got';
 import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
@@ -54,20 +55,47 @@ export default class ImportAssets extends BaseStep {
             {},
           );
 
-          const upload = await this.client.uploads.createFromUrl({
-            url: `https:${fileUrl}`,
-            skipCreationIfAlreadyExists: true,
-            onProgress: (info) => {
-              notify(
-                `${info.type} ${
-                  'payload' in info && 'progress' in info.payload
-                    ? ` (${info.payload.progress}%)`
-                    : ''
-                }`,
-              );
-            },
-            default_field_metadata: fileMetadata,
-          });
+          const client = this.client;
+
+          async function makeUpload() {
+            const fullUrl = `https:${fileUrl}`;
+
+            const headResponse = await got.head(fullUrl, { maxRedirects: 10 });
+
+            if (headResponse.headers.etag) {
+              const md5 = headResponse.headers.etag.trim().replace(/"/g, '');
+
+              if (!md5.includes('-')) {
+                const existingUploads = await client.uploads.list({
+                  filter: { fields: { md5: { eq: md5 } } },
+                });
+
+                if (existingUploads.length > 0) {
+                  console.log('///');
+                  return existingUploads[0];
+                }
+              }
+            }
+
+            console.log('!!!', fullUrl);
+
+            return await client.uploads.createFromUrl({
+              url: fullUrl,
+              skipCreationIfAlreadyExists: true,
+              onProgress: (info) => {
+                notify(
+                  `${info.type} ${
+                    'payload' in info && 'progress' in info.payload
+                      ? ` (${info.payload.progress}%)`
+                      : ''
+                  }`,
+                );
+              },
+              default_field_metadata: fileMetadata,
+            });
+          }
+
+          const upload = await makeUpload();
 
           ctx.uploadIdToDatoUploadInfo[contentfulAsset.sys.id] = {
             id: upload.id,
