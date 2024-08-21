@@ -1,7 +1,12 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
   "files": {
-    "ignore": ["*/lib/*.js", "*/lib/*.d.ts", "*/empty-tsconfig.json"]
+    "ignore": [
+      "*/lib/*.js",
+      "*/lib/*.d.ts",
+      "*/empty-tsconfig.json",
+      "packages/cli-plugin-contentful/ctx.json"
+    ]
   },
   "linter": {
     "enabled": true,

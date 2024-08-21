@@ -1,3 +1,4 @@
+import { writeFileSync } from 'node:fs';
 import { type CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
 import type {
@@ -12,6 +13,7 @@ import {
   type ListrRendererFactory,
   type ListrTaskWrapper,
 } from 'listr2';
+import { type ChangeReport, Observer } from 'micro-observer';
 import AddValidations from '../../import/add-validations';
 import DestroyDatoSchema from '../../import/destroy-dato-schema';
 import ImportAssets from '../../import/import-assets';
@@ -124,6 +126,17 @@ export default class ImportCommand extends CmaClientCommand<
       skipContent: this.parsedFlags['skip-content'],
     };
 
+    const ctxData = {};
+
+    const ctx = Observer.create(ctxData, (change: ChangeReport) => {
+      if (change.type !== 'function-call') {
+        writeFileSync('ctx.json', JSON.stringify(ctxData, null, 2), {
+          encoding: 'utf8',
+        });
+      }
+      return true;
+    });
+
     const tasks = new Listr<Context>(
       [
         {
@@ -235,6 +248,8 @@ export default class ImportCommand extends CmaClientCommand<
         },
       ],
       {
+        ctx,
+        renderer: 'simple' as any,
         rendererOptions: {
           collapse: false,
           showTimer: true,

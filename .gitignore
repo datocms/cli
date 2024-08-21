@@ -11,3 +11,5 @@ datocms.config.json
 migrations
 .env
 **/.DS_Store/
+ctx.json
+output.txt
