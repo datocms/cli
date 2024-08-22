@@ -36,9 +36,9 @@ Import a Contentful project into a DatoCMS project
 ```
 USAGE
   $ @datocms/cli-plugin-contentful contentful:import [--json] [--config-file <value>] [--profile <value>] [--api-token
-    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--contentful-token <value>] [--contentful-space-id <value>]
-    [--contentful-environment <value>] [--autoconfirm] [--ignore-errors] [--skip-content] [--only-content-type <value>]
-    [--concurrency <value>]
+    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory] [--contentful-token
+    <value>] [--contentful-space-id <value>] [--contentful-environment <value>] [--autoconfirm] [--ignore-errors]
+    [--skip-content] [--only-content-type <value>] [--concurrency <value>]
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a DatoCMS project
@@ -54,6 +54,7 @@ FLAGS
   --contentful-token=<value>                      Your Contentful project read-only API token
   --ignore-errors                                 Ignore errors encountered during import
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --log-mode=(stdout|file|directory)              Where logged output should be written to
   --only-content-type=<value>                     Exclusively import the specified content types. Specify the content
                                                   types you want to import with comma separated Contentful IDs -
                                                   Example: blogPost,landingPage,author
@@ -67,7 +68,7 @@ DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v2.0.6/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v2.0.7/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test

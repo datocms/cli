@@ -35,8 +35,9 @@ Imports a WordPress site into a DatoCMS project
 ```
 USAGE
   $ @datocms/cli-plugin-wordpress wordpress:import --wp-username <value> --wp-password <value> [--json] [--config-file
-    <value>] [--profile <value>] [--api-token <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--wp-json-api-url
-    <value> | --wp-url <value>] [--autoconfirm] [--ignore-errors] [--concurrency <value>]
+    <value>] [--profile <value>] [--api-token <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode
+    stdout|file|directory] [--wp-json-api-url <value> | --wp-url <value>] [--autoconfirm] [--ignore-errors]
+    [--concurrency <value>]
 
 FLAGS
   --api-token=<value>                             Specify a custom API key to access a DatoCMS project
@@ -47,6 +48,7 @@ FLAGS
   --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
   --ignore-errors                                 Try to ignore errors encountered during import
   --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
+  --log-mode=(stdout|file|directory)              Where logged output should be written to
   --profile=<value>                               Use settings of profile in datocms.config.js
   --wp-json-api-url=<value>                       The endpoint for your WordPress install (ex.
                                                   https://www.wordpress-website.com/wp-json)
@@ -62,7 +64,7 @@ DESCRIPTION
   Imports a WordPress site into a DatoCMS project
 ```
 
-_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v2.0.5/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
+_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v2.0.7/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
 <!-- commandsstop -->
 
 # Development
