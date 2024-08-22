@@ -1,9 +1,11 @@
 import { access, readFile } from 'node:fs/promises';
 import { get } from 'lodash';
+import type { LogLevelFlagEnum, LogLevelModeEnum } from '.';
 
 export type ProfileConfig = {
   baseUrl?: string;
-  logLevel?: 'NONE' | 'BASIC' | 'BODY' | 'BODY_AND_HEADERS';
+  logLevel?: LogLevelFlagEnum;
+  logMode?: LogLevelModeEnum;
   migrations?: {
     directory?: string;
     modelApiKey?: string;

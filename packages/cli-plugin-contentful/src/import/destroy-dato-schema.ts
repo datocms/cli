@@ -78,7 +78,7 @@ Confirm that you want to destroy them?`,
       task,
       removeValidationsLog,
       ctx.datoItemTypes,
-      (itemType) => itemType.id,
+      (itemType) => `Model ${itemType.id}`,
       async (itemType) => {
         const typeLinksField = (
           await this.client.fields.list(itemType.id)
@@ -136,7 +136,7 @@ Confirm that you want to destroy them?`,
       task,
       destroyModelsLog,
       ctx.itemTypesToDestroy,
-      (itemType) => itemType.id,
+      (itemType) => `Model ${itemType.id}`,
       async (itemType) => {
         await this.client.itemTypes.destroy(itemType);
       },

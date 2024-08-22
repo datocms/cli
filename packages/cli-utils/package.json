@@ -10,10 +10,7 @@
   "directories": {
     "lib": "lib"
   },
-  "files": [
-    "lib",
-    "src"
-  ],
+  "files": ["lib", "src"],
   "publishConfig": {
     "access": "public"
   },
@@ -23,7 +20,8 @@
     "@whatwg-node/fetch": "^0.9.14",
     "chalk": "^4",
     "dotenv": "^16.0.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "serialize-error": "^8"
   },
   "scripts": {
     "build": "tsc",

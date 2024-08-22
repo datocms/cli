@@ -50,50 +50,50 @@ export const toFieldApiKey = (value: string): string => {
   return apiKey;
 };
 
-export function contentFieldTypeToDatoFieldType(field: ContentFields): string {
+export function contentFieldTypeToDatoFieldType(field: ContentFields) {
   switch (field.type) {
     case 'Symbol':
-      return 'string';
+      return 'string' as const;
     case 'Text':
-      return 'text';
+      return 'text' as const;
     case 'Integer':
-      return 'integer';
+      return 'integer' as const;
     case 'Number':
-      return 'float';
+      return 'float' as const;
     case 'Date':
-      return 'date_time';
+      return 'date_time' as const;
     case 'Location':
-      return 'lat_lon';
+      return 'lat_lon' as const;
     case 'Boolean':
-      return 'boolean';
+      return 'boolean' as const;
     case 'Object':
-      return 'json';
+      return 'json' as const;
     case 'RichText':
-      return 'structured_text';
+      return 'structured_text' as const;
     case 'Link':
       switch (field.linkType) {
         case 'Entry':
-          return 'link';
+          return 'link' as const;
         case 'Asset':
-          return 'file';
+          return 'file' as const;
         default:
-          return 'string';
+          return 'string' as const;
       }
 
     case 'Array':
       switch (field.items?.linkType) {
         case 'Asset':
-          return 'gallery';
+          return 'gallery' as const;
         case 'Entry':
-          return 'links';
+          return 'links' as const;
         case 'Symbol':
-          return 'string';
+          return 'string' as const;
         default:
-          return 'string';
+          return 'string' as const;
       }
 
     default:
-      return 'string';
+      return 'string' as const;
   }
 }
 

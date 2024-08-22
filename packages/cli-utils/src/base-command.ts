@@ -1,6 +1,7 @@
 import { CliUx, Command } from '@oclif/core';
 import type { FlagInput, ParserOutput } from '@oclif/core/lib/interfaces';
 import { get } from 'lodash';
+import { serializeError } from 'serialize-error';
 
 type InferredFlagsType<T> = T extends FlagInput<infer F>
   ? F & {
@@ -79,5 +80,17 @@ export abstract class BaseCommand<
         printLine: this.log.bind(this),
       },
     );
+  }
+
+  protected catch(
+    error: Error & { exitCode?: number | undefined },
+  ): Promise<any> {
+    const serialized = serializeError(error);
+
+    console.log();
+    console.dir(serialized, { depth: null, colors: true });
+    console.log();
+
+    throw error;
   }
 }

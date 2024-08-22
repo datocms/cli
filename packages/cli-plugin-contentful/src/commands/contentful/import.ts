@@ -112,6 +112,8 @@ export default class ImportCommand extends CmaClientCommand<
       contentfulToken: this.parsedFlags['contentful-token'],
       contentfulSpaceId: this.parsedFlags['contentful-space-id'],
       contentfulEnvironment: this.parsedFlags['contentful-environment'],
+      logLevel: this.parsedFlags['log-level'],
+      logFn: this.buildBaseClientInitializationOptions().logFn,
     });
 
     const options: Omit<StepOptions, 'ctx' | 'task'> = {

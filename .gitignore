@@ -11,3 +11,5 @@ datocms.config.json
 migrations
 .env
 **/.DS_Store/
+**/api-calls/*.log
+**/api-calls.log

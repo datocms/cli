@@ -4,6 +4,27 @@ import type { Environment } from 'contentful-management';
 import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context, StepOptions } from '../commands/contentful/import';
 
+export class CuncurrentItemError extends Error {
+  task: string;
+  subjectIdentifier: string;
+  subject: unknown;
+  originalError: unknown;
+
+  constructor(
+    task: string,
+    subjectIdentifier: string,
+    subject: unknown,
+    originalError: unknown,
+  ) {
+    super(`Error when executing [${task} > ${subjectIdentifier}]`);
+
+    this.task = task;
+    this.subjectIdentifier = subjectIdentifier;
+    this.subject = subject;
+    this.originalError = originalError;
+  }
+}
+
 export default class BaseStep {
   protected options: StepOptions;
 
@@ -80,7 +101,7 @@ export default class BaseStep {
           } catch (e) {
             failed += 1;
             if (!this.ignoreErrors) {
-              throw e;
+              throw new CuncurrentItemError(title, identifier, item, e);
             }
           } finally {
             finished += 1;

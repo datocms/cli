@@ -1,3 +1,5 @@
+import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   ApiError,
   type Client,
@@ -22,6 +24,13 @@ export const logLevelMap = {
 export type LogLevelFlagEnum = keyof typeof logLevelMap;
 export const logLevelOptions = Object.keys(logLevelMap) as LogLevelFlagEnum[];
 
+export type LogLevelModeEnum = 'stdout' | 'file' | 'directory';
+export const logLevelModes: LogLevelModeEnum[] = [
+  'stdout',
+  'file',
+  'directory',
+];
+
 export abstract class CmaClientCommand<
   T extends typeof CmaClientCommand.flags,
 > extends DatoProfileConfigCommand<T> {
@@ -34,6 +43,10 @@ export abstract class CmaClientCommand<
       options: logLevelOptions,
       description: 'Level of logging for performed API calls',
     }),
+    'log-mode': Flags.enum<LogLevelModeEnum>({
+      options: logLevelModes,
+      description: 'Where logged output should be written to',
+    }),
     'base-url': Flags.string({ hidden: true }),
   };
 
@@ -44,10 +57,8 @@ export abstract class CmaClientCommand<
     this.client = this.buildClient();
   }
 
-  protected buildBaseClientInitializationOptions(): {
+  protected buildBaseClientInitializationOptions(): Partial<ClientConfigOptions> & {
     apiToken: string;
-    baseUrl: string | undefined;
-    logLevel: LogLevel;
   } {
     const apiTokenEnvName =
       this.profileId === 'default'
@@ -62,6 +73,9 @@ export abstract class CmaClientCommand<
 
     const logLevelCode =
       this.parsedFlags['log-level'] || this.datoProfileConfig?.logLevel;
+
+    const logMode =
+      this.parsedFlags['log-mode'] || this.datoProfileConfig?.logMode;
 
     const logLevel =
       this.parsedFlags.json || this.parsedFlags.output || !logLevelCode
@@ -82,15 +96,41 @@ export abstract class CmaClientCommand<
       apiToken,
       baseUrl,
       logLevel,
+      logFn: (message) => {
+        if (logMode === 'directory') {
+          // every message starts with '[<API-CALL-SEQUENTIAL-INTEGER>] ...'
+          const match = message.match(/^\[([^\]]+)\]/);
+
+          if (!match) {
+            return;
+          }
+
+          const sequentialInteger = match[1];
+          const logDir = './api-calls';
+          const logFileName = join(logDir, `${sequentialInteger}.log`);
+
+          // Ensure the directory exists
+          if (!existsSync(logDir)) {
+            mkdirSync(logDir, { recursive: true });
+          }
+
+          appendFileSync(logFileName, `${message}\n`, {
+            encoding: 'utf8',
+          });
+        } else if (logMode === 'file') {
+          appendFileSync('./api-calls.log', `${message}\n`, {
+            encoding: 'utf8',
+          });
+        } else {
+          this.log(chalk.gray(message));
+        }
+      },
     };
   }
 
   protected buildClient(config: Partial<ClientConfigOptions> = {}): Client {
     return buildClient({
       ...this.buildBaseClientInitializationOptions(),
-      logFn: (message) => {
-        this.log(chalk.gray(message));
-      },
       ...config,
       fetchFn,
     });

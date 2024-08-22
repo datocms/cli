@@ -24,9 +24,12 @@ export default class ImportAssets extends BaseStep {
       createAssetsLog,
       contentfulAssets,
       (contentfulAsset) =>
-        `Asset ${
-          contentfulAsset.fields.file?.[ctx.defaultLocale]?.fileName ||
-          contentfulAsset.sys.id
+        `Asset ${contentfulAsset.sys.id} ${
+          contentfulAsset.fields.file?.[ctx.defaultLocale]?.url
+            ? ` (https://${
+                contentfulAsset.fields.file?.[ctx.defaultLocale]?.url
+              })`
+            : ''
         }`,
       async (contentfulAsset, notify) => {
         const fileUrl = contentfulAsset.fields.file?.[ctx.defaultLocale]?.url;

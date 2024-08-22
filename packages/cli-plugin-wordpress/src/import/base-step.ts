@@ -5,6 +5,27 @@ import type WPAPI from 'wpapi';
 import type { WPRequest } from 'wpapi';
 import type { Context, StepOptions } from '../commands/wordpress/import';
 
+export class CuncurrentItemError extends Error {
+  task: string;
+  subjectIdentifier: string;
+  subject: unknown;
+  originalError: unknown;
+
+  constructor(
+    task: string,
+    subjectIdentifier: string,
+    subject: unknown,
+    originalError: unknown,
+  ) {
+    super(`Error when executing [${task} > ${subjectIdentifier}]`);
+
+    this.task = task;
+    this.subjectIdentifier = subjectIdentifier;
+    this.subject = subject;
+    this.originalError = originalError;
+  }
+}
+
 export default class BaseStep {
   protected options: StepOptions;
 
@@ -81,7 +102,7 @@ export default class BaseStep {
           } catch (e) {
             failed += 1;
             if (!this.ignoreErrors) {
-              throw e;
+              throw new CuncurrentItemError(title, identifier, item, e);
             }
           } finally {
             finished += 1;
