@@ -57,7 +57,7 @@ function writeApiCallClientCommand(
         command,
         entityIdsToBeRecreated,
       );
-    case 'client.itemTypes.reorderFieldsAndFieldsets':
+    case 'client.itemTypes.rawReorderFieldsAndFieldsets':
       return ApiCommands.buildReorderFieldsAndFieldsetsItemTypeClientCommandNode(
         command,
         entityIdsToBeRecreated,

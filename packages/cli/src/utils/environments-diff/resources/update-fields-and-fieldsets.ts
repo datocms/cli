@@ -259,7 +259,7 @@ function buildReorderClientCommand(
     buildLog(`Reorder fields/fieldsets for ${buildItemTypeTitle(itemType)}`),
     {
       type: 'apiCallClientCommand',
-      call: 'client.itemTypes.reorderFieldsAndFieldsets',
+      call: 'client.itemTypes.rawReorderFieldsAndFieldsets',
       arguments: [
         {
           data: commands,

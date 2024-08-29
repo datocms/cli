@@ -171,7 +171,7 @@ export type DestroyItemTypeClientCommand = {
 
 export type ReorderItemTypeFieldsAndFieldsetsClientCommand = {
   type: 'apiCallClientCommand';
-  call: 'client.itemTypes.reorderFieldsAndFieldsets';
+  call: 'client.itemTypes.rawReorderFieldsAndFieldsets';
   arguments: Parameters<
     CmaClient.Client['itemTypes']['rawReorderFieldsAndFieldsets']
   >;

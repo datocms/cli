@@ -319,14 +319,10 @@ export function buildDestroyItemTypeClientCommandNode(
 
 export function buildReorderFieldsAndFieldsetsItemTypeClientCommandNode(
   command: Types.ReorderItemTypeFieldsAndFieldsetsClientCommand,
-  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
   const [body] = command.arguments;
-  return makeApiCall(command, [
-    deserializeBody(body, entityIdsToBeRecreated, {
-      replaceNewIdsInBody: true,
-    }),
-  ]);
+  return makeApiCall(command, [createJsonLiteral(body)]);
 }
 
 export function buildCreateUploadFilterClientCommandNode(
