@@ -1,5 +1,5 @@
 import { access, readdir } from 'node:fs/promises';
-import { basename, dirname, join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
   ApiError,
@@ -421,11 +421,14 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     client: Client,
     migrationModelApiKey: string,
   ): Promise<SimpleSchemaTypes.ItemType> {
-    const model = await client.itemTypes.create({
-      name: 'Schema migration',
-      api_key: migrationModelApiKey,
-      draft_mode_active: false,
-    });
+    const model = await client.itemTypes.create(
+      {
+        name: 'Schema migration',
+        api_key: migrationModelApiKey,
+        draft_mode_active: false,
+      },
+      { skip_menu_item_creation: true },
+    );
 
     await client.fields.create(model.id, {
       label: 'Migration file name',
