@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "CLI to interact with DatoCMS APIs",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -25,7 +25,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^2.0.13",
+    "@datocms/cli-utils": "^2.0.14",
     "@datocms/rest-client-utils": "^3",
     "@oclif/plugin-autocomplete": "^1.2.0",
     "@oclif/plugin-help": "^5",
