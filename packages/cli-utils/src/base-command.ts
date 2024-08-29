@@ -1,4 +1,5 @@
 import { CliUx, Command } from '@oclif/core';
+import { CLIError } from '@oclif/core/lib/errors';
 import type { FlagInput, ParserOutput } from '@oclif/core/lib/interfaces';
 import { get } from 'lodash';
 import { serializeError } from 'serialize-error';
@@ -85,11 +86,13 @@ export abstract class BaseCommand<
   protected catch(
     error: Error & { exitCode?: number | undefined },
   ): Promise<any> {
-    const serialized = serializeError(error);
+    if (error instanceof CLIError) {
+      const serialized = serializeError(error);
 
-    console.log();
-    console.dir(serialized, { depth: null, colors: true });
-    console.log();
+      console.log();
+      console.dir(serialized, { depth: null, colors: true });
+      console.log();
+    }
 
     throw error;
   }
