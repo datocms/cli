@@ -82,7 +82,7 @@
     "cli"
   ],
   "types": "lib/index.d.ts",
-  "gitHead": "d10a24b828c3343bcccee03dcf5465e512ff4eed",
+  "gitHead": "fa7e65229975c4f2b378489f22359b01663415c6",
   "devDependencies": {
     "@types/mkdirp": "^1.0.2",
     "@types/prettier": "^2.7.1",
