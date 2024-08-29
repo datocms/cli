@@ -2,7 +2,7 @@ import type { CmaClient } from '@datocms/cli-utils';
 import { difference, isEqual, pick, without } from 'lodash';
 import type { Command, ItemTypeInfo, Schema } from '../types';
 import { buildItemTypeTitle, isBase64Id } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 const defaultValuesForItemTypeAttribute: Partial<CmaClient.SchemaTypes.ItemTypeAttributes> =
   {
@@ -68,7 +68,7 @@ function buildCreateItemTypeClientCommand(
   );
 
   return [
-    buildComment(`Create ${buildItemTypeTitle(itemType)}`),
+    buildLog(`Create ${buildItemTypeTitle(itemType)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.itemTypes.create',
@@ -107,7 +107,7 @@ export function createNewItemTypes(
   }
 
   return [
-    buildComment('Create new models/block models'),
+    buildLog('Create new models/block models'),
     ...createdItemTypeIds.flatMap((itemTypeId) => {
       const schemaMenuItem = Object.values(newSchema.schemaMenuItemsById).find(
         (item) => item.relationships.item_type.data?.id === itemTypeId,

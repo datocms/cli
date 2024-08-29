@@ -2,13 +2,13 @@ import type { CmaClient } from '@datocms/cli-utils';
 import { difference, intersection, isEqual } from 'lodash';
 import type { Command, Schema } from '../types';
 import { buildUploadFilterTitle, isBase64Id } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 function buildCreateUploadFilterClientCommand(
   uploadFilter: CmaClient.SchemaTypes.UploadFilter,
 ): Command[] {
   return [
-    buildComment(`Create ${buildUploadFilterTitle(uploadFilter)}`),
+    buildLog(`Create ${buildUploadFilterTitle(uploadFilter)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.uploadFilters.create',
@@ -30,7 +30,7 @@ function buildDestroyUploadFilterClientCommand(
   uploadFilter: CmaClient.SchemaTypes.UploadFilter,
 ): Command[] {
   return [
-    buildComment(`Delete ${buildUploadFilterTitle(uploadFilter)}`),
+    buildLog(`Delete ${buildUploadFilterTitle(uploadFilter)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.uploadFilters.destroy',
@@ -60,7 +60,7 @@ function buildUpdateUploadFilterClientCommand(
   }
 
   return [
-    buildComment(`Update ${buildUploadFilterTitle(newUploadFilter)}`),
+    buildLog(`Update ${buildUploadFilterTitle(newUploadFilter)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.uploadFilters.update',
@@ -111,5 +111,5 @@ export function manageUploadFilters(
     return [];
   }
 
-  return [buildComment('Manage upload filters'), ...commands];
+  return [buildLog('Manage upload filters'), ...commands];
 }

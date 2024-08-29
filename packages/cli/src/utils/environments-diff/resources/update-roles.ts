@@ -7,7 +7,7 @@ import type {
   UpdateRoleClientCommand,
   UpdateRoleDiff,
 } from '../types';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 function omitNullProperties<T extends Record<string, unknown>>(
   hash: T,
@@ -131,7 +131,7 @@ export function updateRole(
   };
 
   return [
-    buildComment(
+    buildLog(
       `Update permissions for environment in role ${role.attributes.name}`,
     ),
     command,

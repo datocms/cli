@@ -2,7 +2,7 @@ import type { CmaClient } from '@datocms/cli-utils';
 import { difference, intersection, isEqual, pick, without } from 'lodash';
 import type { Command, ItemTypeInfo, Schema } from '../types';
 import { buildItemTypeTitle } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 import {
   attributesToIgnoreOnBlockModels,
   attributesToIgnoreOnModels,
@@ -124,7 +124,7 @@ export function finalizeItemType(
   }
 
   return [
-    buildComment(`Update ${buildItemTypeTitle(newItemType)}`),
+    buildLog(`Update ${buildItemTypeTitle(newItemType)}`),
     ...updateItemTypeCommands,
   ];
 }
@@ -151,5 +151,5 @@ export function finalizeItemTypes(
     return [];
   }
 
-  return [buildComment('Finalize models/block models'), ...commands];
+  return [buildLog('Finalize models/block models'), ...commands];
 }

@@ -1,6 +1,5 @@
 import type { CmaClient } from '@datocms/cli-utils';
 import {
-  cloneDeep,
   difference,
   intersection,
   isEqual,
@@ -8,19 +7,13 @@ import {
   sortBy,
   without,
 } from 'lodash';
-import type {
-  Command,
-  ItemTypeInfo,
-  Schema,
-  UpdateFieldClientCommand,
-  UpdateFieldsetClientCommand,
-} from '../types';
+import type { Command, ItemTypeInfo, Schema } from '../types';
 import {
   buildFieldTitle,
   buildFieldsetTitle,
   buildItemTypeTitle,
 } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 export function buildRegularUpdateFieldClientCommand(
   newField: CmaClient.SchemaTypes.Field,
@@ -43,6 +36,7 @@ export function buildRegularUpdateFieldClientCommand(
           ),
           'appeareance',
           'field_type',
+          'position',
         ),
       )
     : pick(newField.attributes, 'position');
@@ -50,16 +44,19 @@ export function buildRegularUpdateFieldClientCommand(
   const relationshipsToUpdate = oldField
     ? pick(
         newField.relationships,
-        (
-          Object.keys(newField.relationships) as Array<
-            keyof CmaClient.SchemaTypes.FieldRelationships
-          >
-        ).filter(
-          (attribute) =>
-            !isEqual(
-              oldField.relationships[attribute],
-              newField.relationships[attribute],
-            ),
+        without(
+          (
+            Object.keys(newField.relationships) as Array<
+              keyof CmaClient.SchemaTypes.FieldRelationships
+            >
+          ).filter(
+            (attribute) =>
+              !isEqual(
+                oldField.relationships[attribute],
+                newField.relationships[attribute],
+              ),
+          ),
+          'fieldset',
         ),
       )
     : null;
@@ -94,15 +91,12 @@ export function buildRegularUpdateFieldClientCommand(
 
 export function buildUpdateFieldClientCommand(
   newField: CmaClient.SchemaTypes.Field,
-  oldField: CmaClient.SchemaTypes.Field | undefined,
+  oldField: CmaClient.SchemaTypes.Field,
   itemType: CmaClient.SchemaTypes.ItemType,
 ): Command[] {
   const commands: Command[] = [];
 
-  if (
-    oldField &&
-    newField.attributes.field_type !== oldField.attributes.field_type
-  ) {
+  if (newField.attributes.field_type !== oldField.attributes.field_type) {
     commands.push({
       type: 'apiCallClientCommand',
       call: 'client.fields.update',
@@ -136,7 +130,7 @@ export function buildUpdateFieldClientCommand(
   }
 
   return [
-    buildComment(
+    buildLog(
       `Update ${buildFieldTitle(newField)} in ${buildItemTypeTitle(itemType)}`,
     ),
     ...commands,
@@ -145,32 +139,33 @@ export function buildUpdateFieldClientCommand(
 
 export function buildUpdateFieldsetClientCommand(
   newFieldset: CmaClient.SchemaTypes.Fieldset,
-  oldFieldset: CmaClient.SchemaTypes.Fieldset | undefined,
+  oldFieldset: CmaClient.SchemaTypes.Fieldset,
   itemType: CmaClient.SchemaTypes.ItemType,
 ): Command[] {
-  const attributesToUpdate = oldFieldset
-    ? pick(
-        newFieldset.attributes,
-        (
-          Object.keys(newFieldset.attributes) as Array<
-            keyof CmaClient.SchemaTypes.FieldsetAttributes
-          >
-        ).filter(
-          (attribute) =>
-            !isEqual(
-              oldFieldset.attributes[attribute],
-              newFieldset.attributes[attribute],
-            ),
-        ),
-      )
-    : pick(newFieldset.attributes, 'position');
+  const attributesToUpdate = pick(
+    newFieldset.attributes,
+    without(
+      (
+        Object.keys(newFieldset.attributes) as Array<
+          keyof CmaClient.SchemaTypes.FieldsetAttributes
+        >
+      ).filter(
+        (attribute) =>
+          !isEqual(
+            oldFieldset.attributes[attribute],
+            newFieldset.attributes[attribute],
+          ),
+      ),
+      'position',
+    ),
+  );
 
   if (Object.keys(attributesToUpdate).length === 0) {
     return [];
   }
 
   return [
-    buildComment(
+    buildLog(
       `Update ${buildFieldsetTitle(newFieldset)} in ${buildItemTypeTitle(
         itemType,
       )}`,
@@ -192,276 +187,89 @@ export function buildUpdateFieldsetClientCommand(
   ];
 }
 
-function getFieldsetId(
-  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
-) {
-  return isField(entity) ? entity.relationships.fieldset.data?.id : undefined;
-}
+type Entity = CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset;
 
-function findSiblings({
-  of: entity,
-  collection,
-  fieldsetId,
-  positionGte,
-}: {
-  of: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset;
-  collection: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
-  >;
-  fieldsetId: string | undefined;
-  positionGte: number;
-}) {
-  const siblings = fieldsetId
-    ? collection.filter(
-        (entity) =>
-          isField(entity) &&
-          entity.relationships.fieldset.data?.id === fieldsetId,
-      )
-    : collection.filter(
-        (entity) =>
-          (isField(entity) && !entity.relationships.fieldset.data) ||
-          isFieldset(entity),
-      );
-
-  return siblings
-    .filter((e) => e.id !== entity.id || e.type !== entity.type)
-    .filter((e) => e.attributes.position >= positionGte);
-}
-
-function findChildren({
-  of: entity,
-  collection,
-}: {
-  of: CmaClient.SchemaTypes.Fieldset;
-  collection: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
-  >;
-}) {
-  return collection.filter(
-    (e): e is CmaClient.SchemaTypes.Field =>
-      e.type === 'field' && e.relationships.fieldset.data?.id === entity.id,
-  );
-}
-
-function findMaxPosition({
-  collection,
-  fieldsetId,
-}: {
-  collection: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
-  >;
-  fieldsetId: string | undefined;
-}) {
-  const siblings = fieldsetId
-    ? collection.filter(
-        (entity) =>
-          isField(entity) &&
-          entity.relationships.fieldset.data?.id === fieldsetId,
-      )
-    : collection.filter(
-        (entity) =>
-          (isField(entity) && !entity.relationships.fieldset.data) ||
-          isFieldset(entity),
-      );
-
-  return siblings.reduce((max, e) => Math.max(max, e.attributes.position), 0);
-}
-
-function isFieldset(
-  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
-): entity is CmaClient.SchemaTypes.Fieldset {
-  return entity.type === 'fieldset';
-}
-
-function isField(
-  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
-): entity is CmaClient.SchemaTypes.Field {
+function isField(entity: Entity): entity is CmaClient.SchemaTypes.Field {
   return entity.type === 'field';
 }
 
-function generateInitialState({
-  oldKeptEntities,
-  createdEntities,
-  deletedEntities,
-}: {
-  oldKeptEntities: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
-  >;
-  createdEntities: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
-  >;
-  deletedEntities: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
-  >;
-}) {
-  const state = oldKeptEntities.map(cloneDeep);
-
-  [
-    ...createdEntities.filter(isFieldset),
-    ...createdEntities.filter(isField),
-  ].forEach((entity) => {
-    const newEntity = cloneDeep(entity);
-
-    newEntity.attributes.position =
-      findMaxPosition({
-        collection: state,
-        fieldsetId: isField(entity)
-          ? entity.relationships.fieldset.data?.id
-          : undefined,
-      }) + 1;
-
-    state.push(newEntity);
-  });
-
-  deletedEntities.forEach((deletedEntity) => {
-    findSiblings({
-      of: deletedEntity,
-      collection: state,
-      fieldsetId: getFieldsetId(deletedEntity),
-      positionGte: deletedEntity.attributes.position,
-    }).forEach((entity) => {
-      entity.attributes.position -= 1;
-    });
-
-    if (isFieldset(deletedEntity)) {
-      findChildren({ of: deletedEntity, collection: state }).forEach(
-        (entityInState) => {
-          entityInState.relationships.fieldset.data = null;
-          entityInState.attributes.position =
-            findMaxPosition({
-              collection: state,
-              fieldsetId: undefined,
-            }) + 1;
-        },
-      );
-    }
-  });
-
-  return state;
+function isFieldset(entity: Entity): entity is CmaClient.SchemaTypes.Fieldset {
+  return entity.type === 'fieldset';
 }
 
-// biome-ignore lint/correctness/noUnusedVariables: <explanation>
-function debugState(
-  message: string,
-  state: Array<CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset>,
-) {
-  console.log(message);
-
-  const roots = sortBy(
-    state.filter(
-      (entity) =>
-        (isField(entity) && !entity.relationships.fieldset.data) ||
-        isFieldset(entity),
-    ),
-    (e) => e.attributes.position,
-  );
-
-  roots.forEach((root) => {
-    console.log(
-      `${root.attributes.position}. ${
-        root.type === 'field' ? root.attributes.api_key : root.attributes.title
-      }`,
+function buildReorderClientCommand(
+  keptEntities: Array<
+    | [CmaClient.SchemaTypes.Field, CmaClient.SchemaTypes.Field]
+    | [CmaClient.SchemaTypes.Fieldset, CmaClient.SchemaTypes.Fieldset]
+  >,
+  newEntities: Entity[],
+  itemType: CmaClient.SchemaTypes.ItemType,
+): Command[] {
+  const commands: CmaClient.SchemaTypes.ItemTypeReorderFieldsAndFieldsetsSchema['data'] =
+    [
+      ...newEntities,
+      ...keptEntities
+        .filter(([newEntity, oldEntity]) =>
+          isField(newEntity) && isField(oldEntity)
+            ? !isEqual(
+                newEntity.attributes.position,
+                oldEntity.attributes.position,
+              ) ||
+              !isEqual(
+                newEntity.relationships.fieldset.data?.id,
+                oldEntity.relationships.fieldset.data?.id,
+              )
+            : isFieldset(newEntity) && isFieldset(oldEntity)
+              ? !isEqual(
+                  newEntity.attributes.position,
+                  oldEntity.attributes.position,
+                )
+              : true,
+        )
+        .map((tuple) => tuple[0]),
+    ].map((entity) =>
+      isField(entity)
+        ? {
+            id: entity.id,
+            type: entity.type,
+            attributes: { position: entity.attributes.position },
+            relationships: {
+              fieldset: {
+                data: entity.relationships.fieldset.data?.id
+                  ? {
+                      id: entity.relationships.fieldset.data.id,
+                      type: 'fieldset',
+                    }
+                  : null,
+              },
+            },
+          }
+        : {
+            id: entity.id,
+            type: entity.type,
+            attributes: { position: entity.attributes.position },
+          },
     );
 
-    if (root.type === 'fieldset') {
-      const children = sortBy(
-        state.filter(
-          (entity) =>
-            isField(entity) &&
-            entity.relationships.fieldset.data?.id === root.id,
-        ),
-        (e) => e.attributes.position,
-      );
-
-      children.forEach((root) => {
-        console.log(
-          `  ${root.attributes.position}. ${
-            root.type === 'field'
-              ? root.attributes.api_key
-              : root.attributes.title
-          }`,
-        );
-      });
-    }
-  });
-}
-
-class InvalidMovement extends Error {}
-
-function updateState({
-  updateCommand,
-  state,
-}: {
-  updateCommand: UpdateFieldsetClientCommand | UpdateFieldClientCommand;
-  state: Array<CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset>;
-}) {
-  const entityType =
-    updateCommand.call === 'client.fields.update' ? 'field' : 'fieldset';
-
-  const entityId = updateCommand.arguments[0];
-
-  const entityInState = state.find(
-    (e) => e.id === entityId && e.type === entityType,
-  )!;
-
-  const entityFieldsetIdBeforeUpdate = getFieldsetId(entityInState);
-
-  const entityPositionBeforeUpdate = entityInState.attributes.position;
-
-  const entityFieldsetIdAfterUpdate =
-    updateCommand.call === 'client.fields.update'
-      ? updateCommand.arguments[1].data.relationships?.fieldset
-        ? updateCommand.arguments[1].data.relationships?.fieldset.data?.id
-        : entityFieldsetIdBeforeUpdate
-      : undefined;
-
-  const entityPositionAfterUpdate =
-    'position' in updateCommand.arguments[1].data.attributes
-      ? updateCommand.arguments[1].data.attributes.position!
-      : entityPositionBeforeUpdate;
-
-  const maxPosition = findMaxPosition({
-    collection: findSiblings({
-      of: entityInState,
-      collection: state,
-      fieldsetId: entityFieldsetIdAfterUpdate,
-      positionGte: 0,
-    }),
-    fieldsetId: entityFieldsetIdAfterUpdate,
-  });
-
-  if (entityPositionAfterUpdate > maxPosition + 1) {
-    throw new InvalidMovement('Something went wrong!');
+  if (commands.length === 0) {
+    return [];
   }
 
-  entityInState.attributes.position = entityPositionAfterUpdate;
-
-  if (entityInState.type === 'field') {
-    entityInState.relationships.fieldset.data = entityFieldsetIdAfterUpdate
-      ? { id: entityFieldsetIdAfterUpdate, type: 'fieldset' }
-      : null;
-  }
-
-  findSiblings({
-    of: entityInState,
-    collection: state,
-    fieldsetId: entityFieldsetIdBeforeUpdate,
-    positionGte: entityPositionBeforeUpdate,
-  }).forEach((entity) => {
-    entity.attributes.position -= 1;
-  });
-
-  findSiblings({
-    of: entityInState,
-    collection: state,
-    fieldsetId: entityFieldsetIdAfterUpdate,
-    positionGte: entityPositionAfterUpdate,
-  }).forEach((entity) => {
-    entity.attributes.position += 1;
-  });
+  return [
+    buildLog(`Reorder fields/fieldsets for ${buildItemTypeTitle(itemType)}`),
+    {
+      type: 'apiCallClientCommand',
+      call: 'client.itemTypes.reorderFieldsAndFieldsets',
+      arguments: [
+        {
+          data: commands,
+        },
+      ],
+    },
+  ];
 }
 
-export function updateFieldsAndFieldsetsInItemType(
+function updateFieldsAndFieldsetsInItemType(
   newItemTypeSchema: ItemTypeInfo,
   oldItemTypeSchema: ItemTypeInfo,
 ): Command[] {
@@ -471,29 +279,22 @@ export function updateFieldsAndFieldsetsInItemType(
   const oldFieldsetIds = Object.keys(oldItemTypeSchema.fieldsetsById);
   const newFieldsetIds = Object.keys(newItemTypeSchema.fieldsetsById);
 
-  const oldKeptEntities = sortBy(
-    [
-      ...intersection(oldFieldIds, newFieldIds).map(
-        (fieldId) => oldItemTypeSchema.fieldsById[fieldId],
-      ),
-      ...intersection(oldFieldsetIds, newFieldsetIds).map(
-        (fieldsetId) => oldItemTypeSchema.fieldsetsById[fieldsetId],
-      ),
-    ],
-    (entity) => entity.attributes.position,
-  );
-
-  const deletedEntities = sortBy(
-    [
-      ...difference(oldFieldIds, newFieldIds).map(
-        (fieldId) => oldItemTypeSchema.fieldsById[fieldId],
-      ),
-      ...difference(oldFieldsetIds, newFieldsetIds).map(
-        (fieldsetId) => oldItemTypeSchema.fieldsetsById[fieldsetId],
-      ),
-    ],
-    (entity) => entity.attributes.position,
-  );
+  const keptEntities = [
+    ...intersection(oldFieldIds, newFieldIds).map(
+      (fieldId) =>
+        [
+          newItemTypeSchema.fieldsById[fieldId],
+          oldItemTypeSchema.fieldsById[fieldId],
+        ] as [CmaClient.SchemaTypes.Field, CmaClient.SchemaTypes.Field],
+    ),
+    ...intersection(oldFieldsetIds, newFieldsetIds).map(
+      (fieldsetId) =>
+        [
+          newItemTypeSchema.fieldsetsById[fieldsetId],
+          oldItemTypeSchema.fieldsetsById[fieldsetId],
+        ] as [CmaClient.SchemaTypes.Fieldset, CmaClient.SchemaTypes.Fieldset],
+    ),
+  ];
 
   const createdEntities = sortBy(
     [
@@ -507,125 +308,27 @@ export function updateFieldsAndFieldsetsInItemType(
     (entity) => entity.attributes.position,
   );
 
-  function run(mode: 'smart' | 'dumb') {
-    const state = generateInitialState({
-      oldKeptEntities,
-      deletedEntities,
-      createdEntities,
-    });
-
-    const sortedEntitiesToProcess = sortBy(
-      [
-        ...newFieldIds.map((fieldId) => newItemTypeSchema.fieldsById[fieldId]),
-        ...newFieldsetIds.map(
-          (fieldsetId) => newItemTypeSchema.fieldsetsById[fieldsetId],
-        ),
-      ],
-      (entity) => {
-        if (mode === 'dumb') {
-          return entity.attributes.position;
-        }
-
-        // we try to start moving items that are more distant from their original
-        // position. this can generate a lower number of ops, but we're not
-        // mathematically sure that operations are legal :D
-
-        const entityInState = state.find(
-          (e) => e.id === entity.id && e.type === entity.type,
-        )!;
-
-        let weight = Math.abs(
-          entity.attributes.position - entityInState.attributes.position,
-        );
-
-        if (
-          entityInState.type === 'field' &&
-          isField(entity) &&
-          entityInState.relationships.fieldset.data?.id !==
-            entity.relationships.fieldset.data?.id
-        ) {
-          weight += 100;
-        }
-
-        return -weight;
-      },
-    );
-
-    // if (newItemTypeSchema.entity.attributes.api_key === 'plugin') {
-    //   debugState('INITIAL', state);
-    // }
-
-    let commands: Command[] = [];
-
-    while (sortedEntitiesToProcess.length > 0) {
-      const entityToProcess = sortedEntitiesToProcess.shift()!;
-      const entityInState = state.find(
-        (e) => e.id === entityToProcess.id && e.type === entityToProcess.type,
-      )!;
-
-      const entityCommands =
-        entityToProcess.type === 'field'
-          ? buildUpdateFieldClientCommand(
-              entityToProcess,
-              entityInState as CmaClient.SchemaTypes.Field,
-              newItemTypeSchema.entity,
-            )
-          : buildUpdateFieldsetClientCommand(
-              entityToProcess,
-              entityInState as CmaClient.SchemaTypes.Fieldset,
-              newItemTypeSchema.entity,
-            );
-
-      commands = [...commands, ...entityCommands];
-
-      // if (
-      //   newItemTypeSchema.entity.attributes.api_key === 'plugin' &&
-      //   entityCommands.length > 0
-      // ) {
-      //   console.log(
-      //     `${entityToProcess.type} ${
-      //       entityToProcess.type === 'field'
-      //         ? entityToProcess.attributes.api_key
-      //         : entityToProcess.attributes.title
-      //     }`,
-      //   );
-      // }
-
-      entityCommands
-        .filter(
-          (c): c is UpdateFieldsetClientCommand | UpdateFieldClientCommand =>
-            c.type === 'apiCallClientCommand' &&
-            ['client.fieldsets.update', 'client.fields.update'].includes(
-              c.call,
-            ),
+  const updateCommands = keptEntities.flatMap(([newEntity, oldEntity]) =>
+    newEntity.type === 'field'
+      ? buildUpdateFieldClientCommand(
+          newEntity,
+          oldEntity as CmaClient.SchemaTypes.Field,
+          newItemTypeSchema.entity,
         )
-        .forEach((updateCommand) =>
-          updateState({
-            updateCommand,
-            state,
-          }),
-        );
+      : buildUpdateFieldsetClientCommand(
+          newEntity,
+          oldEntity as CmaClient.SchemaTypes.Fieldset,
+          newItemTypeSchema.entity,
+        ),
+  );
 
-      // if (
-      //   newItemTypeSchema.entity.attributes.api_key === 'plugin' &&
-      //   entityCommands.length > 0
-      // ) {
-      //   debugState('RESULT', state);
-      // }
-    }
+  const reorderCommands = buildReorderClientCommand(
+    keptEntities,
+    createdEntities,
+    newItemTypeSchema.entity,
+  );
 
-    return commands;
-  }
-
-  try {
-    return run('smart');
-  } catch (e) {
-    if (e instanceof InvalidMovement) {
-      return run('dumb');
-    }
-
-    throw e;
-  }
+  return [...updateCommands, ...reorderCommands];
 }
 
 export function updateFieldsAndFieldsets(
@@ -635,18 +338,21 @@ export function updateFieldsAndFieldsets(
   const newItemTypeIds = Object.keys(newSchema.itemTypesById);
   const oldItemTypeIds = Object.keys(oldSchema.itemTypesById);
 
-  const keptItemTypeIds = intersection(newItemTypeIds, oldItemTypeIds);
+  const keptItemTypes = intersection(oldItemTypeIds, newItemTypeIds).map(
+    (id) =>
+      [newSchema.itemTypesById[id], oldSchema.itemTypesById[id]] as [
+        ItemTypeInfo,
+        ItemTypeInfo,
+      ],
+  );
 
-  const commands = keptItemTypeIds.flatMap((itemTypeId) =>
-    updateFieldsAndFieldsetsInItemType(
-      newSchema.itemTypesById[itemTypeId],
-      oldSchema.itemTypesById[itemTypeId],
-    ),
+  const commands = keptItemTypes.flatMap((keptItemType) =>
+    updateFieldsAndFieldsetsInItemType(...keptItemType),
   );
 
   if (commands.length === 0) {
     return [];
   }
 
-  return [buildComment('Update existing fields/fieldsets'), ...commands];
+  return [buildLog('Update existing fields/fieldsets'), ...commands];
 }

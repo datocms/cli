@@ -34,7 +34,7 @@
     "@oclif/plugin-warn-if-update-available": "^2.0.4",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "prettier": "^2.7.1",
+    "prettier": "^3.3.3",
     "ts-node": "^10.7.0",
     "typescript": "~4.5.0"
   },

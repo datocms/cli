@@ -79,14 +79,20 @@ function fetchNewRef<T extends { id: string; type: string }>(
 }
 
 function deserializeBody(
-  body: Record<string, unknown>,
+  rawBody: Record<string, unknown> | Array<unknown>,
   entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
   options?: { replaceNewIdsInBody?: boolean; omitEntityId?: boolean },
 ): ts.Expression {
+  const deserializedBody = Utils.deserializeResponseBody(rawBody);
+
+  const propsToOmit = options?.omitEntityId ? ['type', 'id'] : ['type'];
+
+  const body = Array.isArray(deserializedBody)
+    ? deserializedBody.map((item) => omit(item, propsToOmit))
+    : omit(deserializedBody as Record<string, unknown>, propsToOmit);
+
   return createJsonLiteral(
-    options?.omitEntityId
-      ? omit(Utils.deserializeResponseBody(body), 'type', 'id')
-      : omit(Utils.deserializeResponseBody(body), 'type'),
+    body,
     options?.replaceNewIdsInBody
       ? {
           replace: (rawPath, value): ts.Expression | undefined => {
@@ -169,6 +175,7 @@ function deserializeBody(
                 );
               }
               case 'parent': {
+                console.log('CIAO');
                 const menuItemOrSchemaMenuItemRef = value as
                   | CmaClient.SimpleSchemaTypes.MenuItemData
                   | CmaClient.SimpleSchemaTypes.SchemaMenuItemData;
@@ -307,6 +314,18 @@ export function buildDestroyItemTypeClientCommandNode(
   return makeApiCall(command, [
     ts.factory.createStringLiteral(itemTypeId),
     createJsonLiteral(queryParams),
+  ]);
+}
+
+export function buildReorderFieldsAndFieldsetsItemTypeClientCommandNode(
+  command: Types.ReorderItemTypeFieldsAndFieldsetsClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  return makeApiCall(command, [
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
 }
 
@@ -544,6 +563,18 @@ export function buildDestroyMenuItemClientCommandNode(
   return makeApiCall(command, [ts.factory.createStringLiteral(menuItemId)]);
 }
 
+export function buildReorderMenuItemsClientCommandNode(
+  command: Types.ReorderMenuItemsClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  return makeApiCall(command, [
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
+  ]);
+}
+
 export function buildCreateSchemaMenuItemClientCommandNode(
   command: Types.CreateSchemaMenuItemClientCommand,
   entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
@@ -579,5 +610,67 @@ export function buildDestroySchemaMenuItemClientCommandNode(
   const [schemaMenuItemId] = command.arguments;
   return makeApiCall(command, [
     ts.factory.createStringLiteral(schemaMenuItemId),
+  ]);
+}
+
+export function buildReorderSchemaMenuItemsClientCommandNode(
+  command: Types.ReorderSchemaMenuItemsClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  return makeApiCall(command, [
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
+  ]);
+}
+
+export function buildCreateUploadCollectionClientCommandNode(
+  command: Types.CreateUploadCollectionClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  const apiCall = makeApiCall(command, [
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
+  ]);
+  return assignToMapping('uploadCollection', command.oldEnvironmentId, apiCall);
+}
+
+export function buildUpdateUploadCollectionClientCommandNode(
+  command: Types.UpdateUploadCollectionClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [uploadCollectionId, body] = command.arguments;
+
+  return makeApiCall(command, [
+    fetchNewRef('uploadCollection', uploadCollectionId, entityIdsToBeRecreated),
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+      omitEntityId: true,
+    }),
+  ]);
+}
+
+export function buildDestroyUploadCollectionClientCommandNode(
+  command: Types.DestroyUploadCollectionClientCommand,
+  _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [uploadCollectionId] = command.arguments;
+  return makeApiCall(command, [
+    ts.factory.createStringLiteral(uploadCollectionId),
+  ]);
+}
+
+export function buildReorderUploadCollectionsClientCommandNode(
+  command: Types.ReorderUploadCollectionsClientCommand,
+  entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
+): ts.Node {
+  const [body] = command.arguments;
+  return makeApiCall(command, [
+    deserializeBody(body, entityIdsToBeRecreated, {
+      replaceNewIdsInBody: true,
+    }),
   ]);
 }

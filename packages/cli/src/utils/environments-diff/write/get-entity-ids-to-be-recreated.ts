@@ -53,6 +53,13 @@ export function getEntityIdsToBeRecreated(
           command.call === 'client.schemaMenuItems.create',
       )
       .map((command) => command.oldEnvironmentId),
+    uploadCollection: commands
+      .filter(
+        (command): command is Types.CreateUploadCollectionClientCommand =>
+          command.type === 'apiCallClientCommand' &&
+          command.call === 'client.uploadCollections.create',
+      )
+      .map((command) => command.oldEnvironmentId),
     itemTypeFilter: commands
       .filter(
         (command): command is Types.CreateItemTypeFilterClientCommand =>

@@ -9,6 +9,7 @@ export type EntityIdsToBeRecreated = {
   menuItem: string[];
   schemaMenuItem: string[];
   itemTypeFilter: string[];
+  uploadCollection: string[];
 };
 
 export type ItemTypeInfo = {
@@ -22,14 +23,15 @@ export type Schema = {
   itemTypesById: Record<string, ItemTypeInfo>;
   menuItemsById: Record<string, CmaClient.SchemaTypes.MenuItem>;
   schemaMenuItemsById: Record<string, CmaClient.SchemaTypes.SchemaMenuItem>;
+  uploadCollectionsById: Record<string, CmaClient.SchemaTypes.UploadCollection>;
   pluginsById: Record<string, CmaClient.SchemaTypes.Plugin>;
   workflowsById: Record<string, CmaClient.SchemaTypes.Workflow>;
   itemTypeFiltersById: Record<string, CmaClient.SchemaTypes.ItemTypeFilter>;
   uploadFiltersById: Record<string, CmaClient.SchemaTypes.UploadFilter>;
 };
 
-export type Comment = {
-  type: 'comment';
+export type LogCommand = {
+  type: 'log';
   message: string;
 };
 
@@ -167,6 +169,14 @@ export type DestroyItemTypeClientCommand = {
   arguments: Parameters<CmaClient.Client['itemTypes']['rawDestroy']>;
 };
 
+export type ReorderItemTypeFieldsAndFieldsetsClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.itemTypes.reorderFieldsAndFieldsets';
+  arguments: Parameters<
+    CmaClient.Client['itemTypes']['rawReorderFieldsAndFieldsets']
+  >;
+};
+
 export type UpdateRoleDiff<T> = {
   add?: T[];
   remove?: T[];
@@ -227,6 +237,12 @@ export type DestroyMenuItemClientCommand = {
   arguments: Parameters<CmaClient.Client['menuItems']['rawDestroy']>;
 };
 
+export type ReorderMenuItemsClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.menuItems.reorder';
+  arguments: Parameters<CmaClient.Client['menuItems']['rawReorder']>;
+};
+
 export type CreateSchemaMenuItemClientCommand = {
   type: 'apiCallClientCommand';
   call: 'client.schemaMenuItems.create';
@@ -244,6 +260,37 @@ export type DestroySchemaMenuItemClientCommand = {
   type: 'apiCallClientCommand';
   call: 'client.schemaMenuItems.destroy';
   arguments: Parameters<CmaClient.Client['schemaMenuItems']['rawDestroy']>;
+};
+
+export type ReorderSchemaMenuItemsClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.schemaMenuItems.reorder';
+  arguments: Parameters<CmaClient.Client['schemaMenuItems']['rawReorder']>;
+};
+
+export type CreateUploadCollectionClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.uploadCollections.create';
+  arguments: Parameters<CmaClient.Client['uploadCollections']['rawCreate']>;
+  oldEnvironmentId: string;
+};
+
+export type UpdateUploadCollectionClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.uploadCollections.update';
+  arguments: Parameters<CmaClient.Client['uploadCollections']['rawUpdate']>;
+};
+
+export type DestroyUploadCollectionClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.uploadCollections.destroy';
+  arguments: Parameters<CmaClient.Client['uploadCollections']['rawDestroy']>;
+};
+
+export type ReorderUploadCollectionsClientCommand = {
+  type: 'apiCallClientCommand';
+  call: 'client.uploadCollections.reorder';
+  arguments: Parameters<CmaClient.Client['uploadCollections']['rawReorder']>;
 };
 
 export type ClientApiCallCommand =
@@ -268,13 +315,20 @@ export type ClientApiCallCommand =
   | CreateItemTypeClientCommand
   | UpdateItemTypeClientCommand
   | DestroyItemTypeClientCommand
+  | ReorderItemTypeFieldsAndFieldsetsClientCommand
   | UpdateRoleClientCommand
   | CreateMenuItemClientCommand
   | UpdateMenuItemClientCommand
   | DestroyMenuItemClientCommand
+  | ReorderMenuItemsClientCommand
   | CreateSchemaMenuItemClientCommand
   | UpdateSchemaMenuItemClientCommand
   | DestroySchemaMenuItemClientCommand
+  | ReorderSchemaMenuItemsClientCommand
+  | CreateUploadCollectionClientCommand
+  | UpdateUploadCollectionClientCommand
+  | DestroyUploadCollectionClientCommand
+  | ReorderUploadCollectionsClientCommand
   | UpdateSiteClientCommand;
 
-export type Command = Comment | ClientApiCallCommand;
+export type Command = LogCommand | ClientApiCallCommand;

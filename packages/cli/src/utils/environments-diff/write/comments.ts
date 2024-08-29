@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
-import type { Comment } from '../types';
+import type { LogCommand } from '../types';
 
-export function buildCommentNode(comment: Comment): ts.Node {
+export function buildLogNode(comment: LogCommand): ts.Node {
   return ts.factory.createCallExpression(
     ts.factory.createIdentifier('console.log'),
     undefined,

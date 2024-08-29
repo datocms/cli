@@ -6,14 +6,14 @@ import {
   buildFieldsetTitle,
   buildItemTypeTitle,
 } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 export function buildDestroyFieldClientCommand(
   field: CmaClient.SchemaTypes.Field,
   itemType: CmaClient.SchemaTypes.ItemType,
 ): Command[] {
   return [
-    buildComment(
+    buildLog(
       `Delete ${buildFieldTitle(field)} in ${buildItemTypeTitle(itemType)}`,
     ),
     {
@@ -29,7 +29,7 @@ export function buildDestroyFieldsetClientCommand(
   itemType: CmaClient.SchemaTypes.ItemType,
 ): Command[] {
   return [
-    buildComment(
+    buildLog(
       `Delete ${buildFieldsetTitle(fieldset)} in ${buildItemTypeTitle(
         itemType,
       )}`,
@@ -93,7 +93,7 @@ export function deleteMissingFieldsAndFieldsetsInExistingItemTypes(
   }
 
   return [
-    buildComment('Destroy fields in existing models/block models'),
+    buildLog('Destroy fields in existing models/block models'),
     ...destroyCommands,
   ];
 }

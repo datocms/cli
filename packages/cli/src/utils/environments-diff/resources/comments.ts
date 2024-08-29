@@ -1,5 +1,5 @@
-import type { Comment } from '../types';
+import type { LogCommand } from '../types';
 
-export function buildComment(message: string): Comment {
-  return { type: 'comment', message };
+export function buildLog(message: string): LogCommand {
+  return { type: 'log', message };
 }
