@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@datocms/cli-utils": "^2.0.9",
-    "@datocms/rest-client-utils": "^1",
+    "@datocms/rest-client-utils": "^3",
     "@oclif/plugin-autocomplete": "^1.2.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.1",
@@ -82,7 +82,7 @@
     "cli"
   ],
   "types": "lib/index.d.ts",
-  "gitHead": "7968d13cdb679b4d2d1d431d4783ec40af823681",
+  "gitHead": "d10a24b828c3343bcccee03dcf5465e512ff4eed",
   "devDependencies": {
     "@types/mkdirp": "^1.0.2",
     "@types/prettier": "^2.7.1",
