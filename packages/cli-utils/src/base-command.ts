@@ -86,7 +86,7 @@ export abstract class BaseCommand<
   protected catch(
     error: Error & { exitCode?: number | undefined },
   ): Promise<any> {
-    if (error instanceof CLIError) {
+    if (!(error instanceof CLIError)) {
       const serialized = serializeError(error);
 
       console.log();
@@ -94,6 +94,6 @@ export abstract class BaseCommand<
       console.log();
     }
 
-    throw error;
+    return super.catch(error);
   }
 }
