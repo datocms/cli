@@ -2,13 +2,13 @@ import type { CmaClient } from '@datocms/cli-utils';
 import { difference, intersection, isEqual, pick } from 'lodash';
 import type { Command, Schema } from '../types';
 import { buildWorkflowTitle, isBase64Id } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 function buildCreateWorkflowClientCommand(
   workflow: CmaClient.SchemaTypes.Workflow,
 ): Command[] {
   return [
-    buildComment(`Create ${buildWorkflowTitle(workflow)}`),
+    buildLog(`Create ${buildWorkflowTitle(workflow)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.workflows.create',
@@ -30,7 +30,7 @@ function buildDestroyWorkflowClientCommand(
   workflow: CmaClient.SchemaTypes.Workflow,
 ): Command[] {
   return [
-    buildComment(`Delete ${buildWorkflowTitle(workflow)}`),
+    buildLog(`Delete ${buildWorkflowTitle(workflow)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.workflows.destroy',
@@ -63,7 +63,7 @@ function buildUpdateWorkflowClientCommand(
   }
 
   return [
-    buildComment(`Update ${buildWorkflowTitle(newWorkflow)}`),
+    buildLog(`Update ${buildWorkflowTitle(newWorkflow)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.workflows.update',
@@ -113,5 +113,5 @@ export function manageWorkflows(
     return [];
   }
 
-  return [buildComment('Manage workflows'), ...commands];
+  return [buildLog('Manage workflows'), ...commands];
 }

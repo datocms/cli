@@ -33,6 +33,12 @@ export function buildMenuItemTitle(menuItem: CmaClient.SchemaTypes.MenuItem) {
   return `menu item "${menuItem.attributes.label}"`;
 }
 
+export function buildUploadCollectionTitle(
+  menuItem: CmaClient.SchemaTypes.UploadCollection,
+) {
+  return `upload collection "${menuItem.attributes.label}"`;
+}
+
 export function buildSchemaMenuItemTitle(
   schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
   itemType: CmaClient.SchemaTypes.ItemType | undefined,

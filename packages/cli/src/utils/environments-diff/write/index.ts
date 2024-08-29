@@ -4,7 +4,7 @@ import * as ts from 'typescript';
 import type * as Types from '../types';
 import { isBase64Id, parseAstFromCode, writeCodeFromAst } from '../utils';
 import * as ApiCommands from './api-calls';
-import { buildCommentNode } from './comments';
+import { buildLogNode } from './comments';
 import { getEntityIdsToBeRecreated } from './get-entity-ids-to-be-recreated';
 
 function writeApiCallClientCommand(
@@ -54,6 +54,11 @@ function writeApiCallClientCommand(
       );
     case 'client.itemTypes.destroy':
       return ApiCommands.buildDestroyItemTypeClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.itemTypes.rawReorderFieldsAndFieldsets':
+      return ApiCommands.buildReorderFieldsAndFieldsetsItemTypeClientCommandNode(
         command,
         entityIdsToBeRecreated,
       );
@@ -137,6 +142,11 @@ function writeApiCallClientCommand(
         command,
         entityIdsToBeRecreated,
       );
+    case 'client.menuItems.reorder':
+      return ApiCommands.buildReorderMenuItemsClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
     case 'client.schemaMenuItems.create':
       return ApiCommands.buildCreateSchemaMenuItemClientCommandNode(
         command,
@@ -149,6 +159,31 @@ function writeApiCallClientCommand(
       );
     case 'client.schemaMenuItems.destroy':
       return ApiCommands.buildDestroySchemaMenuItemClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.schemaMenuItems.reorder':
+      return ApiCommands.buildReorderSchemaMenuItemsClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.uploadCollections.create':
+      return ApiCommands.buildCreateUploadCollectionClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.uploadCollections.update':
+      return ApiCommands.buildUpdateUploadCollectionClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.uploadCollections.destroy':
+      return ApiCommands.buildDestroyUploadCollectionClientCommandNode(
+        command,
+        entityIdsToBeRecreated,
+      );
+    case 'client.uploadCollections.reorder':
+      return ApiCommands.buildReorderUploadCollectionsClientCommandNode(
         command,
         entityIdsToBeRecreated,
       );
@@ -175,8 +210,8 @@ export function write(
       case 'apiCallClientCommand': {
         return writeApiCallClientCommand(command, entityIdsToBeRecreated);
       }
-      case 'comment': {
-        return buildCommentNode(command);
+      case 'log': {
+        return buildLogNode(command);
       }
       default: {
         throw new Error('Type not handled!');

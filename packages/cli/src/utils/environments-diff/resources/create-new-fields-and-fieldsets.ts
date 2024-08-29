@@ -14,7 +14,7 @@ import {
   buildItemTypeTitle,
   isBase64Id,
 } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 function buildDefaultValues(
   site: CmaClient.SchemaTypes.Site,
@@ -50,15 +50,13 @@ export function buildCreateFieldClientCommand(
         !isEqual(defaultValues[attribute], field.attributes[attribute]),
     ),
     'appeareance',
+    'position',
   );
 
-  const attributesToUpdate = pick(
-    field.attributes,
-    without(attributesToPick, 'position'),
-  );
+  const attributesToUpdate = pick(field.attributes, attributesToPick);
 
   return [
-    buildComment(
+    buildLog(
       `Create ${buildFieldTitle(field)} in ${buildItemTypeTitle(itemType)}`,
     ),
     {
@@ -71,9 +69,6 @@ export function buildCreateFieldClientCommand(
             type: 'field',
             id: isBase64Id(field.id) ? field.id : undefined,
             attributes: attributesToUpdate,
-            ...(field.relationships.fieldset.data
-              ? { relationships: pick(field.relationships, 'fieldset') }
-              : {}),
           },
         },
       ],
@@ -112,7 +107,7 @@ export function buildCreateFieldsetClientCommand(
   );
 
   return [
-    buildComment(
+    buildLog(
       `Create ${buildFieldsetTitle(fieldset)} in ${buildItemTypeTitle(
         itemType,
       )}`,
@@ -230,5 +225,5 @@ export function createNewFieldsAndFieldsets(
     return [];
   }
 
-  return [buildComment('Creating new fields/fieldsets'), ...commands];
+  return [buildLog('Creating new fields/fieldsets'), ...commands];
 }

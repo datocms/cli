@@ -10,6 +10,7 @@ import { manageItemTypeFilters } from './resources/manage-item-type-filters';
 import { manageMenuItems } from './resources/manage-menu-items';
 import { managePlugins } from './resources/manage-plugins';
 import { manageSchemaMenuItems } from './resources/manage-schema-menu-items';
+import { manageUploadCollections } from './resources/manage-upload-collections';
 import { manageUploadFilters } from './resources/manage-upload-filters';
 import { manageWorkflows } from './resources/manage-workflows';
 import { updateFieldsAndFieldsets } from './resources/update-fields-and-fieldsets';
@@ -51,10 +52,15 @@ export async function diffEnvironments({
     ...manageItemTypeFilters(newSchema, oldSchema),
     ...manageMenuItems(newSchema, oldSchema),
     ...manageSchemaMenuItems(newSchema, oldSchema),
+    ...manageUploadCollections(newSchema, oldSchema),
     ...updateRoles(roles, newEnvironmentId, oldEnvironmentId),
   ];
 
   const options = await resolveConfig(migrationFilePath);
 
-  return write(commands, { ...options, format, filepath: migrationFilePath });
+  return write(commands, {
+    ...options,
+    format,
+    filepath: migrationFilePath,
+  });
 }

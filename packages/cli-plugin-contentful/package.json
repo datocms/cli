@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-contentful",
-  "version": "2.0.7",
+  "version": "2.0.14",
   "description": "Plugin for DatoCMS CLI to import projects from Contentful to DatoCMS",
   "keywords": [
     "contentful",
@@ -39,7 +39,7 @@
     "url": "https://github.com/datocms/cli/issues"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^2.0.7",
+    "@datocms/cli-utils": "^2.0.14",
     "@oclif/core": "^1.8.0",
     "async-scheduler": "^1.4.4",
     "contentful-management": "^10.6.0",

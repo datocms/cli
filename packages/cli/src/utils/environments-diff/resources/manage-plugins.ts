@@ -7,7 +7,7 @@ import type {
   UpdatePluginClientCommand,
 } from '../types';
 import { buildPluginTitle, isBase64Id } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 function buildCreatePluginClientCommand(
   plugin: CmaClient.SchemaTypes.Plugin,
@@ -60,7 +60,7 @@ function buildCreatePluginClientCommand(
   }
 
   return [
-    buildComment(
+    buildLog(
       `${
         plugin.attributes.package_name ? 'Install' : 'Create private'
       } ${buildPluginTitle(plugin)}`,
@@ -73,7 +73,7 @@ function buildDestroyPluginClientCommand(
   plugin: CmaClient.SchemaTypes.Plugin,
 ): Command[] {
   return [
-    buildComment(`Delete ${buildPluginTitle(plugin)}`),
+    buildLog(`Delete ${buildPluginTitle(plugin)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.plugins.destroy',
@@ -135,7 +135,7 @@ function buildUpdatePluginClientCommand(
         };
 
         commands.push(
-          buildComment(
+          buildLog(
             `Convert legacy ${buildPluginTitle(newPlugin)} into private plugin`,
           ),
         );
@@ -159,9 +159,7 @@ function buildUpdatePluginClientCommand(
           ],
         };
         commands.push(
-          buildComment(
-            `Upgrade version of legacy ${buildPluginTitle(newPlugin)}`,
-          ),
+          buildLog(`Upgrade version of legacy ${buildPluginTitle(newPlugin)}`),
         );
         commands.push(updateCommand);
       }
@@ -187,9 +185,7 @@ function buildUpdatePluginClientCommand(
           ],
         };
         commands.push(
-          buildComment(
-            `Update settings of legacy ${buildPluginTitle(oldPlugin)}`,
-          ),
+          buildLog(`Update settings of legacy ${buildPluginTitle(oldPlugin)}`),
         );
         commands.push(updateCommand);
       }
@@ -218,7 +214,7 @@ function buildUpdatePluginClientCommand(
           ],
         };
         commands.push(
-          buildComment(`Update legacy private ${buildPluginTitle(newPlugin)}`),
+          buildLog(`Update legacy private ${buildPluginTitle(newPlugin)}`),
         );
         commands.push(updateCommand);
       }
@@ -247,7 +243,7 @@ function buildUpdatePluginClientCommand(
           ],
         };
         commands.push(
-          buildComment(
+          buildLog(
             `Convert ${buildPluginTitle(newPlugin)} into private plugin`,
           ),
         );
@@ -274,7 +270,7 @@ function buildUpdatePluginClientCommand(
             ],
           };
           commands.push(
-            buildComment(
+            buildLog(
               `${
                 'package_version' in changedAttributes
                   ? 'Upgrade version'
@@ -310,9 +306,7 @@ function buildUpdatePluginClientCommand(
           ],
         };
         commands.push(
-          buildComment(
-            `Update settings of private ${buildPluginTitle(oldPlugin)}`,
-          ),
+          buildLog(`Update settings of private ${buildPluginTitle(oldPlugin)}`),
         );
         commands.push(updateCommand);
       }
@@ -351,5 +345,5 @@ export function managePlugins(newSchema: Schema, oldSchema: Schema): Command[] {
     return [];
   }
 
-  return [buildComment('Manage upload filters'), ...commands];
+  return [buildLog('Manage upload filters'), ...commands];
 }

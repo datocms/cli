@@ -1,13 +1,13 @@
 import { difference } from 'lodash';
 import type { Command, ItemTypeInfo, Schema } from '../types';
 import { buildItemTypeTitle } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 export function buildDestroyItemTypeClientCommand(
   itemTypeSchema: ItemTypeInfo,
 ): Command[] {
   return [
-    buildComment(`Delete ${buildItemTypeTitle(itemTypeSchema.entity)}`),
+    buildLog(`Delete ${buildItemTypeTitle(itemTypeSchema.entity)}`),
     {
       type: 'apiCallClientCommand',
       call: 'client.itemTypes.destroy',
@@ -30,7 +30,7 @@ export function deleteMissingItemTypes(
   }
 
   return [
-    buildComment('Destroy models/block models'),
+    buildLog('Destroy models/block models'),
     ...destroyedItemTypeIds.flatMap((itemTypeId) =>
       buildDestroyItemTypeClientCommand(oldSchema.itemTypesById[itemTypeId]),
     ),

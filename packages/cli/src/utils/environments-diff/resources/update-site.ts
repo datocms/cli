@@ -1,7 +1,7 @@
 import type { CmaClient } from '@datocms/cli-utils';
 import { isEqual, omit, pick } from 'lodash';
 import type { Command, Schema } from '../types';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 export function updateSite(newSchema: Schema, oldSchema: Schema): Command[] {
   const newSite = newSchema.siteEntity;
@@ -32,7 +32,7 @@ export function updateSite(newSchema: Schema, oldSchema: Schema): Command[] {
   }
 
   return [
-    buildComment(`Update environment's settings`),
+    buildLog(`Update environment's settings`),
     {
       type: 'apiCallClientCommand',
       call: 'client.site.update',

@@ -29,5 +29,13 @@
     "formatter": {
       "quoteStyle": "single"
     }
-  }
+  },
+  "overrides": [
+    {
+      "include": ["package.json"],
+      "formatter": {
+        "lineWidth": 1
+      }
+    }
+  ]
 }

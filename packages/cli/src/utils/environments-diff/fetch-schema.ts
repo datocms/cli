@@ -10,6 +10,7 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
     workflowsResponse,
     itemTypeFiltersResponse,
     uploadFiltersResponse,
+    uploadCollectionsResponse,
   ] = await Promise.all([
     client.site.rawFind({
       include: 'item_types,item_types.fields,item_types.fieldsets',
@@ -20,6 +21,7 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
     client.workflows.rawList(),
     client.itemTypeFilters.rawList(),
     client.uploadFilters.rawList(),
+    client.uploadCollections.rawList(),
   ]);
 
   const includedResources = siteResponse.included || [];
@@ -68,6 +70,12 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
       schemaMenuItemsResponse.data.map((schemaMenuItem) => [
         schemaMenuItem.id,
         schemaMenuItem,
+      ]),
+    ),
+    uploadCollectionsById: Object.fromEntries(
+      uploadCollectionsResponse.data.map((uploadCollection) => [
+        uploadCollection.id,
+        uploadCollection,
       ]),
     ),
     pluginsById: Object.fromEntries(

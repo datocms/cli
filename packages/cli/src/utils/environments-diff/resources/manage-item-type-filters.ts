@@ -6,14 +6,14 @@ import {
   buildItemTypeTitle,
   isBase64Id,
 } from '../utils';
-import { buildComment } from './comments';
+import { buildLog } from './comments';
 
 function buildCreateItemTypeFilterClientCommand(
   itemTypeFilter: CmaClient.SchemaTypes.ItemTypeFilter,
   itemType: CmaClient.SchemaTypes.ItemType,
 ): Command[] {
   return [
-    buildComment(
+    buildLog(
       `Create ${buildItemTypeFilterTitle(
         itemTypeFilter,
       )} of ${buildItemTypeTitle(itemType)}`,
@@ -41,7 +41,7 @@ function buildDestroyItemTypeFilterClientCommand(
   itemType: CmaClient.SchemaTypes.ItemType,
 ): Command[] {
   return [
-    buildComment(
+    buildLog(
       `Delete ${buildItemTypeFilterTitle(
         itemTypeFilter,
       )} of ${buildItemTypeTitle(itemType)}`,
@@ -79,7 +79,7 @@ function buildUpdateItemTypeFilterClientCommand(
   }
 
   return [
-    buildComment(
+    buildLog(
       `Update ${buildItemTypeFilterTitle(
         newItemTypeFilter,
       )} of ${buildItemTypeTitle(itemType)}`,
@@ -148,5 +148,5 @@ export function manageItemTypeFilters(
     return [];
   }
 
-  return [buildComment('Manage model filters'), ...commands];
+  return [buildLog('Manage model filters'), ...commands];
 }

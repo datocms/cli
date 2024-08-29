@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-utils",
-  "version": "2.0.7",
+  "version": "2.0.14",
   "description": "Utils for DatoCMS CLI",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cma-client-node": ">=3.3.1",
+    "@datocms/cma-client-node": ">=3.3.12",
     "@oclif/core": "^1",
     "@whatwg-node/fetch": "^0.9.14",
     "chalk": "^4",
