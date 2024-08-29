@@ -261,6 +261,7 @@ function buildReorderClientCommand(
       type: 'apiCallClientCommand',
       call: 'client.itemTypes.rawReorderFieldsAndFieldsets',
       arguments: [
+        itemType.id,
         {
           data: commands,
         },

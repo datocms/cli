@@ -321,8 +321,11 @@ export function buildReorderFieldsAndFieldsetsItemTypeClientCommandNode(
   command: Types.ReorderItemTypeFieldsAndFieldsetsClientCommand,
   _entityIdsToBeRecreated: Types.EntityIdsToBeRecreated,
 ): ts.Node {
-  const [body] = command.arguments;
-  return makeApiCall(command, [createJsonLiteral(body)]);
+  const [itemTypeId, body] = command.arguments;
+  return makeApiCall(command, [
+    ts.factory.createStringLiteral(itemTypeId),
+    createJsonLiteral(body),
+  ]);
 }
 
 export function buildCreateUploadFilterClientCommandNode(
