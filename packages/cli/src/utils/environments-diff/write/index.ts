@@ -272,7 +272,7 @@ export function write(
   const code =
     (format === 'js' ? jsHeader : '') +
     writeCodeFromAst(ts.factory.createNodeArray(result.transformed)).replace(
-      /(\s+console\.log|export)/g,
+      /(\s+console\.log\(|export default )/g,
       '\n$1',
     );
 
