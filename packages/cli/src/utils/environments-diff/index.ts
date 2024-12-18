@@ -54,7 +54,12 @@ export async function diffEnvironments({
     ...updateRoles(roles, newEnvironmentId, oldEnvironmentId),
   ];
 
-  const options = await resolveConfig(migrationFilePath);
-
-  return write(commands, { ...options, format, filepath: migrationFilePath });
+  try {
+    const options = await resolveConfig(migrationFilePath);
+    return write(commands, { ...options, format, filepath: migrationFilePath });
+  } catch {
+    // .prettierrc of user might not work with our version of prettier, in this case
+    // fall back to default options
+    return write(commands, { format, filepath: migrationFilePath });
+  }
 }
