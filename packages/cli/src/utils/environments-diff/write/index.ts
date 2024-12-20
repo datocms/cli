@@ -223,7 +223,6 @@ export function write(
 
           return ts.factory.updateFunctionDeclaration(
             functionDeclaration,
-            undefined,
             functionDeclaration.modifiers,
             functionDeclaration.asteriskToken,
             functionDeclaration.name,

@@ -2,11 +2,13 @@
   "compilerOptions": {
     "declaration": true,
     "importHelpers": true,
-    "module": "commonjs",
+    "module": "Node16",
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "target": "es2019"
+    "target": "es2019",
+    "skipLibCheck": true,
+    "moduleResolution": "node16"
   },
   "include": ["src/**/*"]
 }
