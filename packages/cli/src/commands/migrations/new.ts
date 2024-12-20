@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { CmaClientCommand, oclif } from '@datocms/cli-utils';
 import { camelCase } from 'lodash';
-import * as mkdirp from 'mkdirp';
+import mkdirp from 'mkdirp';
 import { diffEnvironments } from '../../utils/environments-diff';
 import { findNearestFile } from '../../utils/find-nearest-file';
 

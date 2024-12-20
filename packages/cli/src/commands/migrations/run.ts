@@ -1,12 +1,12 @@
 import { access, readdir } from 'node:fs/promises';
-import { basename, dirname, join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
   ApiError,
   type Client,
   type SimpleSchemaTypes,
 } from '@datocms/cli-utils/lib/cma-client-node';
-import { register as registerTsNode } from 'ts-node';
+import { require as tsxRequire } from 'tsx/cjs/api';
 
 const MIGRATION_FILE_REGEXP = /^\d+.*\.(js|ts)$/;
 
@@ -212,27 +212,14 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     dryRun: boolean,
     migrationModel: SimpleSchemaTypes.ItemType | null,
     migrationsDir: string,
-    migrationsTsconfig: string | undefined,
+    _migrationsTsconfig: string | undefined,
   ) {
     const relativePath = relative(migrationsDir, script.path);
 
     this.startSpinner(`Running migration "${relativePath}"`);
 
     if (!dryRun) {
-      if (
-        script.filename.endsWith('.ts') &&
-        !this.registeredTsNode &&
-        process.env.NODE_ENV !== 'development'
-      ) {
-        this.registeredTsNode = true;
-        registerTsNode({
-          project:
-            migrationsTsconfig ||
-            join(__dirname, '..', '..', '..', 'empty-tsconfig.json'),
-        });
-      }
-
-      const exportedThing = await import(script.path);
+      const exportedThing = tsxRequire(script.path, __filename);
 
       const migration: (client: unknown) => Promise<void> | undefined =
         typeof exportedThing === 'function'
