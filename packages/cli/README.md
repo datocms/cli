@@ -115,7 +115,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [lib/commands/environments/destroy.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/environments/destroy.js)_
+_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/environments/destroy.ts)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -149,7 +149,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [lib/commands/environments/fork.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/environments/fork.js)_
+_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/environments/fork.ts)_
 
 ## `datocms environments:index`
 
@@ -225,7 +225,7 @@ ALIASES
   $ datocms environments:list
 ```
 
-_See code: [lib/commands/environments/list.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/environments/list.js)_
+_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/environments/list.ts)_
 
 ## `datocms environments:primary`
 
@@ -250,7 +250,7 @@ DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [lib/commands/environments/primary.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/environments/primary.js)_
+_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/environments/primary.ts)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -278,7 +278,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [lib/commands/environments/promote.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/environments/promote.js)_
+_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/environments/promote.ts)_
 
 ## `datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -307,7 +307,7 @@ DESCRIPTION
   Renames an environment
 ```
 
-_See code: [lib/commands/environments/rename.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/environments/rename.js)_
+_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/environments/rename.ts)_
 
 ## `datocms help [COMMAND]`
 
@@ -352,7 +352,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [lib/commands/maintenance/off.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/maintenance/off.js)_
+_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/maintenance/off.ts)_
 
 ## `datocms maintenance:on`
 
@@ -379,7 +379,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [lib/commands/maintenance/on.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/maintenance/on.js)_
+_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/maintenance/on.ts)_
 
 ## `datocms migrations:new NAME`
 
@@ -433,7 +433,7 @@ DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [lib/commands/migrations/new.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/migrations/new.js)_
+_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/migrations/new.ts)_
 
 ## `datocms migrations:run`
 
@@ -472,7 +472,7 @@ DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [lib/commands/migrations/run.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/migrations/run.js)_
+_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/migrations/run.ts)_
 
 ## `datocms plugins`
 
@@ -559,7 +559,7 @@ DESCRIPTION
   Lists official DatoCMS CLI plugins
 ```
 
-_See code: [lib/commands/plugins/available.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/plugins/available.js)_
+_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/plugins/available.ts)_
 
 ## `datocms plugins:inspect PLUGIN...`
 
@@ -764,7 +764,7 @@ DESCRIPTION
   Remove a profile from DatoCMS config file
 ```
 
-_See code: [lib/commands/profile/remove.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/profile/remove.js)_
+_See code: [src/commands/profile/remove.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/profile/remove.ts)_
 
 ## `datocms profile:set PROFILE_ID`
 
@@ -794,5 +794,5 @@ DESCRIPTION
   Add/update profile configuration in DatoCMS config file
 ```
 
-_See code: [lib/commands/profile/set.js](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/lib/commands/profile/set.js)_
+_See code: [src/commands/profile/set.ts](https://github.com/datocms/cli/blob/v2.0.16/packages/cli/src/commands/profile/set.ts)_
 <!-- commandsstop -->
