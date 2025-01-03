@@ -7,7 +7,6 @@ import { buildComment } from './comments';
 const defaultValuesForItemTypeAttribute: Partial<CmaClient.SchemaTypes.ItemTypeAttributes> =
   {
     hint: null,
-    draft_mode_active: false,
     sortable: false,
     tree: false,
     singleton: false,
