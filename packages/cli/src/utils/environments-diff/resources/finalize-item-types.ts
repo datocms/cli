@@ -27,11 +27,13 @@ const relationshipsToIgnoreOnModels: Array<
 
 const defaultRelationshipsOnCreatedItemTypes: Partial<CmaClient.SchemaTypes.ItemTypeRelationships> =
   {
+    workflow: { data: null },
     ordering_field: { data: null },
     title_field: { data: null },
     image_preview_field: { data: null },
     excerpt_field: { data: null },
-    workflow: { data: null },
+    presentation_image_field: { data: null },
+    presentation_title_field: { data: null },
   };
 
 export function finalizeItemType(

@@ -124,7 +124,9 @@ function deserializeBody(
               case 'ordering_field':
               case 'title_field':
               case 'image_preview_field':
-              case 'excerpt_field': {
+              case 'excerpt_field':
+              case 'presentation_image_field':
+              case 'presentation_title_field': {
                 const fieldRef = value as CmaClient.SimpleSchemaTypes.FieldData;
                 return fetchNewRef('field', fieldRef, entityIdsToBeRecreated);
               }
