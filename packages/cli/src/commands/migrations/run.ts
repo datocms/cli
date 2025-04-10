@@ -218,45 +218,47 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     this.startSpinner(`Running migration "${relativePath}"`);
 
-    if (!dryRun) {
-      const exportedThing = tsxRequire(script.path, __filename);
+    try {
+      if (!dryRun) {
+        const exportedThing = tsxRequire(script.path, __filename);
 
-      const migration: (client: unknown) => Promise<void> | undefined =
-        typeof exportedThing === 'function'
-          ? exportedThing
-          : 'default' in exportedThing &&
-              typeof exportedThing.default === 'function'
-            ? exportedThing.default
-            : undefined;
+        const migration: (client: unknown) => Promise<void> | undefined =
+          typeof exportedThing === 'function'
+            ? exportedThing
+            : 'default' in exportedThing &&
+                typeof exportedThing.default === 'function'
+              ? exportedThing.default
+              : undefined;
 
-      if (!migration) {
-        this.error('The script does not export a valid migration function');
-      }
-
-      try {
-        await migration(script.legacy ? legacyEnvClient : envClient);
-      } catch (e) {
-        this.stopSpinner('failed!');
-
-        if (e instanceof Error) {
-          this.log();
-          this.log('----');
-          this.log(e.stack);
-          this.log('----');
-          this.log();
+        if (!migration) {
+          this.error('The script does not export a valid migration function');
         }
 
-        this.error(`Migration "${relativePath}" failed`);
+        try {
+          await migration(script.legacy ? legacyEnvClient : envClient);
+        } catch (e) {
+          this.stopSpinner('failed!');
+
+          if (e instanceof Error) {
+            this.log();
+            this.log('----');
+            this.log(e.stack);
+            this.log('----');
+            this.log();
+          }
+
+          this.error(`Migration "${relativePath}" failed`);
+        }
       }
-    }
 
-    this.stopSpinner();
-
-    if (!dryRun && migrationModel) {
-      await envClient.items.create({
-        item_type: migrationModel,
-        name: relativePath,
-      });
+      if (!dryRun && migrationModel) {
+        await envClient.items.create({
+          item_type: migrationModel,
+          name: relativePath,
+        });
+      }
+    } finally {
+      this.stopSpinner();
     }
   }
 
@@ -340,8 +342,6 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         );
       }
 
-      this.stopSpinner();
-
       return dryRun ? sourceEnv.id : destinationEnvId;
     } catch (e) {
       if (
@@ -357,6 +357,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       }
 
       throw e;
+    } finally {
+      this.stopSpinner();
     }
   }
 
