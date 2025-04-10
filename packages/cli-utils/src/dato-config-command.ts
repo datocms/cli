@@ -46,12 +46,18 @@ export abstract class DatoConfigCommand<
   protected async saveDatoConfig(config: Config): Promise<void> {
     this.startSpinner(`Writing "${this.datoConfigRelativePath}"`);
 
-    await writeFile(
-      this.datoConfigPath,
-      JSON.stringify(config, null, 2),
-      'utf-8',
-    );
+    try {
+      await writeFile(
+        this.datoConfigPath,
+        JSON.stringify(config, null, 2),
+        'utf-8',
+      );
 
-    this.stopSpinner();
+      this.stopSpinner();
+    } catch (e) {
+      this.stopSpinnerWithFailure();
+
+      throw e;
+    }
   }
 }

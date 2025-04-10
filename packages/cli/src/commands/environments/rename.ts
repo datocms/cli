@@ -21,12 +21,19 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       this.parsedArgs;
 
     this.startSpinner(`Renaming environment "${oldId}" -> "${newId}"`);
-    const result = await this.client.environments.rename(oldId, {
-      id: newId,
-    });
 
-    this.stopSpinner();
+    try {
+      const result = await this.client.environments.rename(oldId, {
+        id: newId,
+      });
 
-    return result;
+      this.stopSpinner();
+
+      return result;
+    } catch (e) {
+      this.stopSpinnerWithFailure();
+
+      throw e;
+    }
   }
 }

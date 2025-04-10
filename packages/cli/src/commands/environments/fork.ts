@@ -36,14 +36,14 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     const { fast, force } = this.parsedFlags;
 
+    this.startSpinner(
+      `Starting a ${
+        fast ? 'fast ' : ''
+      }fork of "${srcEnvId}" called "${newEnvId}"`,
+    );
+
     try {
       const sourceEnv = await this.client.environments.find(srcEnvId);
-
-      this.startSpinner(
-        `Starting a ${fast ? 'fast ' : ''}fork of "${
-          sourceEnv.id
-        }" called "${newEnvId}"`,
-      );
 
       const environment = await this.client.environments.fork(
         sourceEnv.id,
@@ -57,6 +57,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
       return environment;
     } catch (e) {
+      this.stopSpinnerWithFailure();
+
       if (e instanceof CmaClient.ApiError && e.findError('NOT_FOUND')) {
         this.error(`An environment called "${srcEnvId}" does not exist`);
       }

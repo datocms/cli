@@ -237,7 +237,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         try {
           await migration(script.legacy ? legacyEnvClient : envClient);
         } catch (e) {
-          this.stopSpinner('failed!');
+          this.stopSpinnerWithFailure();
 
           if (e instanceof Error) {
             this.log();
@@ -257,8 +257,11 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
           name: relativePath,
         });
       }
-    } finally {
+
       this.stopSpinner();
+    } catch (e) {
+      this.stopSpinnerWithFailure();
+      throw e;
     }
   }
 
@@ -342,8 +345,12 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
         );
       }
 
+      this.stopSpinner();
+
       return dryRun ? sourceEnv.id : destinationEnvId;
     } catch (e) {
+      this.stopSpinnerWithFailure();
+
       if (
         e instanceof CmaClient.ApiError &&
         e.findError('ACTIVE_EDITING_SESSIONS')
@@ -357,8 +364,6 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       }
 
       throw e;
-    } finally {
-      this.stopSpinner();
     }
   }
 
@@ -390,14 +395,18 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
         let migrationItemType: SimpleSchemaTypes.ItemType | null = null;
 
-        if (!dryRun) {
-          migrationItemType = await this.createMigrationModel(
-            client,
-            migrationModelApiKey,
-          );
-        }
+        try {
+          if (!dryRun) {
+            migrationItemType = await this.createMigrationModel(
+              client,
+              migrationModelApiKey,
+            );
+          }
 
-        this.stopSpinner();
+          this.stopSpinner();
+        } catch (_e) {
+          this.stopSpinnerWithFailure();
+        }
 
         return migrationItemType;
       }

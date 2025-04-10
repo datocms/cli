@@ -165,15 +165,21 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       `Writing "${relative(process.cwd(), migrationFilePath)}"`,
     );
 
-    await mkdirp(migrationsDir);
+    try {
+      await mkdirp(migrationsDir);
 
-    await writeFile(
-      migrationFilePath,
-      await this.migrationScriptContent(template, format, migrationFilePath),
-      'utf-8',
-    );
+      await writeFile(
+        migrationFilePath,
+        await this.migrationScriptContent(template, format, migrationFilePath),
+        'utf-8',
+      );
 
-    this.stopSpinner();
+      this.stopSpinner();
+    } catch (e) {
+      this.stopSpinnerWithFailure();
+
+      throw e;
+    }
 
     return migrationFilePath;
   }

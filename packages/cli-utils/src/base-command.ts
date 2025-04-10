@@ -54,6 +54,14 @@ export abstract class BaseCommand<
     CliUx.ux.action.stop(message);
   }
 
+  protected stopSpinnerWithFailure(): void {
+    if (this.jsonEnabled()) {
+      return;
+    }
+
+    CliUx.ux.action.stop('FAILED!');
+  }
+
   protected printTable<T extends Record<string, unknown>>(
     data: T[],
     primaryColumns: string[],

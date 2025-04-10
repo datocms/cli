@@ -14,14 +14,17 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
   async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
     const { ENVIRONMENT_ID: envId } = this.parsedArgs;
 
+    this.startSpinner(`Destroying environment "${envId}"`);
+
     try {
-      this.startSpinner(`Destroying environment "${envId}"`);
       const result = await this.client.environments.destroy(envId);
 
       this.stopSpinner();
 
       return result;
     } catch (e) {
+      this.stopSpinnerWithFailure();
+
       if (e instanceof CmaClient.ApiError && e.findError('NOT_FOUND')) {
         this.error(`An environment called "${envId}" does not exist`);
       }

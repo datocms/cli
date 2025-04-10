@@ -5,9 +5,16 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
   async run(): Promise<CmaClient.SimpleSchemaTypes.MaintenanceMode> {
     this.startSpinner('Deactivating maintenance mode');
-    const result = await this.client.maintenanceMode.deactivate();
-    this.stopSpinner();
 
-    return result;
+    try {
+      const result = await this.client.maintenanceMode.deactivate();
+      this.stopSpinner();
+
+      return result;
+    } catch (e) {
+      this.stopSpinnerWithFailure();
+
+      throw e;
+    }
   }
 }

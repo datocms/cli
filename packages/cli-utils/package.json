@@ -10,10 +10,7 @@
   "directories": {
     "lib": "lib"
   },
-  "files": [
-    "lib",
-    "src"
-  ],
+  "files": ["lib", "src"],
   "publishConfig": {
     "access": "public"
   },
@@ -30,5 +27,5 @@
     "build": "tsc",
     "prebuild": "rimraf lib"
   },
-  "gitHead": "156eff36152666cf811463135b831818026501a0"
+  "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485"
 }

@@ -77,12 +77,9 @@
     "node": ">=12.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": [
-    "datocms",
-    "cli"
-  ],
+  "keywords": ["datocms", "cli"],
   "types": "lib/index.d.ts",
-  "gitHead": "7968d13cdb679b4d2d1d431d4783ec40af823681",
+  "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485",
   "devDependencies": {
     "@types/mkdirp": "^1.0.2",
     "@types/prettier": "^2.7.1",

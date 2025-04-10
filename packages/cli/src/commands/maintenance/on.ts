@@ -12,9 +12,9 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
   };
 
   async run(): Promise<CmaClient.SimpleSchemaTypes.MaintenanceMode> {
-    try {
-      this.startSpinner('Activating maintenance mode');
+    this.startSpinner('Activating maintenance mode');
 
+    try {
       const result = await this.client.maintenanceMode.activate({
         force: this.parsedFlags.force,
       });
@@ -23,6 +23,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
       return result;
     } catch (e) {
+      this.stopSpinnerWithFailure();
+
       if (
         e instanceof CmaClient.ApiError &&
         e.findError('ACTIVE_EDITING_SESSIONS')
