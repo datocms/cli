@@ -67,7 +67,13 @@ export default class ImportRecords extends BaseStep {
       contentfulEntries,
       (entry) => `Import ${entry.sys.id}`,
       async (entry) => {
-        const { contentType, publishedVersion, id: entryId } = entry.sys;
+        const {
+          contentType,
+          publishedVersion,
+          id: entryId,
+          createdAt,
+          firstPublishedAt,
+        } = entry.sys;
 
         const contentfulFieldTodatoField =
           ctx.contentTypeIdToDatoFields[contentType.sys.id];
@@ -130,6 +136,10 @@ export default class ImportRecords extends BaseStep {
           item_type: {
             type: 'item_type',
             id: itemType.id,
+          },
+          meta: {
+            created_at: createdAt,
+            first_published_at: firstPublishedAt,
           },
           ...recordAttributes,
         });

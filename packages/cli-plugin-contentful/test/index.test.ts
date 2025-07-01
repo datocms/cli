@@ -211,6 +211,12 @@ describe('Import from Contentful', () => {
       (a) => a.slug === 'static',
     );
 
+    expect(unpublishedArticle?.meta.created_at).to.eq(
+      '2022-05-30T15:30:54.682+01:00',
+    );
+    expect(unpublishedArticle?.meta.first_published_at).to.eq(
+      '2022-05-30T15:30:56.711+01:00',
+    );
     expect(unpublishedArticle?.meta.status).to.eq('draft');
     expect(unpublishedArticle?.title).to.have.own.property('en-US');
     expect(unpublishedArticle?.title?.['en-US']).to.eq(
@@ -220,6 +226,12 @@ describe('Import from Contentful', () => {
     expect(unpublishedArticle?.title?.it).to.eq('');
 
     const publishedArticle = blogPostArticles.find((a) => a.slug === 'hello');
+    expect(publishedArticle?.meta.created_at).to.eq(
+      '2022-05-30T15:30:54.670+01:00',
+    );
+    expect(publishedArticle?.meta.first_published_at).to.eq(
+      '2022-05-30T15:30:56.701+01:00',
+    );
     expect(publishedArticle?.meta.status).to.eq('published');
     expect(publishedArticle?.title.it).to.eq('Ciao Mondo!');
     expect(publishedArticle?.hero_image?.upload_id).to.eq(computerImage?.id);
