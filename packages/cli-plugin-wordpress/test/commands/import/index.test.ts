@@ -33,7 +33,7 @@ describe('Import from WP', () => {
       `Project: https://${site.internal_subdomain}.admin.datocms.com/`,
     );
 
-    const datoApiToken = site.readwrite_token!;
+    const datoApiToken = site.access_token!;
     process.env.DATOCMS_API_TOKEN = datoApiToken;
     const client = CmaClient.buildClient({
       apiToken: datoApiToken,
