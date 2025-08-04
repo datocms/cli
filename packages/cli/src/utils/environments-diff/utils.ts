@@ -192,6 +192,16 @@ export function createJsonLiteral(
   }
 
   if (typeof element === 'number') {
+    // Error: Negative numbers should be created in combination with createPrefixUnaryExpression factory.
+    // The method createNumericLiteral only accepts positive numbers
+    // or those combined with createPrefixUnaryExpression.
+    // Therefore, we need to ensure that the number is not negative.
+    if (element < 0) {
+      return ts.factory.createPrefixUnaryExpression(
+        ts.SyntaxKind.MinusToken,
+        ts.factory.createNumericLiteral(Math.abs(element)),
+      );
+    }
     return ts.factory.createNumericLiteral(element);
   }
 
