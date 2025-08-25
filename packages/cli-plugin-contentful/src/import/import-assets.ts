@@ -1,5 +1,5 @@
 import type { CmaClient } from '@datocms/cli-utils';
-import got from 'got';
+import { fetch } from '@whatwg-node/fetch';
 import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context } from '../commands/contentful/import';
 import { getAll } from '../utils/getAll';
@@ -63,10 +63,14 @@ export default class ImportAssets extends BaseStep {
           async function findUploadUsingContenfulEtagOrCreateNew() {
             const fullUrl = `https:${fileUrl}`;
 
-            const headResponse = await got.head(fullUrl, { maxRedirects: 10 });
+            const headResponse = await fetch(fullUrl, {
+              method: 'HEAD',
+              redirect: 'follow',
+            });
 
-            if (headResponse.headers.etag) {
-              const md5 = headResponse.headers.etag.trim().replace(/"/g, '');
+            const etag = headResponse.headers.get('etag');
+            if (etag) {
+              const md5 = etag.trim().replace(/"/g, '');
 
               if (!md5.includes('-')) {
                 const existingUploads = await client.uploads.list({
