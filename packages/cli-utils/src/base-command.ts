@@ -1,32 +1,12 @@
-import { CliUx, Command } from '@oclif/core';
-import type { FlagInput, ParserOutput } from '@oclif/core/lib/interfaces';
-import { get } from 'lodash';
+import { Command, ux } from '@oclif/core';
 import { serializeError } from 'serialize-error';
+import TtyTable = require('tty-table');
 
-type InferredFlagsType<T> = T extends FlagInput<infer F>
-  ? F & {
-      json: boolean | undefined;
-      output: string | undefined;
-    }
-  : any;
-
-export abstract class BaseCommand<
-  T extends typeof BaseCommand.flags,
-> extends Command {
+export abstract class BaseCommand extends Command {
   static flags = {};
+  static baseFlags = {};
+
   static enableJsonFlag = true;
-
-  protected parsedOutput!: ParserOutput<any, any>;
-  protected parsedArgs!: { [name: string]: string };
-  protected parsedFlags!: InferredFlagsType<T>;
-
-  protected async init(): Promise<void> {
-    await super.init();
-
-    this.parsedOutput = await this.parse(this.ctor);
-    this.parsedFlags = this.parsedOutput?.flags ?? {};
-    this.parsedArgs = this.parsedOutput?.args ?? {};
-  }
 
   protected toErrorJson(err: any): any {
     return { error: { message: err.message, ...err } };
@@ -43,7 +23,7 @@ export abstract class BaseCommand<
       return;
     }
 
-    CliUx.ux.action.start(action, status, opts);
+    ux.action.start(action, status, opts);
   }
 
   protected stopSpinner(message?: string): void {
@@ -51,7 +31,7 @@ export abstract class BaseCommand<
       return;
     }
 
-    CliUx.ux.action.stop(message);
+    ux.action.stop(message);
   }
 
   protected stopSpinnerWithFailure(): void {
@@ -59,35 +39,20 @@ export abstract class BaseCommand<
       return;
     }
 
-    CliUx.ux.action.stop('FAILED!');
+    ux.action.stop('FAILED!');
   }
 
   protected printTable<T extends Record<string, unknown>>(
     data: T[],
-    primaryColumns: string[],
-    extendedColumns: string[],
+    columns: string[],
   ): void {
     if (this.jsonEnabled()) {
       return;
     }
 
-    CliUx.ux.table(
-      data,
-      Object.fromEntries(
-        [...primaryColumns, ...extendedColumns].map((key) => [
-          key,
-          {
-            get: (e: T) => get(e, key),
-            extended: extendedColumns.includes(key),
-            header: key,
-          },
-        ]),
-      ),
-      {
-        ...this.parsedFlags,
-        printLine: this.log.bind(this),
-      },
-    );
+    const table = TtyTable(columns, data);
+
+    this.log.bind(table.render());
   }
 
   protected catch(

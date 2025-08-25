@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "@datocms/cli-utils": "^2.0.22",
-    "@oclif/core": "^1.8.0",
-    "@whatwg-node/fetch": "^0.9.14",
+    "@oclif/core": "^4",
+    "@whatwg-node/fetch": "^0.10.10",
     "async-scheduler": "^1.4.4",
     "contentful-management": "^10.6.0",
     "date-fns": "^2.29.3",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@datocms/dashboard-client": "^0.1.8",
-    "@oclif/test": "^2.1.0",
+    "@oclif/test": "^4",
     "@types/humps": "^2.0.1",
     "@types/listr": "^0.14.4",
     "@types/pluralize": "^0.0.29",

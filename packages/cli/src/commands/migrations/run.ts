@@ -10,11 +10,10 @@ import { require as tsxRequire } from 'tsx/cjs/api';
 
 const MIGRATION_FILE_REGEXP = /^\d+.*\.(js|ts)$/;
 
-export default class Command extends CmaClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand {
   static description = 'Run migration scripts that have not run yet';
 
   static flags = {
-    ...CmaClientCommand.flags,
     source: oclif.Flags.string({
       description: 'Specify the environment to fork',
     }),
@@ -62,6 +61,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     this.requireDatoProfileConfig();
 
     const preference = this.datoProfileConfig?.migrations;
+    const parsed = await this.parse(Command);
 
     const {
       'dry-run': dryRun,
@@ -70,10 +70,10 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       force,
       source: sourceEnvId,
       destination: rawDestinationEnvId,
-    } = this.parsedFlags;
+    } = parsed.flags;
 
     const migrationsDir = resolve(
-      this.parsedFlags['migrations-dir'] ||
+      parsed.flags['migrations-dir'] ||
         (preference?.directory
           ? resolve(dirname(this.datoConfigPath), preference?.directory)
           : undefined) ||
@@ -81,12 +81,12 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     );
 
     const migrationsModelApiKey =
-      this.parsedFlags['migrations-model'] ||
+      parsed.flags['migrations-model'] ||
       preference?.modelApiKey ||
       'schema_migration';
 
     const migrationsTsconfig =
-      this.parsedFlags['migrations-tsconfig'] ||
+      parsed.flags['migrations-tsconfig'] ||
       (preference?.tsconfig
         ? resolve(dirname(this.datoConfigPath), preference?.tsconfig)
         : undefined);
@@ -144,7 +144,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       );
     }
 
-    const envClient = this.buildClient({ environment: destinationEnvId });
+    const envClient = await this.buildClient({ environment: destinationEnvId });
 
     const migrationModel = await this.upsertMigrationModel(
       envClient,
@@ -165,7 +165,7 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     let legacyEnvClient = null;
 
     if (someMigrationScriptRequiresLegacyClient) {
-      const config = this.buildBaseClientInitializationOptions();
+      const config = await this.buildBaseClientInitializationOptions();
 
       try {
         const libraryName = 'datocms-client';

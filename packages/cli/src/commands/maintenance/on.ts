@@ -1,10 +1,9 @@
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 
-export default class Command extends CmaClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand {
   static description = 'Put a project in maintenance mode';
 
   static flags = {
-    ...CmaClientCommand.flags,
     force: oclif.Flags.boolean({
       description:
         'Forces the activation of maintenance mode even there are users currently editing records',
@@ -12,11 +11,13 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
   };
 
   async run(): Promise<CmaClient.SimpleSchemaTypes.MaintenanceMode> {
+    const { flags } = await this.parse(Command);
+
     this.startSpinner('Activating maintenance mode');
 
     try {
       const result = await this.client.maintenanceMode.activate({
-        force: this.parsedFlags.force,
+        force: flags.force,
       });
 
       this.stopSpinner();

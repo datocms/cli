@@ -66,13 +66,10 @@ export type Context = {
   };
   uploadUrlToDatoUploadUrl: Record<string, string>;
 };
-export default class ImportCommand extends CmaClientCommand<
-  typeof ImportCommand.flags
-> {
+export default class ImportCommand extends CmaClientCommand {
   static description = 'Import a Contentful project into a DatoCMS project';
 
   static flags = {
-    ...CmaClientCommand.flags,
     'contentful-token': oclif.Flags.string({
       description: 'Your Contentful project read-only API token',
     }),
@@ -108,22 +105,24 @@ export default class ImportCommand extends CmaClientCommand<
   protected datoSchema!: Record<string, string>;
 
   async run(): Promise<void> {
+    const { flags } = await this.parse(ImportCommand);
+
     this.cfEnvironmentApi = await cfEnvironmentApi({
-      contentfulToken: this.parsedFlags['contentful-token'],
-      contentfulSpaceId: this.parsedFlags['contentful-space-id'],
-      contentfulEnvironment: this.parsedFlags['contentful-environment'],
-      logLevel: this.parsedFlags['log-level'],
-      logFn: this.buildBaseClientInitializationOptions().logFn,
+      contentfulToken: flags['contentful-token'],
+      contentfulSpaceId: flags['contentful-space-id'],
+      contentfulEnvironment: flags['contentful-environment'],
+      logLevel: flags['log-level'],
+      logFn: (await this.buildBaseClientInitializationOptions()).logFn,
     });
 
     const options: Omit<StepOptions, 'ctx' | 'task'> = {
-      autoconfirm: this.parsedFlags.autoconfirm,
-      ignoreErrors: this.parsedFlags['ignore-errors'],
+      autoconfirm: flags.autoconfirm,
+      ignoreErrors: flags['ignore-errors'],
       client: this.client,
       cfEnvironmentApi: this.cfEnvironmentApi,
-      scheduler: new Scheduler(this.parsedFlags.concurrency),
-      importOnly: this.parsedFlags['only-content-type']?.split(','),
-      skipContent: this.parsedFlags['skip-content'],
+      scheduler: new Scheduler(flags.concurrency),
+      importOnly: flags['only-content-type']?.split(','),
+      skipContent: flags['skip-content'],
     };
 
     const tasks = new Listr<Context>(
@@ -223,7 +222,7 @@ export default class ImportCommand extends CmaClientCommand<
               },
             ]);
           },
-          enabled: !this.parsedFlags['skip-content'],
+          enabled: !flags['skip-content'],
         },
         {
           title: 'Add validations to fields',

@@ -4,15 +4,14 @@ import { Flags } from '@oclif/core';
 import { BaseCommand } from './base-command';
 import { type Config, readConfig } from './config';
 
-export abstract class DatoConfigCommand<
-  T extends typeof DatoConfigCommand.flags,
-> extends BaseCommand<T> {
-  static flags = {
-    ...BaseCommand.flags,
+export abstract class DatoConfigCommand extends BaseCommand {
+  static baseFlags = {
+    ...BaseCommand.baseFlags,
     'config-file': Flags.string({
       description: 'Specify a custom config file path',
       env: 'DATOCMS_CONFIG_FILE',
       default: './datocms.config.json',
+      helpGroup: 'GLOBAL',
     }),
   };
 
@@ -23,10 +22,9 @@ export abstract class DatoConfigCommand<
   protected async init(): Promise<void> {
     await super.init();
 
-    this.datoConfigPath = resolve(
-      process.cwd(),
-      this.parsedFlags['config-file'],
-    );
+    const { flags } = await this.parse(this.ctor as typeof DatoConfigCommand);
+
+    this.datoConfigPath = resolve(process.cwd(), flags['config-file']);
 
     this.datoConfigRelativePath = relative(process.cwd(), this.datoConfigPath);
 

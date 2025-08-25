@@ -1,6 +1,6 @@
 import { type CmaClient, CmaClientCommand } from '@datocms/cli-utils';
 
-export default class Command extends CmaClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand {
   static description = 'Take a project out of maintenance mode';
 
   async run(): Promise<CmaClient.SimpleSchemaTypes.MaintenanceMode> {

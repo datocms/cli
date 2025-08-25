@@ -1,17 +1,18 @@
-import { DatoConfigCommand } from '@datocms/cli-utils';
-export default class Command extends DatoConfigCommand<typeof Command.flags> {
+import { DatoConfigCommand, oclif } from '@datocms/cli-utils';
+export default class Command extends DatoConfigCommand {
   static description = 'Remove a profile from DatoCMS config file';
 
-  static args = [
-    {
-      name: 'PROFILE_ID',
+  static args = {
+    PROFILE_ID: oclif.Args.string({
       description: 'The name of the profile',
       required: true,
-    },
-  ];
+    }),
+  };
 
   async run(): Promise<void> {
-    const { PROFILE_ID: profileId } = this.parsedArgs;
+    const {
+      args: { PROFILE_ID: profileId },
+    } = await this.parse(Command);
 
     if (!this.datoConfig) {
       this.log(

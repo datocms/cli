@@ -1,24 +1,21 @@
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 
-export default class Command extends CmaClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand {
   static description =
     'Creates a new sandbox environment by forking an existing one';
 
-  static args = [
-    {
-      name: 'SOURCE_ENVIRONMENT_ID',
+  static args = {
+    SOURCE_ENVIRONMENT_ID: oclif.Args.string({
       description: 'The environment to copy',
       required: true,
-    },
-    {
-      name: 'NEW_ENVIRONMENT_ID',
+    }),
+    NEW_ENVIRONMENT_ID: oclif.Args.string({
       description: 'The name of the new sandbox environment to generate',
       required: true,
-    },
-  ];
+    }),
+  };
 
   static flags = {
-    ...CmaClientCommand.flags,
     fast: oclif.Flags.boolean({
       description:
         'Run a fast fork. A fast fork reduces processing time, but it also prevents writing to the source environment during the process',
@@ -31,10 +28,10 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
   };
 
   async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
-    const { SOURCE_ENVIRONMENT_ID: srcEnvId, NEW_ENVIRONMENT_ID: newEnvId } =
-      this.parsedArgs;
-
-    const { fast, force } = this.parsedFlags;
+    const {
+      args: { SOURCE_ENVIRONMENT_ID: srcEnvId, NEW_ENVIRONMENT_ID: newEnvId },
+      flags: { fast, force },
+    } = await this.parse(Command);
 
     this.startSpinner(
       `Starting a ${
