@@ -38,8 +38,5 @@
     "hooks": {
       "pre-commit": "./node_modules/.bin/lint-staged"
     }
-  },
-  "dependencies": {
-    "tty-table": "^4.2.3"
   }
 }

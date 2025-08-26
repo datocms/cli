@@ -24,13 +24,14 @@
     "chalk": "^4",
     "dotenv": "^16.0.1",
     "lodash": "^4.17.21",
-    "serialize-error": "^8"
+    "serialize-error": "^8",
+    "tty-table": "^4.2.3"
   },
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf lib"
   },
-  "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485",
+  "gitHead": "26a2225c7c88f69fc7231475eec7ae6ad47a2e51",
   "devDependencies": {
     "@types/lodash": "^4.17.20"
   }

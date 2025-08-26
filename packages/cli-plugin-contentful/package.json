@@ -67,5 +67,5 @@
     "commands": "./lib/commands",
     "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli-plugin-contentful/<%- commandPath %>"
   },
-  "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485"
+  "gitHead": "26a2225c7c88f69fc7231475eec7ae6ad47a2e51"
 }
