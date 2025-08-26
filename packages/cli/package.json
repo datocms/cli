@@ -27,11 +27,12 @@
   "dependencies": {
     "@datocms/cli-utils": "^2.0.22",
     "@datocms/rest-client-utils": "^1",
-    "@oclif/plugin-autocomplete": "^1.2.0",
-    "@oclif/plugin-help": "^5",
-    "@oclif/plugin-not-found": "^2.3.1",
-    "@oclif/plugin-plugins": "^2.0.1",
-    "@oclif/plugin-warn-if-update-available": "^2.0.4",
+    "@inquirer/prompts": "^7.8.4",
+    "@oclif/plugin-autocomplete": "^3",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-not-found": "^3",
+    "@oclif/plugin-plugins": "^5",
+    "@oclif/plugin-warn-if-update-available": "^3",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "prettier": "^3.4.2",
@@ -74,16 +75,17 @@
     "version": "oclif readme && git add README.md"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
   "keywords": ["datocms", "cli"],
   "types": "lib/index.d.ts",
   "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485",
   "devDependencies": {
+    "@types/inquirer": "^9.0.9",
+    "@types/lodash": "^4.17.20",
     "@types/mkdirp": "^1.0.2",
     "@types/prettier": "^2.7.1",
-    "datocms-client": "^3.5.20",
-    "oclif": "^3"
+    "oclif": "^4"
   }
 }

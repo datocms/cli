@@ -1,8 +1,8 @@
 import { CmaClient } from '@datocms/cli-utils';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
-import { expect } from '@oclif/test';
+import { runCommand } from '@oclif/test';
 import { fetch } from '@whatwg-node/fetch';
-import ImportCommand from '../../../src/commands/wordpress/import';
+import { expect } from 'chai';
 
 describe('Import from WP', () => {
   it('works', async () => {
@@ -42,12 +42,9 @@ describe('Import from WP', () => {
 
     await client.itemTypes.create({ name: 'WP Page', api_key: 'wp_page' });
 
-    await ImportCommand.run([
-      '--wp-url=http://localhost:8081/',
-      '--wp-username=admin',
-      '--wp-password=password',
-      '--autoconfirm',
-    ]);
+    await runCommand(
+      'wordpress:import --wp-url=http://localhost:8081/ --wp-username=admin --wp-password=password --autoconfirm',
+    );
 
     // =================== ASSETS ===================
 

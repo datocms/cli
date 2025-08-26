@@ -63,7 +63,11 @@ export default class WpPages extends BaseStep {
         field_type: 'link',
         label: 'Author',
         validators: {
-          item_item_type: { item_types: [ctx.datoItemTypes.author.id] },
+          item_item_type: {
+            item_types: [ctx.datoItemTypes.author.id],
+            on_publish_with_unpublished_references_strategy:
+              'publish_references',
+          },
         },
       }),
     ];

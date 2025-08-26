@@ -1,10 +1,11 @@
 import { CmaClient } from '@datocms/cli-utils';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
-import { expect } from '@oclif/test';
+import { runCommand } from '@oclif/test';
+import { expect } from 'chai';
 import type { StructuredText } from 'datocms-structured-text-utils';
 import get from 'lodash/get';
-import ImportCommand from '../src/commands/contentful/import';
 import type { UploadData } from '../src/utils/item-create-helpers';
+
 interface BlogPostType extends CmaClient.SimpleSchemaTypes.Item {
   author: CmaClient.SimpleSchemaTypes.ItemIdentity | null;
   title: { 'en-US': string | null; it?: string | null };
@@ -62,13 +63,9 @@ describe('Import from Contentful', () => {
     });
 
     // ========= SKIP CONTENT ==================
-    await ImportCommand.run([
-      `--contentful-token=${process.env.CONTENTFUL_TOKEN}`,
-      '--contentful-space-id=gjarw06urmh5',
-      '--autoconfirm',
-      '--only-content-type=landingPage',
-      '--skip-content',
-    ]);
+    await runCommand(
+      `contentful:import --contentful-token=${process.env.CONTENTFUL_TOKEN} --contentful-space-id=gjarw06urmh5 --autoconfirm --only-content-type=landingPage --skip-content`,
+    );
 
     const skipContentModels = await client.itemTypes.list();
     expect(skipContentModels.length).to.eq(1);
@@ -77,16 +74,14 @@ describe('Import from Contentful', () => {
     expect(skipContentItems.length).to.eq(0);
 
     // ========= IMPORT FULL PROJECT ==================
-    await ImportCommand.run([
-      `--contentful-token=${process.env.CONTENTFUL_TOKEN}`,
-      '--contentful-space-id=gjarw06urmh5',
-      '--autoconfirm',
-    ]);
+    await runCommand(
+      `contentful:import --contentful-token=${process.env.CONTENTFUL_TOKEN} --contentful-space-id=gjarw06urmh5 --autoconfirm`,
+    );
 
     const createdSite = await client.site.find();
     expect(createdSite.locales).to.have.all.members(['en-US', 'it']);
 
-    // // =================== MODELS ===================
+    // =================== MODELS ===================
     const models = await client.itemTypes.list();
     expect(models.length).to.eq(4);
 
@@ -106,7 +101,7 @@ describe('Import from Contentful', () => {
       return;
     }
 
-    // // =================== FIELDS ===================
+    // =================== FIELDS ===================
 
     const blogPostFields = await client.fields.list(blogPostModel.id);
     // expect(blogPostFields.length).to.eq(8);
@@ -177,7 +172,7 @@ describe('Import from Contentful', () => {
       size: { min: 1, max: 3 },
     });
 
-    // // =================== ASSETS ===================
+    // =================== ASSETS ===================
 
     const uploads = await client.uploads.list();
     expect(uploads.length).to.eq(3);
@@ -198,7 +193,7 @@ describe('Import from Contentful', () => {
     expect(video?.default_field_metadata['en-US'].title).to.eq('beach video');
     expect(video?.mux_playback_id).to.not.be.null;
 
-    // // =================== RECORDS ===================
+    // =================== RECORDS ===================
 
     const blogPostArticles = (await client.items.list({
       filter: { type: blogPostModel.api_key },
@@ -245,7 +240,7 @@ describe('Import from Contentful', () => {
     });
     expect(publishedArticle?.body).to.include(`${computerImage?.url}`);
 
-    // // =================== LINKS ===================
+    // =================== LINKS ===================
     const authors = (await client.items.list({
       filter: { type: authorModel.api_key },
       version: 'current',
@@ -270,7 +265,7 @@ describe('Import from Contentful', () => {
       unpublishedArticle?.id,
     ]);
 
-    // // =================== STRUCTURED TEXT ===================
+    // =================== STRUCTURED TEXT ===================
 
     const content = landing?.content.document.children;
 

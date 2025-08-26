@@ -15,9 +15,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cma-client-node": ">=3.4.4",
-    "@oclif/core": "^1",
-    "@whatwg-node/fetch": "^0.9.14",
+    "@datocms/cma-client-node": "^5",
+    "@oclif/core": "^4",
+    "@whatwg-node/fetch": "^0.10.10",
     "chalk": "^4",
     "dotenv": "^16.0.1",
     "lodash": "^4.17.21",
@@ -27,5 +27,8 @@
     "build": "tsc",
     "prebuild": "rimraf lib"
   },
-  "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485"
+  "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485",
+  "devDependencies": {
+    "@types/lodash": "^4.17.20"
+  }
 }

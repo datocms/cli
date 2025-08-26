@@ -86,7 +86,7 @@ export default async function(client: Client): Promise<void> {
 }
 `.trim();
 
-export default class Command extends CmaClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand {
   static description = 'Create a new migration script';
 
   static flags = {
@@ -110,16 +110,18 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     }),
   };
 
-  static args = [
-    {
-      name: 'NAME',
+  static args = {
+    NAME: oclif.Args.string({
       description: 'The name to give to the script',
       required: true,
-    },
-  ];
+    }),
+  };
 
   async run(): Promise<string> {
-    const { NAME: scriptName } = this.parsedArgs;
+    const {
+      flags,
+      args: { NAME: scriptName },
+    } = await this.parse(Command);
 
     this.requireDatoProfileConfig();
 
@@ -150,9 +152,9 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
     const format: 'js' | 'ts' = template
       ? (extname(template).split('.').pop()! as 'js' | 'ts')
-      : this.parsedFlags.js
+      : flags.js
         ? ('js' as const)
-        : this.parsedFlags.ts || isTsProject
+        : flags.ts || isTsProject
           ? ('ts' as const)
           : ('js' as const);
 
@@ -170,7 +172,12 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
 
       await writeFile(
         migrationFilePath,
-        await this.migrationScriptContent(template, format, migrationFilePath),
+        await this.migrationScriptContent(
+          template,
+          format,
+          migrationFilePath,
+          flags.autogenerate,
+        ),
         'utf-8',
       );
 
@@ -188,9 +195,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
     template: string | undefined,
     format: 'js' | 'ts',
     migrationFilePath: string,
+    rawAutoGenerate: string | undefined,
   ): Promise<string> {
-    const rawAutoGenerate = this.parsedFlags.autogenerate;
-
     if (!rawAutoGenerate) {
       return template
         ? readFileSync(template, 'utf-8')
@@ -217,8 +223,8 @@ export default class Command extends CmaClientCommand<typeof Command.flags> {
       this.error(`Environment "${oldEnv}" does not exist`);
     }
 
-    const newClient = this.buildClient({ environment: newEnvironmentId });
-    const oldClient = this.buildClient({ environment: oldEnvironmentId });
+    const newClient = await this.buildClient({ environment: newEnvironmentId });
+    const oldClient = await this.buildClient({ environment: oldEnvironmentId });
 
     const script = await diffEnvironments({
       newClient,
