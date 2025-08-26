@@ -40,31 +40,31 @@ USAGE
     [--concurrency <value>]
 
 FLAGS
-  --api-token=<value>                             Specify a custom API key to access a DatoCMS project
-  --autoconfirm                                   Automatically enters the affirmative response to all confirmation
-                                                  prompts, enabling the command to execute without waiting for user
-                                                  confirmation. Forces the destroy of existing "wp_*" models.
-  --concurrency=<value>                           [default: 15] Maximum number of operations to be run concurrently
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
-  --ignore-errors                                 Try to ignore errors encountered during import
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
-  --log-mode=(stdout|file|directory)              Where logged output should be written to
-  --profile=<value>                               Use settings of profile in datocms.config.js
-  --wp-json-api-url=<value>                       The endpoint for your WordPress install (ex.
-                                                  https://www.wordpress-website.com/wp-json)
-  --wp-password=<value>                           (required) WordPress password
-  --wp-url=<value>                                A URL within a WordPress REST API-enabled site (ex.
-                                                  https://www.wordpress-website.com)
-  --wp-username=<value>                           (required) WordPress username
+  --autoconfirm              Automatically enters the affirmative response to all confirmation prompts, enabling the
+                             command to execute without waiting for user confirmation. Forces the destroy of existing
+                             "wp_*" models.
+  --concurrency=<value>      [default: 15] Maximum number of operations to be run concurrently
+  --ignore-errors            Try to ignore errors encountered during import
+  --wp-json-api-url=<value>  The endpoint for your WordPress install (ex. https://www.wordpress-website.com/wp-json)
+  --wp-password=<value>      (required) WordPress password
+  --wp-url=<value>           A URL within a WordPress REST API-enabled site (ex. https://www.wordpress-website.com)
+  --wp-username=<value>      (required) WordPress username
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --api-token=<value>    Specify a custom API key to access a DatoCMS project
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --json                 Format output as json.
+  --log-level=<option>   Level of logging for performed API calls
+                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --log-mode=<option>    Where logged output should be written to
+                         <options: stdout|file|directory>
+  --profile=<value>      Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Imports a WordPress site into a DatoCMS project
 ```
 
-_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v2.0.23/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
+_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v3.0.0/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
 <!-- commandsstop -->
 
 # Development

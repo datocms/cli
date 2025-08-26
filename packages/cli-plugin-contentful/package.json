@@ -1,8 +1,12 @@
 {
   "name": "@datocms/cli-plugin-contentful",
-  "version": "2.0.22",
+  "version": "3.0.0",
   "description": "Plugin for DatoCMS CLI to import projects from Contentful to DatoCMS",
-  "keywords": ["contentful", "datocms", "import"],
+  "keywords": [
+    "contentful",
+    "datocms",
+    "import"
+  ],
   "engines": {
     "node": ">=18.0.0"
   },
@@ -11,7 +15,11 @@
   "license": "MIT",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.js",
-  "files": ["/lib", "/npm-shrinkwrap.json", "/oclif.manifest.json"],
+  "files": [
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -31,7 +39,7 @@
     "url": "https://github.com/datocms/cli/issues"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^2.0.22",
+    "@datocms/cli-utils": "^3.0.0",
     "@oclif/core": "^4",
     "@whatwg-node/fetch": "^0.10.10",
     "async-scheduler": "^1.4.4",
@@ -50,8 +58,8 @@
     "@oclif/test": "^4",
     "@types/humps": "^2.0.1",
     "@types/listr": "^0.14.4",
-    "@types/pluralize": "^0.0.29",
     "@types/lodash": "^4.17.20",
+    "@types/pluralize": "^0.0.29",
     "dotenv": "^16.0.2",
     "oclif": "^4"
   },

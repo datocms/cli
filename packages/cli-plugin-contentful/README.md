@@ -41,34 +41,33 @@ USAGE
     [--skip-content] [--only-content-type <value>] [--concurrency <value>]
 
 FLAGS
-  --api-token=<value>                             Specify a custom API key to access a DatoCMS project
-  --autoconfirm                                   Automatically enter an affirmative response to all confirmation
-                                                  prompts, enabling the command to execute without waiting for user
-                                                  confirmation, like forcing the destroy of existing Contentful schema
-                                                  models.
-  --concurrency=<value>                           [default: 15] Specify the maximum number of operations to be run
-                                                  concurrently
-  --config-file=<value>                           [default: ./datocms.config.json] Specify a custom config file path
-  --contentful-environment=<value>                The environment you want to work with
-  --contentful-space-id=<value>                   Your Contentful project space ID
-  --contentful-token=<value>                      Your Contentful project read-only API token
-  --ignore-errors                                 Ignore errors encountered during import
-  --log-level=(NONE|BASIC|BODY|BODY_AND_HEADERS)  Level of logging for performed API calls
-  --log-mode=(stdout|file|directory)              Where logged output should be written to
-  --only-content-type=<value>                     Exclusively import the specified content types. Specify the content
-                                                  types you want to import with comma separated Contentful IDs -
-                                                  Example: blogPost,landingPage,author
-  --profile=<value>                               Use settings of profile in datocms.config.js
-  --skip-content                                  Exclusively import the schema (models) and ignore records and assets
+  --autoconfirm                     Automatically enter an affirmative response to all confirmation prompts, enabling
+                                    the command to execute without waiting for user confirmation, like forcing the
+                                    destroy of existing Contentful schema models.
+  --concurrency=<value>             [default: 15] Specify the maximum number of operations to be run concurrently
+  --contentful-environment=<value>  The environment you want to work with
+  --contentful-space-id=<value>     Your Contentful project space ID
+  --contentful-token=<value>        Your Contentful project read-only API token
+  --ignore-errors                   Ignore errors encountered during import
+  --only-content-type=<value>       Exclusively import the specified content types. Specify the content types you want
+                                    to import with comma separated Contentful IDs - Example: blogPost,landingPage,author
+  --skip-content                    Exclusively import the schema (models) and ignore records and assets
 
 GLOBAL FLAGS
-  --json  Format output as json.
+  --api-token=<value>    Specify a custom API key to access a DatoCMS project
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --json                 Format output as json.
+  --log-level=<option>   Level of logging for performed API calls
+                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --log-mode=<option>    Where logged output should be written to
+                         <options: stdout|file|directory>
+  --profile=<value>      Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v2.0.22/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v3.0.0/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test
