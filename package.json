@@ -10,19 +10,19 @@
     "publish-next": "npm run build && lerna publish --dist-tag next"
   },
   "devDependencies": {
-    "@oclif/test": "^2",
+    "@biomejs/biome": "1.6.4",
+    "@oclif/test": "^4",
     "@types/chai": "^4",
-    "@types/mocha": "^9.0.0",
+    "@types/mocha": "^10",
     "@types/node": "^22.10.2",
     "chai": "^4",
     "globby": "^11",
     "husky": "^7.0.4",
     "lerna": "^4.0.0",
     "lint-staged": "^13.1.0",
-    "mocha": "^9",
-    "oclif": "^3",
+    "mocha": "^10",
+    "oclif": "^4",
     "rimraf": "^3.0.2",
-    "@biomejs/biome": "1.6.4",
     "ts-node": "^10.2.1",
     "tslib": "^2.3.1",
     "typescript": "5.7.2"
@@ -38,5 +38,8 @@
     "hooks": {
       "pre-commit": "./node_modules/.bin/lint-staged"
     }
+  },
+  "dependencies": {
+    "tty-table": "^4.2.3"
   }
 }

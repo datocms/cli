@@ -45,13 +45,10 @@ export type Context = {
   wpAssetUrlToDatoUrl?: Record<string, string>;
   wpAssetIdToDatoId?: Record<string, string>;
 };
-export default class ImportCommand extends CmaClientCommand<
-  typeof ImportCommand.flags
-> {
+export default class ImportCommand extends CmaClientCommand {
   static description = 'Imports a WordPress site into a DatoCMS project';
 
   static flags = {
-    ...CmaClientCommand.flags,
     'wp-json-api-url': oclif.Flags.string({
       description:
         'The endpoint for your WordPress install (ex. https://www.wordpress-website.com/wp-json)',
@@ -87,19 +84,21 @@ export default class ImportCommand extends CmaClientCommand<
   protected datoSchema!: Record<string, string>;
 
   async run(): Promise<void> {
+    const { flags } = await this.parse(ImportCommand);
+
     this.wpClient = await buildWpClient({
-      username: this.parsedFlags['wp-username'],
-      password: this.parsedFlags['wp-password'],
-      apiUrl: this.parsedFlags['wp-json-api-url'],
-      discoverUrl: this.parsedFlags['wp-url'],
+      username: flags['wp-username'],
+      password: flags['wp-password'],
+      apiUrl: flags['wp-json-api-url'],
+      discoverUrl: flags['wp-url'],
     });
 
     const options: Omit<StepOptions, 'ctx' | 'task'> = {
-      autoconfirm: this.parsedFlags.autoconfirm,
-      ignoreErrors: this.parsedFlags['ignore-errors'],
+      autoconfirm: flags.autoconfirm,
+      ignoreErrors: flags['ignore-errors'],
       client: this.client,
       wpClient: this.wpClient,
-      scheduler: new Scheduler(this.parsedFlags.concurrency),
+      scheduler: new Scheduler(flags.concurrency),
     };
 
     const tasks = new Listr<Context>(
@@ -199,7 +198,7 @@ export default class ImportCommand extends CmaClientCommand<
           collapseErrors: false,
         },
         rendererFallback:
-          this.buildBaseClientInitializationOptions().logLevel !==
+          (await this.buildBaseClientInitializationOptions()).logLevel !==
           CmaClient.LogLevel.NONE,
       },
     );

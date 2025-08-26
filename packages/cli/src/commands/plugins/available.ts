@@ -1,4 +1,4 @@
-import { BaseCommand, oclif } from '@datocms/cli-utils';
+import { BaseCommand } from '@datocms/cli-utils';
 
 type AvailablePlugin = {
   package: string;
@@ -9,13 +9,8 @@ type MaybeInstalledPlugin = AvailablePlugin & {
   installed: boolean;
 };
 
-export default class Command extends BaseCommand<typeof Command.flags> {
+export default class Command extends BaseCommand {
   static description = 'Lists official DatoCMS CLI plugins';
-
-  static flags = {
-    ...BaseCommand.flags,
-    ...oclif.CliUx.ux.table.flags(),
-  };
 
   static availablePlugins: AvailablePlugin[] = [
     {
@@ -31,16 +26,14 @@ export default class Command extends BaseCommand<typeof Command.flags> {
   async run(): Promise<MaybeInstalledPlugin[]> {
     const installedPlugins = this.config.plugins;
 
-    const maybeInstalled = Command.availablePlugins.map((p) => ({
-      ...p,
-      installed: installedPlugins.some((ip) => ip.name === p.package),
+    const maybeInstalled = Command.availablePlugins.map((availablePlugin) => ({
+      ...availablePlugin,
+      installed: Array.from(installedPlugins.values()).some(
+        (installedPlugin) => installedPlugin.name === availablePlugin.package,
+      ),
     }));
 
-    this.printTable(
-      maybeInstalled,
-      ['package', 'description', 'installed'],
-      [],
-    );
+    this.printTable(maybeInstalled, ['package', 'description', 'installed']);
 
     return maybeInstalled;
   }

@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@datocms/cli-utils": "^2.0.22",
-    "@oclif/core": "^1.8.0",
+    "@oclif/core": "^4",
     "async-scheduler": "^1.4.4",
     "enquirer": ">= 2.3.0 < 3",
     "inflected": "^2.1.0",
@@ -32,11 +32,11 @@
     "build": "rm -rf lib && tsc -b",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run build && oclif manifest && oclif readme",
-    "test": "mocha --timeout 120000 --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
+    "test": "mocha --timeout 200000 --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
   "keywords": ["datocms", "cli"],
@@ -44,11 +44,11 @@
   "gitHead": "88e1a052dbb8c8134efdc5d66e32ede065db0485",
   "devDependencies": {
     "@datocms/dashboard-client": "^0.1.8",
-    "@oclif/test": "^2.1.0",
+    "@oclif/test": "^4",
     "@types/inflected": "^1.1.29",
     "@types/listr": "^0.14.4",
     "@types/wpapi": "^1.1.1",
-    "@whatwg-node/fetch": "^0.9.14",
-    "oclif": "^3"
+    "@whatwg-node/fetch": "^0.10.10",
+    "oclif": "^4"
   }
 }

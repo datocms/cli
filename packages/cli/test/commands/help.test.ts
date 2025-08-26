@@ -1,11 +1,7 @@
-import { expect, test } from '@oclif/test';
+import { runCommand } from '@oclif/test';
+import { expect } from 'chai';
 
-describe('datocms', () => {
-  test
-    .loadConfig({ root: process.cwd() })
-    .stdout()
-    .command(['help'])
-    .it('runs help', (ctx) => {
-      expect(ctx.stdout).to.contain('plugins');
-    });
+describe('datocms', async () => {
+  const { stdout } = await runCommand('help');
+  expect(stdout).to.contain('plugins');
 });

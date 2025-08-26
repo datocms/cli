@@ -1,24 +1,23 @@
-import { type CmaClient, CmaClientCommand } from '@datocms/cli-utils';
+import { type CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 
-export default class Command extends CmaClientCommand<typeof Command.flags> {
+export default class Command extends CmaClientCommand {
   static description = 'Renames an environment';
 
-  static args = [
-    {
-      name: 'ENVIRONMENT_ID',
+  static args = {
+    ENVIRONMENT_ID: oclif.Args.string({
       description: 'The environment to rename',
       required: true,
-    },
-    {
-      name: 'NEW_ENVIRONMENT_ID',
+    }),
+    NEW_ENVIRONMENT_ID: oclif.Args.string({
       description: 'The new environment ID',
       required: true,
-    },
-  ];
+    }),
+  };
 
   async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
-    const { ENVIRONMENT_ID: oldId, NEW_ENVIRONMENT_ID: newId } =
-      this.parsedArgs;
+    const {
+      args: { ENVIRONMENT_ID: oldId, NEW_ENVIRONMENT_ID: newId },
+    } = await this.parse(Command);
 
     this.startSpinner(`Renaming environment "${oldId}" -> "${newId}"`);
 

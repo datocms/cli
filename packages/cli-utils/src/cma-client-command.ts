@@ -9,7 +9,7 @@ import {
 } from '@datocms/cma-client-node';
 import { Flags } from '@oclif/core';
 import { fetch as ponyfillFetch } from '@whatwg-node/fetch';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { DatoProfileConfigCommand } from './dato-profile-config-command';
 
 const fetchFn = typeof fetch === 'undefined' ? ponyfillFetch : fetch;
@@ -25,28 +25,25 @@ export type LogLevelFlagEnum = keyof typeof logLevelMap;
 export const logLevelOptions = Object.keys(logLevelMap) as LogLevelFlagEnum[];
 
 export type LogLevelModeEnum = 'stdout' | 'file' | 'directory';
-export const logLevelModes: LogLevelModeEnum[] = [
-  'stdout',
-  'file',
-  'directory',
-];
+export const logLevelModes = ['stdout', 'file', 'directory'];
 
-export abstract class CmaClientCommand<
-  T extends typeof CmaClientCommand.flags,
-> extends DatoProfileConfigCommand<T> {
-  static flags = {
-    ...DatoProfileConfigCommand.flags,
+export abstract class CmaClientCommand extends DatoProfileConfigCommand {
+  static baseFlags = {
+    ...DatoProfileConfigCommand.baseFlags,
     'api-token': Flags.string({
       description: 'Specify a custom API key to access a DatoCMS project',
+      helpGroup: 'GLOBAL',
     }),
-    'log-level': Flags.enum<LogLevelFlagEnum>({
+    'log-level': Flags.custom<LogLevelFlagEnum>({
       options: logLevelOptions,
       description: 'Level of logging for performed API calls',
-    }),
-    'log-mode': Flags.enum<LogLevelModeEnum>({
+      helpGroup: 'GLOBAL',
+    })(),
+    'log-mode': Flags.custom<LogLevelModeEnum>({
       options: logLevelModes,
       description: 'Where logged output should be written to',
-    }),
+      helpGroup: 'GLOBAL',
+    })(),
     'base-url': Flags.string({ hidden: true }),
   };
 
@@ -54,31 +51,32 @@ export abstract class CmaClientCommand<
 
   protected async init(): Promise<void> {
     await super.init();
-    this.client = this.buildClient();
+
+    this.client = await this.buildClient();
   }
 
-  protected buildBaseClientInitializationOptions(): Partial<ClientConfigOptions> & {
-    apiToken: string;
-  } {
+  protected async buildBaseClientInitializationOptions(): Promise<
+    Partial<ClientConfigOptions> & {
+      apiToken: string;
+    }
+  > {
     const apiTokenEnvName =
       this.profileId === 'default'
         ? 'DATOCMS_API_TOKEN'
         : `DATOCMS_${this.profileId.toUpperCase()}_PROFILE_API_TOKEN`;
 
-    const apiToken =
-      this.parsedFlags['api-token'] || process.env[apiTokenEnvName];
+    const { flags } = await this.parse(this.ctor as typeof CmaClientCommand);
 
-    const baseUrl =
-      this.parsedFlags['base-url'] || this.datoProfileConfig?.baseUrl;
+    const apiToken = flags['api-token'] || process.env[apiTokenEnvName];
 
-    const logLevelCode =
-      this.parsedFlags['log-level'] || this.datoProfileConfig?.logLevel;
+    const baseUrl = flags['base-url'] || this.datoProfileConfig?.baseUrl;
 
-    const logMode =
-      this.parsedFlags['log-mode'] || this.datoProfileConfig?.logMode;
+    const logLevelCode = flags['log-level'] || this.datoProfileConfig?.logLevel;
+
+    const logMode = flags['log-mode'] || this.datoProfileConfig?.logMode;
 
     const logLevel =
-      this.parsedFlags.json || this.parsedFlags.output || !logLevelCode
+      flags.json || flags.output || !logLevelCode
         ? LogLevel.NONE
         : logLevelMap[logLevelCode];
 
@@ -128,9 +126,11 @@ export abstract class CmaClientCommand<
     };
   }
 
-  protected buildClient(config: Partial<ClientConfigOptions> = {}): Client {
+  protected async buildClient(
+    config: Partial<ClientConfigOptions> = {},
+  ): Promise<Client> {
     return buildClient({
-      ...this.buildBaseClientInitializationOptions(),
+      ...(await this.buildBaseClientInitializationOptions()),
       ...config,
       fetchFn,
     });

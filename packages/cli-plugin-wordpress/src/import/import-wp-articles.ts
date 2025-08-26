@@ -68,7 +68,11 @@ export default class WpArticles extends BaseStep {
         field_type: 'link',
         label: 'Author',
         validators: {
-          item_item_type: { item_types: [ctx.datoItemTypes.author.id] },
+          item_item_type: {
+            item_types: [ctx.datoItemTypes.author.id],
+            on_publish_with_unpublished_references_strategy:
+              'publish_references',
+          },
         },
       }),
       this.client.fields.create(itemType.id, {
@@ -76,7 +80,11 @@ export default class WpArticles extends BaseStep {
         field_type: 'links',
         label: 'Categories',
         validators: {
-          items_item_type: { item_types: [ctx.datoItemTypes.category.id] },
+          items_item_type: {
+            item_types: [ctx.datoItemTypes.category.id],
+            on_publish_with_unpublished_references_strategy:
+              'publish_references',
+          },
         },
       }),
       this.client.fields.create(itemType.id, {
@@ -84,7 +92,11 @@ export default class WpArticles extends BaseStep {
         field_type: 'links',
         label: 'Tags',
         validators: {
-          items_item_type: { item_types: [ctx.datoItemTypes.tag.id] },
+          items_item_type: {
+            item_types: [ctx.datoItemTypes.tag.id],
+            on_publish_with_unpublished_references_strategy:
+              'publish_references',
+          },
         },
       }),
     ];

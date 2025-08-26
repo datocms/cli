@@ -5,27 +5,26 @@ import {
   logLevelOptions,
   oclif,
 } from '@datocms/cli-utils';
+import { input, select } from '@inquirer/prompts';
 import { camelCase } from 'lodash';
 
-export default class Command extends DatoConfigCommand<typeof Command.flags> {
+export default class Command extends DatoConfigCommand {
   static description =
     'Add/update profile configuration in DatoCMS config file';
 
-  static args = [
-    {
-      name: 'PROFILE_ID',
+  static args = {
+    PROFILE_ID: oclif.Args.string({
       description: 'Name of the profile to create/update',
       default: 'default',
       required: true,
-    },
-  ];
+    }),
+  };
 
   static flags = {
-    ...DatoConfigCommand.flags,
-    'log-level': oclif.Flags.enum<LogLevelFlagEnum>({
+    'log-level': oclif.Flags.custom<LogLevelFlagEnum>({
       options: logLevelOptions,
       description: 'Level of logging to use for the profile',
-    }),
+    })(),
     'migrations-dir': oclif.Flags.string({
       description: 'Directory where script migrations will be stored',
     }),
@@ -43,13 +42,16 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
   };
 
   async run(): Promise<void> {
+    const {
+      args: { PROFILE_ID: profileId },
+      flags,
+    } = await this.parse(Command);
+
     if (!this.datoConfig) {
       this.log(
         `Config file not present in "${this.datoConfigRelativePath}", will be created from scratch`,
       );
     }
-
-    const profileId = this.parsedArgs.PROFILE_ID;
 
     this.log(`Requested to configure profile "${profileId}"`);
 
@@ -65,79 +67,75 @@ export default class Command extends DatoConfigCommand<typeof Command.flags> {
     this.log();
 
     const logLevel =
-      this.parsedFlags['log-level'] ||
-      (await oclif.CliUx.ux.prompt(
-        `* Level of logging to use for the profile (${logLevelOptions.join(
+      flags['log-level'] ||
+      (await select({
+        message: `* Level of logging to use for the profile (${logLevelOptions.join(
           ', ',
         )})`,
-        {
-          default: existingProfileConfig?.logLevel || 'NONE',
-          required: true,
-        },
-      ));
+        default: existingProfileConfig?.logLevel || 'NONE',
+        choices: logLevelOptions.map((option) => ({
+          name: option,
+          value: option,
+        })),
+      }));
 
     const migrationsDir =
-      this.parsedFlags['migrations-dir'] ||
-      (await oclif.CliUx.ux.prompt(
-        '* Directory where script migrations will be stored',
-        {
-          default:
-            existingProfileConfig?.migrations?.directory ||
-            (Object.keys(this.datoConfig?.profiles || {}).length -
-              (existingProfileConfig ? 1 : 0) ===
-            0
-              ? './migrations'
-              : `./${camelCase(`${profileId} migrations`)}`),
-          required: true,
-        },
-      ));
+      flags['migrations-dir'] ||
+      (await input({
+        message: '* Directory where script migrations will be stored',
+        default:
+          existingProfileConfig?.migrations?.directory ||
+          (Object.keys(this.datoConfig?.profiles || {}).length -
+            (existingProfileConfig ? 1 : 0) ===
+          0
+            ? './migrations'
+            : `./${camelCase(`${profileId} migrations`)}`),
+        required: true,
+      }));
 
     const migrationModelApiKey =
-      this.parsedFlags['migrations-model'] ||
-      (await oclif.CliUx.ux.prompt(
-        '* API key of the DatoCMS model used to store migration data',
-        {
-          default:
-            existingProfileConfig?.migrations?.modelApiKey ||
-            'schema_migration',
-          required: true,
-        },
-      ));
+      flags['migrations-model'] ||
+      (await input({
+        message: '* API key of the DatoCMS model used to store migration data',
+        default:
+          existingProfileConfig?.migrations?.modelApiKey || 'schema_migration',
+        required: true,
+      }));
 
     const migrationTemplate =
-      this.parsedFlags['migrations-template'] ||
-      (await oclif.CliUx.ux.prompt(
-        '* Path of the file to use as migration script template (optional)',
-        {
-          default: existingProfileConfig?.migrations?.template,
-          required: false,
-        },
-      ));
+      flags['migrations-template'] ||
+      (await input({
+        message:
+          '* Path of the file to use as migration script template (optional)',
+        default: existingProfileConfig?.migrations?.template,
+        required: false,
+      }));
 
     const migrationTsconfig =
-      this.parsedFlags['migrations-tsconfig'] ||
-      (await oclif.CliUx.ux.prompt(
-        '* Path of the tsconfig.json to use to run TS migration scripts (optional)',
-        {
-          default: existingProfileConfig?.migrations?.tsconfig,
-          required: false,
-        },
-      ));
+      flags['migrations-tsconfig'] ||
+      (await input({
+        message:
+          '* Path of the tsconfig.json to use to run TS migration scripts (optional)',
+        default: existingProfileConfig?.migrations?.tsconfig,
+        required: false,
+      }));
+
+    const newProfileConfig: ProfileConfig = {
+      ...this.datoConfig?.profiles[profileId],
+      logLevel,
+      migrations: {
+        directory: migrationsDir,
+        modelApiKey: migrationModelApiKey,
+        template: migrationTemplate,
+        tsconfig: migrationTsconfig,
+      },
+    };
 
     await this.saveDatoConfig({
       ...this.datoConfig,
       profiles: {
         ...this.datoConfig?.profiles,
-        [profileId]: {
-          ...this.datoConfig?.profiles[profileId],
-          logLevel,
-          migrations: {
-            directory: migrationsDir,
-            modelApiKey: migrationModelApiKey,
-            template: migrationTemplate,
-            tsconfig: migrationTsconfig,
-          },
-        },
+        [profileId]: newProfileConfig,
       },
     });
   }
