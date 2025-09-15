@@ -27,7 +27,7 @@ export default class Command extends CmaClientCommand {
     }),
   };
 
-  async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
+  async run(): Promise<CmaClient.ApiTypes.Environment> {
     const {
       args: { SOURCE_ENVIRONMENT_ID: srcEnvId, NEW_ENVIRONMENT_ID: newEnvId },
       flags: { fast, force },

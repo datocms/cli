@@ -10,7 +10,7 @@ import { buildPluginTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 function buildCreatePluginClientCommand(
-  plugin: CmaClient.SchemaTypes.Plugin,
+  plugin: CmaClient.RawApiTypes.Plugin,
 ): Command[] {
   const commands: Command[] = [];
 
@@ -70,7 +70,7 @@ function buildCreatePluginClientCommand(
 }
 
 function buildDestroyPluginClientCommand(
-  plugin: CmaClient.SchemaTypes.Plugin,
+  plugin: CmaClient.RawApiTypes.Plugin,
 ): Command[] {
   return [
     buildComment(`Delete ${buildPluginTitle(plugin)}`),
@@ -83,8 +83,8 @@ function buildDestroyPluginClientCommand(
 }
 
 function buildUpdatePluginClientCommand(
-  newPlugin: CmaClient.SchemaTypes.Plugin,
-  oldPlugin: CmaClient.SchemaTypes.Plugin,
+  newPlugin: CmaClient.RawApiTypes.Plugin,
+  oldPlugin: CmaClient.RawApiTypes.Plugin,
 ): Command[] {
   const isLegacy = oldPlugin.meta.version === '1';
   const isPublic = Boolean(oldPlugin.attributes.package_name);
@@ -97,7 +97,7 @@ function buildUpdatePluginClientCommand(
       intersection(
         (
           Object.keys(newPlugin.attributes) as Array<
-            keyof CmaClient.SchemaTypes.PluginAttributes
+            keyof CmaClient.RawApiTypes.PluginAttributes
           >
         ).filter(
           (attribute) =>

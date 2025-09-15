@@ -1,7 +1,7 @@
 import type { CmaClient } from '@datocms/cli-utils';
 import * as ts from 'typescript';
 
-export function buildFieldsetTitle(fieldset: CmaClient.SchemaTypes.Fieldset) {
+export function buildFieldsetTitle(fieldset: CmaClient.RawApiTypes.Fieldset) {
   return `fieldset "${fieldset.attributes.title}"`;
 }
 
@@ -29,13 +29,13 @@ const fieldTypeName: Record<string, string> = {
   video: 'External video',
 };
 
-export function buildMenuItemTitle(menuItem: CmaClient.SchemaTypes.MenuItem) {
+export function buildMenuItemTitle(menuItem: CmaClient.RawApiTypes.MenuItem) {
   return `menu item "${menuItem.attributes.label}"`;
 }
 
 export function buildSchemaMenuItemTitle(
-  schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
-  itemType: CmaClient.SchemaTypes.ItemType | undefined,
+  schemaMenuItem: CmaClient.RawApiTypes.SchemaMenuItem,
+  itemType: CmaClient.RawApiTypes.ItemType | undefined,
 ) {
   const context =
     schemaMenuItem.attributes.kind === 'item_type' ? 'model' : 'block';
@@ -47,33 +47,33 @@ export function buildSchemaMenuItemTitle(
   return `${context} schema menu item ${name}`;
 }
 
-export function buildWorkflowTitle(workflow: CmaClient.SchemaTypes.Workflow) {
+export function buildWorkflowTitle(workflow: CmaClient.RawApiTypes.Workflow) {
   return `workflow "${workflow.attributes.name}"`;
 }
 
-export function buildPluginTitle(plugin: CmaClient.SchemaTypes.Plugin) {
+export function buildPluginTitle(plugin: CmaClient.RawApiTypes.Plugin) {
   return `plugin "${plugin.attributes.name}"`;
 }
 
 export function buildUploadFilterTitle(
-  uploadFilter: CmaClient.SchemaTypes.UploadFilter,
+  uploadFilter: CmaClient.RawApiTypes.UploadFilter,
 ) {
   return `Media Area filter "${uploadFilter.attributes.name}"`;
 }
 
 export function buildItemTypeFilterTitle(
-  itemTypeFilter: CmaClient.SchemaTypes.ItemTypeFilter,
+  itemTypeFilter: CmaClient.RawApiTypes.ItemTypeFilter,
 ) {
   return `filter "${itemTypeFilter.attributes.name}"`;
 }
 
-export function buildFieldTitle(field: CmaClient.SchemaTypes.Field) {
+export function buildFieldTitle(field: CmaClient.RawApiTypes.Field) {
   return `${fieldTypeName[field.attributes.field_type]} field "${
     field.attributes.label
   }" (\`${field.attributes.api_key}\`)`;
 }
 
-export function buildItemTypeTitle(itemType: CmaClient.SchemaTypes.ItemType) {
+export function buildItemTypeTitle(itemType: CmaClient.RawApiTypes.ItemType) {
   const itemTypeApiKey = itemType.attributes.api_key;
   const itemTypeName = itemType.attributes.name;
   return `${

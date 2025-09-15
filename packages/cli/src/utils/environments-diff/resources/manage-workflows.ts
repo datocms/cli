@@ -5,7 +5,7 @@ import { buildWorkflowTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 function buildCreateWorkflowClientCommand(
-  workflow: CmaClient.SchemaTypes.Workflow,
+  workflow: CmaClient.RawApiTypes.Workflow,
 ): Command[] {
   return [
     buildComment(`Create ${buildWorkflowTitle(workflow)}`),
@@ -27,7 +27,7 @@ function buildCreateWorkflowClientCommand(
 }
 
 function buildDestroyWorkflowClientCommand(
-  workflow: CmaClient.SchemaTypes.Workflow,
+  workflow: CmaClient.RawApiTypes.Workflow,
 ): Command[] {
   return [
     buildComment(`Delete ${buildWorkflowTitle(workflow)}`),
@@ -40,14 +40,14 @@ function buildDestroyWorkflowClientCommand(
 }
 
 function buildUpdateWorkflowClientCommand(
-  newWorkflow: CmaClient.SchemaTypes.Workflow,
-  oldWorkflow: CmaClient.SchemaTypes.Workflow,
+  newWorkflow: CmaClient.RawApiTypes.Workflow,
+  oldWorkflow: CmaClient.RawApiTypes.Workflow,
 ): Command[] {
   const attributesToUpdate = pick(
     newWorkflow.attributes,
     (
       Object.keys(newWorkflow.attributes) as Array<
-        keyof CmaClient.SchemaTypes.WorkflowAttributes
+        keyof CmaClient.RawApiTypes.WorkflowAttributes
       >
     ).filter(
       (attribute) =>

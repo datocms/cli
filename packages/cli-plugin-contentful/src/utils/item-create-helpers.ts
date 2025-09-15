@@ -26,7 +26,7 @@ export const isLinkType = (datoFieldType: string): boolean => {
 
 export const datoValueForFieldType = async (
   contentfulValue: unknown,
-  fieldType: CmaClient.SimpleSchemaTypes.Field['field_type'],
+  fieldType: CmaClient.ApiTypes.Field['field_type'],
   uploadUrlToDatoUploadUrl: Context['uploadUrlToDatoUploadUrl'],
 ): Promise<unknown> => {
   // Fills link and media fields temporarly. They will be valorized once we create all items
@@ -73,13 +73,13 @@ export const datoValueForFieldType = async (
 };
 
 export type UploadData = {
-  upload_id: CmaClient.SimpleSchemaTypes.UploadIdentity;
+  upload_id: CmaClient.ApiTypes.UploadIdentity;
   alt: string | null;
   title: string | null;
   focal_point?: string;
   custom_data: Record<string, string>;
 };
-type LinkData = CmaClient.SimpleSchemaTypes.ItemIdentity;
+type LinkData = CmaClient.ApiTypes.ItemIdentity;
 type ContentfulSingleLinkData = {
   sys: {
     id: string;
@@ -88,7 +88,7 @@ type ContentfulSingleLinkData = {
 
 export const datoLinkValueForFieldType = async (
   contentfulValue: unknown,
-  fieldType: CmaClient.SimpleSchemaTypes.Field['field_type'],
+  fieldType: CmaClient.ApiTypes.Field['field_type'],
   entryIdToDatoItemId: Context['entryIdToDatoItemId'],
   uploadIdToDatoUploadInfo: Context['uploadIdToDatoUploadInfo'],
   assetBlockId: string,

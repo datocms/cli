@@ -6,6 +6,7 @@ import { camelCase } from 'lodash';
 import mkdirp from 'mkdirp';
 import { diffEnvironments } from '../../utils/environments-diff';
 import { findNearestFile } from '../../utils/find-nearest-file';
+import { SchemaTypesGenerator } from '../../utils/schema-types-generator';
 
 const jsTemplate = `
 'use strict';
@@ -108,6 +109,11 @@ export default class Command extends CmaClientCommand {
         "Auto-generates script by diffing the schema of two environments\n\nExamples:\n* --autogenerate=foo finds changes made to sandbox environment 'foo' and applies them to primary environment\n* --autogenerate=foo:bar finds changes made to environment 'foo' and applies them to environment 'bar'",
       exclusive: ['template'],
     }),
+    schema: oclif.Flags.string({
+      description:
+        'Include schema definitions for models and blocks (TypeScript only). Use "all" for all item types, or specify comma-separated API keys for specific ones',
+      required: false,
+    }),
   };
 
   static args = {
@@ -177,6 +183,7 @@ export default class Command extends CmaClientCommand {
           format,
           migrationFilePath,
           flags.autogenerate,
+          flags.schema,
         ),
         'utf-8',
       );
@@ -196,13 +203,22 @@ export default class Command extends CmaClientCommand {
     format: 'js' | 'ts',
     migrationFilePath: string,
     rawAutoGenerate: string | undefined,
+    schemaFilter: string | undefined,
   ): Promise<string> {
     if (!rawAutoGenerate) {
-      return template
+      let content = template
         ? readFileSync(template, 'utf-8')
         : format === 'js'
           ? jsTemplate
           : tsTemplate;
+
+      // Add schema types if requested (only for TypeScript)
+      if (schemaFilter && format === 'ts') {
+        const schemaTypes = await this.generateSchemaTypes(schemaFilter);
+        content = this.addSchemaTypesToMigration(content, schemaTypes);
+      }
+
+      return content;
     }
 
     const allEnvironments = await this.client.environments.list();
@@ -236,5 +252,50 @@ export default class Command extends CmaClientCommand {
     });
 
     return script;
+  }
+
+  private async generateSchemaTypes(schemaFilter: string): Promise<string> {
+    const client = await this.buildClient();
+    const generator = new SchemaTypesGenerator(client);
+    const itemTypesFilter =
+      schemaFilter.toLowerCase() === 'all' ? undefined : schemaFilter;
+
+    return await generator.generateSchemaTypesForMigration({
+      itemTypesFilter,
+    });
+  }
+
+  private addSchemaTypesToMigration(
+    content: string,
+    schemaTypes: string,
+  ): string {
+    // Update the import to include ItemTypeDefinition
+    const importMatch = content.match(
+      /^import { Client } from '@datocms\/cli\/lib\/cma-client-node';/m,
+    );
+
+    let updatedContent = content;
+    if (importMatch) {
+      const updatedImport =
+        "import { Client, ItemTypeDefinition } from '@datocms/cli/lib/cma-client-node';";
+      updatedContent = updatedContent.replace(importMatch[0], updatedImport);
+    }
+
+    // Add schema types before the function declaration
+    const functionMatch = updatedContent.match(
+      /^export default async function/m,
+    );
+    if (functionMatch) {
+      const insertIndex = functionMatch.index!;
+      return `${updatedContent.slice(
+        0,
+        insertIndex,
+      )}// Schema type definitions\n${schemaTypes}\n\n${updatedContent.slice(
+        insertIndex,
+      )}`;
+    }
+
+    // Fallback: prepend to the beginning
+    return `// Schema type definitions\n${schemaTypes}\n\n${updatedContent}`;
   }
 }

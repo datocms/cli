@@ -44,7 +44,7 @@ function buildUpdateRoleDiff<T>(
 }
 
 function getEnvItemTypePermissions(
-  permissions: CmaClient.SchemaTypes.RoleAttributes['positive_item_type_permissions'],
+  permissions: CmaClient.RawApiTypes.RoleAttributes['positive_item_type_permissions'],
   newEnvironmentId: string,
   oldEnvironmentId: string,
 ): UpdateRoleDiff<RoleItemTypePermission> | undefined {
@@ -60,7 +60,7 @@ function getEnvItemTypePermissions(
 }
 
 function getEnvUploadPermissions(
-  permissions: CmaClient.SchemaTypes.RoleAttributes['positive_upload_permissions'],
+  permissions: CmaClient.RawApiTypes.RoleAttributes['positive_upload_permissions'],
   newEnvironmentId: string,
   oldEnvironmentId: string,
 ): UpdateRoleDiff<RoleUploadPermission> | undefined {
@@ -76,7 +76,7 @@ function getEnvUploadPermissions(
 }
 
 export function updateRole(
-  role: CmaClient.SchemaTypes.Role,
+  role: CmaClient.RawApiTypes.Role,
   newEnvironmentId: string,
   oldEnvironmentId: string,
 ): Command[] {
@@ -139,7 +139,7 @@ export function updateRole(
 }
 
 export function updateRoles(
-  roles: CmaClient.SchemaTypes.Role[],
+  roles: CmaClient.RawApiTypes.Role[],
   newEnvironmentId: string,
   oldEnvironmentId: string,
 ): Command[] {

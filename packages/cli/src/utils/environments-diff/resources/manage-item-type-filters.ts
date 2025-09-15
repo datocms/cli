@@ -9,8 +9,8 @@ import {
 import { buildComment } from './comments';
 
 function buildCreateItemTypeFilterClientCommand(
-  itemTypeFilter: CmaClient.SchemaTypes.ItemTypeFilter,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  itemTypeFilter: CmaClient.RawApiTypes.ItemTypeFilter,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   return [
     buildComment(
@@ -37,8 +37,8 @@ function buildCreateItemTypeFilterClientCommand(
 }
 
 function buildDestroyItemTypeFilterClientCommand(
-  itemTypeFilter: CmaClient.SchemaTypes.ItemTypeFilter,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  itemTypeFilter: CmaClient.RawApiTypes.ItemTypeFilter,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   return [
     buildComment(
@@ -55,15 +55,15 @@ function buildDestroyItemTypeFilterClientCommand(
 }
 
 function buildUpdateItemTypeFilterClientCommand(
-  newItemTypeFilter: CmaClient.SchemaTypes.ItemTypeFilter,
-  oldItemTypeFilter: CmaClient.SchemaTypes.ItemTypeFilter,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  newItemTypeFilter: CmaClient.RawApiTypes.ItemTypeFilter,
+  oldItemTypeFilter: CmaClient.RawApiTypes.ItemTypeFilter,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   const attributesToUpdate = pick(
     newItemTypeFilter.attributes,
     (
       Object.keys(newItemTypeFilter.attributes) as Array<
-        keyof CmaClient.SchemaTypes.ItemTypeFilterAttributes
+        keyof CmaClient.RawApiTypes.ItemTypeFilterAttributes
       >
     ).filter(
       (attribute) =>

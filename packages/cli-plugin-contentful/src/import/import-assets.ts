@@ -43,7 +43,7 @@ export default class ImportAssets extends BaseStep {
           const fileMetadata = ctx.locales.reduce(
             (
               acc: NonNullable<
-                CmaClient.SimpleSchemaTypes.UploadCreateSchema['default_field_metadata']
+                CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata']
               >,
               locale: string,
             ) => {

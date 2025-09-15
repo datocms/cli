@@ -127,12 +127,11 @@ function deserializeBody(
               case 'excerpt_field':
               case 'presentation_image_field':
               case 'presentation_title_field': {
-                const fieldRef = value as CmaClient.SimpleSchemaTypes.FieldData;
+                const fieldRef = value as CmaClient.ApiTypes.FieldData;
                 return fetchNewRef('field', fieldRef, entityIdsToBeRecreated);
               }
               case 'item_type': {
-                const itemTypeRef =
-                  value as CmaClient.SimpleSchemaTypes.ItemTypeData;
+                const itemTypeRef = value as CmaClient.ApiTypes.ItemTypeData;
 
                 return fetchNewRef(
                   'itemType',
@@ -141,8 +140,7 @@ function deserializeBody(
                 );
               }
               case 'item_type_filter': {
-                const itemTypeRef =
-                  value as CmaClient.SimpleSchemaTypes.ItemTypeData;
+                const itemTypeRef = value as CmaClient.ApiTypes.ItemTypeData;
 
                 return fetchNewRef(
                   'itemTypeFilter',
@@ -151,8 +149,7 @@ function deserializeBody(
                 );
               }
               case 'workflow': {
-                const workflowRef =
-                  value as CmaClient.SimpleSchemaTypes.WorkflowData;
+                const workflowRef = value as CmaClient.ApiTypes.WorkflowData;
 
                 return fetchNewRef(
                   'workflow',
@@ -161,8 +158,7 @@ function deserializeBody(
                 );
               }
               case 'fieldset': {
-                const fieldsetRef =
-                  value as CmaClient.SimpleSchemaTypes.FieldsetData;
+                const fieldsetRef = value as CmaClient.ApiTypes.FieldsetData;
 
                 return fetchNewRef(
                   'fieldset',
@@ -172,8 +168,8 @@ function deserializeBody(
               }
               case 'parent': {
                 const menuItemOrSchemaMenuItemRef = value as
-                  | CmaClient.SimpleSchemaTypes.MenuItemData
-                  | CmaClient.SimpleSchemaTypes.SchemaMenuItemData;
+                  | CmaClient.ApiTypes.MenuItemData
+                  | CmaClient.ApiTypes.SchemaMenuItemData;
 
                 return fetchNewRef(
                   menuItemOrSchemaMenuItemRef.type === 'menu_item'

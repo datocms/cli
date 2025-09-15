@@ -46,7 +46,7 @@ export default class ImportFields extends BaseStep {
 
         for (const contentfulField of contentType.fields) {
           const position = contentType.fields.indexOf(contentfulField);
-          let validators = {};
+          let validators: any = {};
 
           if (isSingleLinkField(contentfulField)) {
             validators = {
@@ -84,15 +84,14 @@ export default class ImportFields extends BaseStep {
             };
           }
 
-          const fieldAttributes: CmaClient.SimpleSchemaTypes.FieldCreateSchema =
-            {
-              label: contentfulField.name,
-              field_type: contentFieldTypeToDatoFieldType(contentfulField),
-              localized: contentfulField.localized,
-              api_key: toFieldApiKey(contentfulField.id),
-              position,
-              validators,
-            };
+          const fieldAttributes: CmaClient.ApiTypes.FieldCreateSchema = {
+            label: contentfulField.name,
+            field_type: contentFieldTypeToDatoFieldType(contentfulField) as any,
+            localized: contentfulField.localized,
+            api_key: toFieldApiKey(contentfulField.id),
+            position,
+            validators,
+          };
 
           if (isTitleField(contentfulField, contentType)) {
             fieldAttributes.appearance = {

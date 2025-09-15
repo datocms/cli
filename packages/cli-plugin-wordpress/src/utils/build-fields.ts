@@ -3,9 +3,9 @@ import { titleize } from 'inflected';
 
 export async function createSlugField(
   client: CmaClient.Client,
-  itemType: CmaClient.SimpleSchemaTypes.ItemType,
+  itemType: CmaClient.ApiTypes.ItemType,
   titleFieldId: string,
-): Promise<CmaClient.SimpleSchemaTypes.Field> {
+): Promise<CmaClient.ApiTypes.Field> {
   return client.fields.create(itemType.id, {
     field_type: 'slug',
     api_key: 'slug',
@@ -16,9 +16,9 @@ export async function createSlugField(
 
 export async function createStringField(
   client: CmaClient.Client,
-  itemType: CmaClient.SimpleSchemaTypes.ItemType,
+  itemType: CmaClient.ApiTypes.ItemType,
   apiKey: string,
-): Promise<CmaClient.SimpleSchemaTypes.Field> {
+): Promise<CmaClient.ApiTypes.Field> {
   return client.fields.create(itemType.id, {
     field_type: 'string',
     api_key: apiKey,
@@ -28,9 +28,9 @@ export async function createStringField(
 
 export async function createTextField(
   client: CmaClient.Client,
-  itemType: CmaClient.SimpleSchemaTypes.ItemType,
+  itemType: CmaClient.ApiTypes.ItemType,
   apiKey: string,
-): Promise<CmaClient.SimpleSchemaTypes.Field> {
+): Promise<CmaClient.ApiTypes.Field> {
   return client.fields.create(itemType.id, {
     api_key: apiKey,
     label: titleize(apiKey),

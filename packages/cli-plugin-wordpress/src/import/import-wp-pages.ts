@@ -117,7 +117,7 @@ export default class WpPages extends BaseStep {
       wpPages,
       (wpPage) => wpPage.title.rendered,
       async (wpPage) => {
-        const itemData: CmaClient.SimpleSchemaTypes.ItemCreateSchema = {
+        const itemData: CmaClient.ApiTypes.ItemCreateSchema = {
           item_type: pageItemType,
           title: wpPage.title.rendered,
           slug: wpPage.slug,

@@ -5,7 +5,7 @@ import { buildUploadFilterTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
 function buildCreateUploadFilterClientCommand(
-  uploadFilter: CmaClient.SchemaTypes.UploadFilter,
+  uploadFilter: CmaClient.RawApiTypes.UploadFilter,
 ): Command[] {
   return [
     buildComment(`Create ${buildUploadFilterTitle(uploadFilter)}`),
@@ -27,7 +27,7 @@ function buildCreateUploadFilterClientCommand(
 }
 
 function buildDestroyUploadFilterClientCommand(
-  uploadFilter: CmaClient.SchemaTypes.UploadFilter,
+  uploadFilter: CmaClient.RawApiTypes.UploadFilter,
 ): Command[] {
   return [
     buildComment(`Delete ${buildUploadFilterTitle(uploadFilter)}`),
@@ -40,12 +40,12 @@ function buildDestroyUploadFilterClientCommand(
 }
 
 function buildUpdateUploadFilterClientCommand(
-  newUploadFilter: CmaClient.SchemaTypes.UploadFilter,
-  oldUploadFilter: CmaClient.SchemaTypes.UploadFilter,
+  newUploadFilter: CmaClient.RawApiTypes.UploadFilter,
+  oldUploadFilter: CmaClient.RawApiTypes.UploadFilter,
 ): Command[] {
   const updatedAttributes = (
     Object.keys(newUploadFilter.attributes) as Array<
-      keyof CmaClient.SchemaTypes.UploadFilterAttributes
+      keyof CmaClient.RawApiTypes.UploadFilterAttributes
     >
   ).filter(
     (attribute) =>

@@ -114,7 +114,7 @@ export const findLinkedItemTypesFromContentField = (
   }
 
   return Object.values(itemTypeMapping).map(
-    (iT: CmaClient.SimpleSchemaTypes.ItemType) => iT.id,
+    (iT: CmaClient.ApiTypes.ItemType) => iT.id,
   );
 };
 
@@ -124,7 +124,7 @@ export const findOrCreateStructuredTextAssetBlock = async (
   // DatoCMS does not handle assets in Structured Text like Contentful does, so
   // we need to create a modular block with a file field to allow assets in Structured text
 
-  let contentfulAssetModularBlock: CmaClient.SimpleSchemaTypes.ItemType;
+  let contentfulAssetModularBlock: CmaClient.ApiTypes.ItemType;
 
   try {
     contentfulAssetModularBlock =

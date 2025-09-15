@@ -23,8 +23,8 @@ import {
 import { buildComment } from './comments';
 
 export function buildRegularUpdateFieldClientCommand(
-  newField: CmaClient.SchemaTypes.Field,
-  oldField: CmaClient.SchemaTypes.Field | undefined,
+  newField: CmaClient.RawApiTypes.Field,
+  oldField: CmaClient.RawApiTypes.Field | undefined,
 ): Command | undefined {
   const attributesToUpdate = oldField
     ? pick(
@@ -32,7 +32,7 @@ export function buildRegularUpdateFieldClientCommand(
         without(
           (
             Object.keys(newField.attributes) as Array<
-              keyof CmaClient.SchemaTypes.FieldAttributes
+              keyof CmaClient.RawApiTypes.FieldAttributes
             >
           ).filter(
             (attribute) =>
@@ -52,7 +52,7 @@ export function buildRegularUpdateFieldClientCommand(
         newField.relationships,
         (
           Object.keys(newField.relationships) as Array<
-            keyof CmaClient.SchemaTypes.FieldRelationships
+            keyof CmaClient.RawApiTypes.FieldRelationships
           >
         ).filter(
           (attribute) =>
@@ -93,9 +93,9 @@ export function buildRegularUpdateFieldClientCommand(
 }
 
 export function buildUpdateFieldClientCommand(
-  newField: CmaClient.SchemaTypes.Field,
-  oldField: CmaClient.SchemaTypes.Field | undefined,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  newField: CmaClient.RawApiTypes.Field,
+  oldField: CmaClient.RawApiTypes.Field | undefined,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   const commands: Command[] = [];
 
@@ -144,16 +144,16 @@ export function buildUpdateFieldClientCommand(
 }
 
 export function buildUpdateFieldsetClientCommand(
-  newFieldset: CmaClient.SchemaTypes.Fieldset,
-  oldFieldset: CmaClient.SchemaTypes.Fieldset | undefined,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  newFieldset: CmaClient.RawApiTypes.Fieldset,
+  oldFieldset: CmaClient.RawApiTypes.Fieldset | undefined,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   const attributesToUpdate = oldFieldset
     ? pick(
         newFieldset.attributes,
         (
           Object.keys(newFieldset.attributes) as Array<
-            keyof CmaClient.SchemaTypes.FieldsetAttributes
+            keyof CmaClient.RawApiTypes.FieldsetAttributes
           >
         ).filter(
           (attribute) =>
@@ -193,7 +193,7 @@ export function buildUpdateFieldsetClientCommand(
 }
 
 function getFieldsetId(
-  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
+  entity: CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset,
 ) {
   return isField(entity) ? entity.relationships.fieldset.data?.id : undefined;
 }
@@ -204,9 +204,9 @@ function findSiblings({
   fieldsetId,
   positionGte,
 }: {
-  of: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset;
+  of: CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset;
   collection: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
+    CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset
   >;
   fieldsetId: string | undefined;
   positionGte: number;
@@ -232,13 +232,13 @@ function findChildren({
   of: entity,
   collection,
 }: {
-  of: CmaClient.SchemaTypes.Fieldset;
+  of: CmaClient.RawApiTypes.Fieldset;
   collection: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
+    CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset
   >;
 }) {
   return collection.filter(
-    (e): e is CmaClient.SchemaTypes.Field =>
+    (e): e is CmaClient.RawApiTypes.Field =>
       e.type === 'field' && e.relationships.fieldset.data?.id === entity.id,
   );
 }
@@ -248,7 +248,7 @@ function findMaxPosition({
   fieldsetId,
 }: {
   collection: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
+    CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset
   >;
   fieldsetId: string | undefined;
 }) {
@@ -268,14 +268,14 @@ function findMaxPosition({
 }
 
 function isFieldset(
-  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
-): entity is CmaClient.SchemaTypes.Fieldset {
+  entity: CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset,
+): entity is CmaClient.RawApiTypes.Fieldset {
   return entity.type === 'fieldset';
 }
 
 function isField(
-  entity: CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset,
-): entity is CmaClient.SchemaTypes.Field {
+  entity: CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset,
+): entity is CmaClient.RawApiTypes.Field {
   return entity.type === 'field';
 }
 
@@ -285,13 +285,13 @@ function generateInitialState({
   deletedEntities,
 }: {
   oldKeptEntities: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
+    CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset
   >;
   createdEntities: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
+    CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset
   >;
   deletedEntities: Array<
-    CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset
+    CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset
   >;
 }) {
   const state = oldKeptEntities.map(cloneDeep);
@@ -343,7 +343,7 @@ function generateInitialState({
 // biome-ignore lint/correctness/noUnusedVariables: <explanation>
 function debugState(
   message: string,
-  state: Array<CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset>,
+  state: Array<CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset>,
 ) {
   console.log(message);
 
@@ -393,7 +393,7 @@ function updateState({
   state,
 }: {
   updateCommand: UpdateFieldsetClientCommand | UpdateFieldClientCommand;
-  state: Array<CmaClient.SchemaTypes.Field | CmaClient.SchemaTypes.Fieldset>;
+  state: Array<CmaClient.RawApiTypes.Field | CmaClient.RawApiTypes.Fieldset>;
 }) {
   const entityType =
     updateCommand.call === 'client.fields.update' ? 'field' : 'fieldset';
@@ -567,12 +567,12 @@ export function updateFieldsAndFieldsetsInItemType(
         entityToProcess.type === 'field'
           ? buildUpdateFieldClientCommand(
               entityToProcess,
-              entityInState as CmaClient.SchemaTypes.Field,
+              entityInState as CmaClient.RawApiTypes.Field,
               newItemTypeSchema.entity,
             )
           : buildUpdateFieldsetClientCommand(
               entityToProcess,
-              entityInState as CmaClient.SchemaTypes.Fieldset,
+              entityInState as CmaClient.RawApiTypes.Fieldset,
               newItemTypeSchema.entity,
             );
 

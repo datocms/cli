@@ -27,11 +27,11 @@ export type StepOptions = {
 
 export type Context = {
   datoItemTypes: {
-    tag?: CmaClient.SimpleSchemaTypes.ItemType;
-    article?: CmaClient.SimpleSchemaTypes.ItemType;
-    page?: CmaClient.SimpleSchemaTypes.ItemType;
-    category?: CmaClient.SimpleSchemaTypes.ItemType;
-    author?: CmaClient.SimpleSchemaTypes.ItemType;
+    tag?: CmaClient.ApiTypes.ItemType;
+    article?: CmaClient.ApiTypes.ItemType;
+    page?: CmaClient.ApiTypes.ItemType;
+    category?: CmaClient.ApiTypes.ItemType;
+    author?: CmaClient.ApiTypes.ItemType;
   };
   wpMediaItems?: Array<Record<string, any>>;
   wpTags?: Array<any>;

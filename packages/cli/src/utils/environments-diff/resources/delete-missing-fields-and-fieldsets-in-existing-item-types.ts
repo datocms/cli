@@ -9,8 +9,8 @@ import {
 import { buildComment } from './comments';
 
 export function buildDestroyFieldClientCommand(
-  field: CmaClient.SchemaTypes.Field,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  field: CmaClient.RawApiTypes.Field,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   return [
     buildComment(
@@ -25,8 +25,8 @@ export function buildDestroyFieldClientCommand(
 }
 
 export function buildDestroyFieldsetClientCommand(
-  fieldset: CmaClient.SchemaTypes.Fieldset,
-  itemType: CmaClient.SchemaTypes.ItemType,
+  fieldset: CmaClient.RawApiTypes.Fieldset,
+  itemType: CmaClient.RawApiTypes.ItemType,
 ): Command[] {
   return [
     buildComment(

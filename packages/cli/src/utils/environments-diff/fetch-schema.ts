@@ -25,12 +25,12 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
   const includedResources = siteResponse.included || [];
 
   const allFields = includedResources.filter(
-    (x): x is CmaClient.SchemaTypes.Field => x.type === 'field',
+    (x): x is CmaClient.RawApiTypes.Field => x.type === 'field',
   );
 
-  const allFieldsets: CmaClient.SchemaTypes.Fieldset[] =
+  const allFieldsets: CmaClient.RawApiTypes.Fieldset[] =
     includedResources.filter(
-      (x): x is CmaClient.SchemaTypes.Fieldset => x.type === 'fieldset',
+      (x): x is CmaClient.RawApiTypes.Fieldset => x.type === 'fieldset',
     );
 
   return {
@@ -38,7 +38,7 @@ export async function fetchSchema(client: CmaClient.Client): Promise<Schema> {
     itemTypesById: Object.fromEntries(
       includedResources
         .filter(
-          (x): x is CmaClient.SchemaTypes.ItemType => x.type === 'item_type',
+          (x): x is CmaClient.RawApiTypes.ItemType => x.type === 'item_type',
         )
         .map((itemType) => [
           itemType.id,

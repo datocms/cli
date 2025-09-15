@@ -35,18 +35,18 @@ export type StepOptions = {
 };
 
 export type Context = {
-  itemTypesToDestroy: CmaClient.SimpleSchemaTypes.ItemType[];
-  datoItemTypes: CmaClient.SimpleSchemaTypes.ItemType[];
+  itemTypesToDestroy: CmaClient.ApiTypes.ItemType[];
+  datoItemTypes: CmaClient.ApiTypes.ItemType[];
   contentTypes: ContentType[];
   defaultLocale: string;
   assetBlockId: string;
   locales: [string, ...string[]];
   contentTypeIdToDatoItemType: {
-    [k: ContentType['sys']['id']]: CmaClient.SimpleSchemaTypes.ItemType;
+    [k: ContentType['sys']['id']]: CmaClient.ApiTypes.ItemType;
   };
   contentTypeIdToDatoFields: {
     [key: ContentType['sys']['id']]: {
-      [key: ContentFields['id']]: CmaClient.SimpleSchemaTypes.Field;
+      [key: ContentFields['id']]: CmaClient.ApiTypes.Field;
     };
   };
   contentTypeIdToContentfulFields: {
@@ -56,11 +56,11 @@ export type Context = {
   };
   entriesWithLinkField: Entry[];
   entryIdToDatoItemId: {
-    [k: Entry['sys']['id']]: CmaClient.SimpleSchemaTypes.ItemIdentity;
+    [k: Entry['sys']['id']]: CmaClient.ApiTypes.ItemIdentity;
   };
   uploadIdToDatoUploadInfo: {
     [key: Asset['sys']['id']]: {
-      id: CmaClient.SimpleSchemaTypes.UploadIdentity;
+      id: CmaClient.ApiTypes.UploadIdentity;
       url: string;
     } | null;
   };

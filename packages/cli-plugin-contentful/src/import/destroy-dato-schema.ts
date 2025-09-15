@@ -87,41 +87,72 @@ Confirm that you want to destroy them?`,
         );
 
         for (const field of typeLinksField) {
-          let validatorKey: string;
-
           switch (field.field_type) {
-            case 'link':
-              validatorKey = 'item_item_type';
+            case 'link': {
+              const allowedItemTypes =
+                field.validators.item_item_type.item_types;
+              if (!allowedItemTypes) continue;
+
+              const newAllowedItemTypes = allowedItemTypes.filter(
+                (id) => !itemTypesToDestroyIds.includes(id),
+              );
+
+              if (newAllowedItemTypes.length !== allowedItemTypes.length) {
+                await this.client.fields.update(field.id, {
+                  validators: {
+                    ...field.validators,
+                    item_item_type: {
+                      item_types: newAllowedItemTypes,
+                    },
+                  },
+                });
+              }
               break;
-            case 'links':
-              validatorKey = 'items_item_type';
+            }
+            case 'links': {
+              const allowedItemTypes =
+                field.validators.items_item_type.item_types;
+              if (!allowedItemTypes) continue;
+
+              const newAllowedItemTypes = allowedItemTypes.filter(
+                (id) => !itemTypesToDestroyIds.includes(id),
+              );
+
+              if (newAllowedItemTypes.length !== allowedItemTypes.length) {
+                await this.client.fields.update(field.id, {
+                  validators: {
+                    ...field.validators,
+                    items_item_type: {
+                      item_types: newAllowedItemTypes,
+                    },
+                  },
+                });
+              }
               break;
-            case 'structured_text':
-              validatorKey = 'structured_text_links';
+            }
+            case 'structured_text': {
+              const allowedItemTypes =
+                field.validators.structured_text_links.item_types;
+              if (!allowedItemTypes) continue;
+
+              const newAllowedItemTypes = allowedItemTypes.filter(
+                (id) => !itemTypesToDestroyIds.includes(id),
+              );
+
+              if (newAllowedItemTypes.length !== allowedItemTypes.length) {
+                await this.client.fields.update(field.id, {
+                  validators: {
+                    ...field.validators,
+                    structured_text_links: {
+                      item_types: newAllowedItemTypes,
+                    },
+                  },
+                });
+              }
               break;
+            }
             default:
               throw new Error('Missing field type. This should not happen');
-          }
-
-          const allowedItemTypes = (
-            field.validators[validatorKey] as {
-              item_types: string[];
-            }
-          )?.item_types;
-
-          const newAllowedItemTypes = allowedItemTypes.filter(
-            (id) => !itemTypesToDestroyIds.includes(id),
-          );
-
-          if (newAllowedItemTypes.length !== allowedItemTypes.length) {
-            await this.client.fields.update(field.id, {
-              validators: {
-                ...field.validators,
-                [validatorKey]: {
-                  item_types: newAllowedItemTypes,
-                },
-              },
-            });
           }
         }
       },

@@ -17,8 +17,8 @@ import {
 import { buildComment } from './comments';
 
 function buildDefaultValues(
-  site: CmaClient.SchemaTypes.Site,
-): Partial<CmaClient.SchemaTypes.FieldAttributes> {
+  site: CmaClient.RawApiTypes.Site,
+): Partial<CmaClient.RawApiTypes.FieldAttributes> {
   return {
     hint: null,
     localized: false,
@@ -30,20 +30,20 @@ function buildDefaultValues(
             site.attributes.locales.map((locale) => [locale, null]),
           ),
     validators: {},
-  };
+  } as any;
 }
 
 export function buildCreateFieldClientCommand(
-  site: CmaClient.SchemaTypes.Site,
-  itemType: CmaClient.SchemaTypes.ItemType,
-  field: CmaClient.SchemaTypes.Field,
+  site: CmaClient.RawApiTypes.Site,
+  itemType: CmaClient.RawApiTypes.ItemType,
+  field: CmaClient.RawApiTypes.Field,
 ): Command[] {
   const defaultValues = buildDefaultValues(site);
 
   const attributesToPick = without(
     (
       Object.keys(field.attributes) as Array<
-        keyof CmaClient.SchemaTypes.FieldAttributes
+        keyof CmaClient.RawApiTypes.FieldAttributes
       >
     ).filter(
       (attribute) =>
@@ -70,7 +70,7 @@ export function buildCreateFieldClientCommand(
           data: {
             type: 'field',
             id: isBase64Id(field.id) ? field.id : undefined,
-            attributes: attributesToUpdate,
+            attributes: attributesToUpdate as any,
             ...(field.relationships.fieldset.data
               ? { relationships: pick(field.relationships, 'fieldset') }
               : {}),
@@ -82,7 +82,7 @@ export function buildCreateFieldClientCommand(
   ];
 }
 
-const defaultValuesForFieldsetAttribute: Partial<CmaClient.SchemaTypes.FieldsetAttributes> =
+const defaultValuesForFieldsetAttribute: Partial<CmaClient.RawApiTypes.FieldsetAttributes> =
   {
     hint: null,
     collapsible: false,
@@ -90,15 +90,15 @@ const defaultValuesForFieldsetAttribute: Partial<CmaClient.SchemaTypes.FieldsetA
   };
 
 export function buildCreateFieldsetClientCommand(
-  itemType: CmaClient.SchemaTypes.ItemType,
-  fieldset: CmaClient.SchemaTypes.Fieldset,
+  itemType: CmaClient.RawApiTypes.ItemType,
+  fieldset: CmaClient.RawApiTypes.Fieldset,
 ): Command[] {
   const attributesToUpdate = pick(
     fieldset.attributes,
     without(
       (
         Object.keys(fieldset.attributes) as Array<
-          keyof CmaClient.SchemaTypes.FieldsetAttributes
+          keyof CmaClient.RawApiTypes.FieldsetAttributes
         >
       ).filter(
         (attribute) =>
@@ -136,9 +136,9 @@ export function buildCreateFieldsetClientCommand(
 }
 
 export function buildCreateFieldClientCommands(
-  site: CmaClient.SchemaTypes.Site,
-  itemType: CmaClient.SchemaTypes.ItemType,
-  fields: CmaClient.SchemaTypes.Field[],
+  site: CmaClient.RawApiTypes.Site,
+  itemType: CmaClient.RawApiTypes.ItemType,
+  fields: CmaClient.RawApiTypes.Field[],
 ): Command[] {
   const nonSlugFields = sortBy(
     fields.filter((field) => field.attributes.field_type !== 'slug'),
@@ -161,8 +161,8 @@ export function buildCreateFieldClientCommands(
 }
 
 export function buildCreateFieldsetClientCommands(
-  itemType: CmaClient.SchemaTypes.ItemType,
-  fieldsets: CmaClient.SchemaTypes.Fieldset[],
+  itemType: CmaClient.RawApiTypes.ItemType,
+  fieldsets: CmaClient.RawApiTypes.Fieldset[],
 ): Command[] {
   return sortBy(fieldsets, (e) => e.attributes.position).flatMap(
     buildCreateFieldsetClientCommand.bind(null, itemType),
@@ -170,7 +170,7 @@ export function buildCreateFieldsetClientCommands(
 }
 
 function createNewFieldsAndFieldsetsInItemType(
-  newSite: CmaClient.SchemaTypes.Site,
+  newSite: CmaClient.RawApiTypes.Site,
   newItemTypeSchema: ItemTypeInfo,
   oldItemTypeSchema?: ItemTypeInfo,
 ): Command[] {

@@ -150,7 +150,7 @@ export default class WpArticles extends BaseStep {
       wpArticles,
       (wpArticle) => wpArticle.title.rendered,
       async (wpArticle, notify) => {
-        const itemData: CmaClient.SimpleSchemaTypes.ItemCreateSchema = {
+        const itemData: CmaClient.ApiTypes.ItemCreateSchema = {
           item_type: articlesItemType,
           title: wpArticle.title.rendered,
           slug: wpArticle.slug,

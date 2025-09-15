@@ -9,7 +9,7 @@ import {
 } from './create-new-item-types';
 
 const relationshipsToIgnoreOnModelBlocks: Array<
-  keyof CmaClient.SchemaTypes.ItemTypeRelationships
+  keyof CmaClient.RawApiTypes.ItemTypeRelationships
 > = [
   'ordering_field',
   'title_field',
@@ -22,10 +22,10 @@ const relationshipsToIgnoreOnModelBlocks: Array<
 ];
 
 const relationshipsToIgnoreOnModels: Array<
-  keyof CmaClient.SchemaTypes.ItemTypeRelationships
+  keyof CmaClient.RawApiTypes.ItemTypeRelationships
 > = ['fields', 'fieldsets', 'singleton_item'];
 
-const defaultRelationshipsOnCreatedItemTypes: Partial<CmaClient.SchemaTypes.ItemTypeRelationships> =
+const defaultRelationshipsOnCreatedItemTypes: Partial<CmaClient.RawApiTypes.ItemTypeRelationships> =
   {
     workflow: { data: null },
     ordering_field: { data: null },
@@ -46,7 +46,7 @@ export function finalizeItemType(
   const changedAttributes = oldItemTypeSchema
     ? (
         Object.keys(newItemType.attributes) as Array<
-          keyof CmaClient.SchemaTypes.ItemTypeAttributes
+          keyof CmaClient.RawApiTypes.ItemTypeAttributes
         >
       ).filter(
         (attribute) =>
@@ -72,7 +72,7 @@ export function finalizeItemType(
 
   const changedRelationships = (
     Object.keys(newItemType.relationships) as Array<
-      keyof CmaClient.SchemaTypes.ItemTypeRelationships
+      keyof CmaClient.RawApiTypes.ItemTypeRelationships
     >
   ).filter(
     (relationship) =>

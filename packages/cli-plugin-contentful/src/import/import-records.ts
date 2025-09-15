@@ -78,7 +78,7 @@ export default class ImportRecords extends BaseStep {
         const contentfulFieldTodatoField =
           ctx.contentTypeIdToDatoFields[contentType.sys.id];
 
-        const recordAttributes: Partial<CmaClient.SimpleSchemaTypes.ItemCreateSchema> =
+        const recordAttributes: Partial<CmaClient.ApiTypes.ItemCreateSchema> =
           {};
 
         let hasLinks = false;
@@ -177,7 +177,7 @@ export default class ImportRecords extends BaseStep {
           throw new Error('This should not happen');
         }
 
-        const newRecordAttributes: Partial<CmaClient.SimpleSchemaTypes.ItemCreateSchema> =
+        const newRecordAttributes: Partial<CmaClient.ApiTypes.ItemCreateSchema> =
           {};
 
         for (const [contentfulFieldApiKey, datoField] of Object.entries(

@@ -12,20 +12,20 @@ export type EntityIdsToBeRecreated = {
 };
 
 export type ItemTypeInfo = {
-  entity: CmaClient.SchemaTypes.ItemType;
-  fieldsById: Record<string, CmaClient.SchemaTypes.Field>;
-  fieldsetsById: Record<string, CmaClient.SchemaTypes.Fieldset>;
+  entity: CmaClient.RawApiTypes.ItemType;
+  fieldsById: Record<string, CmaClient.RawApiTypes.Field>;
+  fieldsetsById: Record<string, CmaClient.RawApiTypes.Fieldset>;
 };
 
 export type Schema = {
-  siteEntity: CmaClient.SchemaTypes.Site;
+  siteEntity: CmaClient.RawApiTypes.Site;
   itemTypesById: Record<string, ItemTypeInfo>;
-  menuItemsById: Record<string, CmaClient.SchemaTypes.MenuItem>;
-  schemaMenuItemsById: Record<string, CmaClient.SchemaTypes.SchemaMenuItem>;
-  pluginsById: Record<string, CmaClient.SchemaTypes.Plugin>;
-  workflowsById: Record<string, CmaClient.SchemaTypes.Workflow>;
-  itemTypeFiltersById: Record<string, CmaClient.SchemaTypes.ItemTypeFilter>;
-  uploadFiltersById: Record<string, CmaClient.SchemaTypes.UploadFilter>;
+  menuItemsById: Record<string, CmaClient.RawApiTypes.MenuItem>;
+  schemaMenuItemsById: Record<string, CmaClient.RawApiTypes.SchemaMenuItem>;
+  pluginsById: Record<string, CmaClient.RawApiTypes.Plugin>;
+  workflowsById: Record<string, CmaClient.RawApiTypes.Workflow>;
+  itemTypeFiltersById: Record<string, CmaClient.RawApiTypes.ItemTypeFilter>;
+  uploadFiltersById: Record<string, CmaClient.RawApiTypes.UploadFilter>;
 };
 
 export type Comment = {
@@ -175,7 +175,7 @@ export type UpdateRoleDiff<T> = {
 export type RoleItemTypePermission = Omit<
   NonNullable<
     NonNullable<
-      CmaClient.SchemaTypes.RoleUpdateSchema['data']['attributes']
+      CmaClient.RawApiTypes.RoleUpdateSchema['data']['attributes']
     >['positive_item_type_permissions']
   >[0],
   'environment'
@@ -184,7 +184,7 @@ export type RoleItemTypePermission = Omit<
 export type RoleUploadPermission = Omit<
   NonNullable<
     NonNullable<
-      CmaClient.SchemaTypes.RoleUpdateSchema['data']['attributes']
+      CmaClient.RawApiTypes.RoleUpdateSchema['data']['attributes']
     >['positive_upload_permissions']
   >[0],
   'environment'

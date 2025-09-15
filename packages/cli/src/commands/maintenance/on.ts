@@ -10,7 +10,7 @@ export default class Command extends CmaClientCommand {
     }),
   };
 
-  async run(): Promise<CmaClient.SimpleSchemaTypes.MaintenanceMode> {
+  async run(): Promise<CmaClient.ApiTypes.MaintenanceMode> {
     const { flags } = await this.parse(Command);
 
     this.startSpinner('Activating maintenance mode');

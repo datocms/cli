@@ -1,11 +1,6 @@
 import { access, readdir } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
-import {
-  ApiError,
-  type Client,
-  type SimpleSchemaTypes,
-} from '@datocms/cli-utils/lib/cma-client-node';
 import { require as tsxRequire } from 'tsx/cjs/api';
 
 const MIGRATION_FILE_REGEXP = /^\d+.*\.(js|ts)$/;
@@ -207,10 +202,10 @@ export default class Command extends CmaClientCommand {
 
   private async runMigrationScript(
     script: { filename: string; path: string; legacy: boolean },
-    envClient: Client,
+    envClient: CmaClient.Client,
     legacyEnvClient: unknown,
     dryRun: boolean,
-    migrationModel: SimpleSchemaTypes.ItemType | null,
+    migrationModel: CmaClient.ApiTypes.ItemType | null,
     migrationsDir: string,
     _migrationsTsconfig: string | undefined,
   ) {
@@ -266,8 +261,8 @@ export default class Command extends CmaClientCommand {
   }
 
   private async migrationScriptsToRun(
-    migrationModel: SimpleSchemaTypes.ItemType | null,
-    envClient: Client,
+    migrationModel: CmaClient.ApiTypes.ItemType | null,
+    envClient: CmaClient.Client,
     migrationsDir: string,
   ) {
     const alreadyRunMigrations = migrationModel
@@ -307,9 +302,9 @@ export default class Command extends CmaClientCommand {
   }
 
   private async forkEnvironment(
-    sourceEnv: SimpleSchemaTypes.Environment,
+    sourceEnv: CmaClient.ApiTypes.Environment,
     destinationEnvId: string,
-    allEnvironments: SimpleSchemaTypes.Environment[],
+    allEnvironments: CmaClient.ApiTypes.Environment[],
     dryRun: boolean,
     fastFork: boolean,
     force: boolean,
@@ -368,8 +363,8 @@ export default class Command extends CmaClientCommand {
   }
 
   private async fetchAlreadyRunMigrationScripts(
-    client: Client,
-    model: SimpleSchemaTypes.ItemType,
+    client: CmaClient.Client,
+    model: CmaClient.ApiTypes.ItemType,
   ) {
     const migrationScripts: string[] = [];
 
@@ -383,17 +378,17 @@ export default class Command extends CmaClientCommand {
   }
 
   private async upsertMigrationModel(
-    client: Client,
+    client: CmaClient.Client,
     migrationModelApiKey: string,
     dryRun: boolean,
-  ): Promise<SimpleSchemaTypes.ItemType | null> {
+  ): Promise<CmaClient.ApiTypes.ItemType | null> {
     try {
       return await client.itemTypes.find(migrationModelApiKey);
     } catch (e) {
-      if (e instanceof ApiError && e.response.status === 404) {
+      if (e instanceof CmaClient.ApiError && e.response.status === 404) {
         this.startSpinner(`Creating "${migrationModelApiKey}" model`);
 
-        let migrationItemType: SimpleSchemaTypes.ItemType | null = null;
+        let migrationItemType: CmaClient.ApiTypes.ItemType | null = null;
 
         try {
           if (!dryRun) {
@@ -416,9 +411,9 @@ export default class Command extends CmaClientCommand {
   }
 
   private async createMigrationModel(
-    client: Client,
+    client: CmaClient.Client,
     migrationModelApiKey: string,
-  ): Promise<SimpleSchemaTypes.ItemType> {
+  ): Promise<CmaClient.ApiTypes.ItemType> {
     const model = await client.itemTypes.create({
       name: 'Schema migration',
       api_key: migrationModelApiKey,

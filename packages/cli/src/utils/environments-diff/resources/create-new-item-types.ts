@@ -4,7 +4,7 @@ import type { Command, ItemTypeInfo, Schema } from '../types';
 import { buildItemTypeTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
-const defaultValuesForItemTypeAttribute: Partial<CmaClient.SchemaTypes.ItemTypeAttributes> =
+const defaultValuesForItemTypeAttribute: Partial<CmaClient.RawApiTypes.ItemTypeAttributes> =
   {
     hint: null,
     sortable: false,
@@ -17,7 +17,7 @@ const defaultValuesForItemTypeAttribute: Partial<CmaClient.SchemaTypes.ItemTypeA
   };
 
 export const attributesToIgnoreOnModels: Array<
-  keyof CmaClient.SchemaTypes.ItemTypeAttributes
+  keyof CmaClient.RawApiTypes.ItemTypeAttributes
 > = [
   'collection_appeareance',
   'ordering_direction',
@@ -26,7 +26,7 @@ export const attributesToIgnoreOnModels: Array<
 ];
 
 export const attributesToIgnoreOnBlockModels: Array<
-  keyof CmaClient.SchemaTypes.ItemTypeAttributes
+  keyof CmaClient.RawApiTypes.ItemTypeAttributes
 > = [
   'all_locales_required',
   'collection_appearance',
@@ -42,7 +42,7 @@ export const attributesToIgnoreOnBlockModels: Array<
 
 function buildCreateItemTypeClientCommand(
   itemTypeSchema: ItemTypeInfo,
-  schemaMenuItem: CmaClient.SchemaTypes.SchemaMenuItem,
+  schemaMenuItem: CmaClient.RawApiTypes.SchemaMenuItem,
 ): Command[] {
   const itemType = itemTypeSchema.entity;
 
@@ -51,7 +51,7 @@ function buildCreateItemTypeClientCommand(
     without(
       (
         Object.keys(itemType.attributes) as Array<
-          keyof CmaClient.SchemaTypes.ItemTypeAttributes
+          keyof CmaClient.RawApiTypes.ItemTypeAttributes
         >
       ).filter(
         (attribute) =>

@@ -5,7 +5,7 @@ export default class Command extends CmaClientCommand {
 
   static description = 'Lists primary/sandbox environments of a project';
 
-  async run(): Promise<CmaClient.SimpleSchemaTypes.Environment[]> {
+  async run(): Promise<CmaClient.ApiTypes.Environment[]> {
     const environments = await this.client.environments.list();
 
     this.printTable(environments, ['id', 'meta.primary']);

@@ -6,18 +6,18 @@ import type { StructuredText } from 'datocms-structured-text-utils';
 import get from 'lodash/get';
 import type { UploadData } from '../src/utils/item-create-helpers';
 
-interface BlogPostType extends CmaClient.SimpleSchemaTypes.Item {
-  author: CmaClient.SimpleSchemaTypes.ItemIdentity | null;
+interface BlogPostType extends CmaClient.ApiTypes.Item {
+  author: CmaClient.ApiTypes.ItemIdentity | null;
   title: { 'en-US': string | null; it?: string | null };
   hero_image: UploadData | null;
   gallery: UploadData[] | [];
 }
-interface AuthorType extends CmaClient.SimpleSchemaTypes.Item {
+interface AuthorType extends CmaClient.ApiTypes.Item {
   name: string;
 }
-interface LandingPageType extends CmaClient.SimpleSchemaTypes.Item {
+interface LandingPageType extends CmaClient.ApiTypes.Item {
   title: string;
-  latest_posts: CmaClient.SimpleSchemaTypes.ItemIdentity | null;
+  latest_posts: CmaClient.ApiTypes.ItemIdentity | null;
   content: StructuredText['value'];
 }
 
@@ -107,42 +107,41 @@ describe('Import from Contentful', () => {
     // expect(blogPostFields.length).to.eq(8);
 
     const authorLinkField = blogPostFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) => f.field_type === 'link',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'link',
     );
     const postValidators = authorLinkField?.validators.item_item_type as Record<
       'item_types',
-      CmaClient.SimpleSchemaTypes.ItemTypeIdentity[]
+      CmaClient.ApiTypes.ItemTypeIdentity[]
     >;
     expect(postValidators.item_types).to.have.all.members([authorModel.id]);
 
     const landingFields = await client.fields.list(landingModel.id);
     const landingRichTextField = landingFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) =>
-        f.field_type === 'structured_text',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'structured_text',
     );
     const landingLinkedModels = landingRichTextField?.validators
       .structured_text_blocks as Record<
       'item_types',
-      CmaClient.SimpleSchemaTypes.ItemTypeIdentity[]
+      CmaClient.ApiTypes.ItemTypeIdentity[]
     >;
     expect(landingLinkedModels.item_types).to.have.all.members([assetBlock.id]);
 
     const floatField = blogPostFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) => f.field_type === 'float',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'float',
     );
     expect(floatField?.validators).to.deep.equal({
       number_range: { min: 0.5 },
     });
 
     const integerField = blogPostFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) => f.field_type === 'integer',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'integer',
     );
     expect(integerField?.validators).to.deep.equal({
       number_range: { min: 1, max: 200 },
     });
 
     const dateField = blogPostFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) => f.field_type === 'date_time',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'date_time',
     );
     expect(dateField?.validators).to.deep.equal({
       required: {},
@@ -153,7 +152,7 @@ describe('Import from Contentful', () => {
     });
 
     const assetField = blogPostFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) => f.field_type === 'file',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'file',
     );
     expect(assetField?.validators).to.deep.equal({
       required: {},
@@ -166,7 +165,7 @@ describe('Import from Contentful', () => {
     });
 
     const galleryField = blogPostFields.find(
-      (f: CmaClient.SimpleSchemaTypes.Field) => f.field_type === 'gallery',
+      (f: CmaClient.ApiTypes.Field) => f.field_type === 'gallery',
     );
     expect(galleryField?.validators).to.deep.equal({
       size: { min: 1, max: 3 },

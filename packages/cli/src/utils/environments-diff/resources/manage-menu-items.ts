@@ -13,18 +13,18 @@ import type { Command, Schema, UpdateMenuItemClientCommand } from '../types';
 import { buildMenuItemTitle, isBase64Id } from '../utils';
 import { buildComment } from './comments';
 
-const defaultValuesForMenuItemAttribute: Partial<CmaClient.SchemaTypes.MenuItemAttributes> =
+const defaultValuesForMenuItemAttribute: Partial<CmaClient.RawApiTypes.MenuItemAttributes> =
   {
     external_url: null,
     open_in_new_tab: false,
   };
 
 function buildCreateMenuItemClientCommand(
-  menuItem: CmaClient.SchemaTypes.MenuItem,
+  menuItem: CmaClient.RawApiTypes.MenuItem,
 ): Command[] {
   const attributesToPick = (
     Object.keys(menuItem.attributes) as Array<
-      keyof CmaClient.SchemaTypes.MenuItemAttributes
+      keyof CmaClient.RawApiTypes.MenuItemAttributes
     >
   ).filter(
     (attribute) =>
@@ -64,7 +64,7 @@ function buildCreateMenuItemClientCommand(
 }
 
 function buildDestroyMenuItemClientCommand(
-  menuItem: CmaClient.SchemaTypes.MenuItem,
+  menuItem: CmaClient.RawApiTypes.MenuItem,
 ): Command[] {
   return [
     buildComment(`Delete ${buildMenuItemTitle(menuItem)}`),
@@ -77,15 +77,15 @@ function buildDestroyMenuItemClientCommand(
 }
 
 function buildUpdateMenuItemClientCommand(
-  newMenuItem: CmaClient.SchemaTypes.MenuItem,
-  oldMenuItem: CmaClient.SchemaTypes.MenuItem | undefined,
+  newMenuItem: CmaClient.RawApiTypes.MenuItem,
+  oldMenuItem: CmaClient.RawApiTypes.MenuItem | undefined,
 ): Command[] {
   const attributesToUpdate = oldMenuItem
     ? pick(
         newMenuItem.attributes,
         (
           Object.keys(newMenuItem.attributes) as Array<
-            keyof CmaClient.SchemaTypes.MenuItemAttributes
+            keyof CmaClient.RawApiTypes.MenuItemAttributes
           >
         ).filter(
           (attribute) =>
@@ -102,7 +102,7 @@ function buildUpdateMenuItemClientCommand(
         newMenuItem.relationships,
         (
           Object.keys(omit(newMenuItem.relationships, 'children')) as Array<
-            keyof CmaClient.SchemaTypes.MenuItemRelationships
+            keyof CmaClient.RawApiTypes.MenuItemRelationships
           >
         ).filter(
           (attribute) =>
@@ -150,8 +150,8 @@ function findSiblings({
   parentId,
   positionGte,
 }: {
-  of: CmaClient.SchemaTypes.MenuItem;
-  collection: CmaClient.SchemaTypes.MenuItem[];
+  of: CmaClient.RawApiTypes.MenuItem;
+  collection: CmaClient.RawApiTypes.MenuItem[];
   parentId: string | undefined;
   positionGte: number;
 }) {
@@ -168,8 +168,8 @@ function findChildren({
   of: entity,
   collection,
 }: {
-  of: CmaClient.SchemaTypes.MenuItem;
-  collection: CmaClient.SchemaTypes.MenuItem[];
+  of: CmaClient.RawApiTypes.MenuItem;
+  collection: CmaClient.RawApiTypes.MenuItem[];
 }) {
   return collection.filter(
     (e) => e.relationships.parent.data?.id === entity.id,
@@ -180,7 +180,7 @@ function findMaxPosition({
   collection,
   parentId,
 }: {
-  collection: CmaClient.SchemaTypes.MenuItem[];
+  collection: CmaClient.RawApiTypes.MenuItem[];
   parentId: string | undefined;
 }) {
   const siblings = collection.filter(
@@ -195,9 +195,9 @@ function generateInitialState({
   createdEntities,
   deletedEntities,
 }: {
-  oldKeptEntities: CmaClient.SchemaTypes.MenuItem[];
-  createdEntities: CmaClient.SchemaTypes.MenuItem[];
-  deletedEntities: CmaClient.SchemaTypes.MenuItem[];
+  oldKeptEntities: CmaClient.RawApiTypes.MenuItem[];
+  createdEntities: CmaClient.RawApiTypes.MenuItem[];
+  deletedEntities: CmaClient.RawApiTypes.MenuItem[];
 }) {
   const state = oldKeptEntities.map(cloneDeep);
 
@@ -245,7 +245,7 @@ function updateState({
   state,
 }: {
   updateCommand: UpdateMenuItemClientCommand;
-  state: CmaClient.SchemaTypes.MenuItem[];
+  state: CmaClient.RawApiTypes.MenuItem[];
 }) {
   const entityId = updateCommand.arguments[0];
 
@@ -299,8 +299,8 @@ function updateState({
 
 export function debugState(
   message: string,
-  state: CmaClient.SchemaTypes.MenuItem[],
-  rawRoots: CmaClient.SchemaTypes.MenuItem[] = state.filter(
+  state: CmaClient.RawApiTypes.MenuItem[],
+  rawRoots: CmaClient.RawApiTypes.MenuItem[] = state.filter(
     (entity) => !entity.relationships.parent.data,
   ),
   level = 0,
@@ -433,9 +433,9 @@ function buildUpdateCommands(newSchema: Schema, oldSchema: Schema) {
   }
 }
 
-function sortByDepth(entities: CmaClient.SchemaTypes.MenuItem[]) {
+function sortByDepth(entities: CmaClient.RawApiTypes.MenuItem[]) {
   type Node = {
-    entity: CmaClient.SchemaTypes.MenuItem;
+    entity: CmaClient.RawApiTypes.MenuItem;
     children: Node[];
     depth: number;
   };

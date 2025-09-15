@@ -12,7 +12,7 @@ export function updateSite(newSchema: Schema, oldSchema: Schema): Command[] {
       newSite.attributes,
       (
         Object.keys(newSite.attributes) as Array<
-          keyof CmaClient.SchemaTypes.SiteAttributes
+          keyof CmaClient.RawApiTypes.SiteAttributes
         >
       ).filter(
         (attribute) =>

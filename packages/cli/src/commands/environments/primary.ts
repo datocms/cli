@@ -3,7 +3,7 @@ import { type CmaClient, CmaClientCommand } from '@datocms/cli-utils';
 export default class Command extends CmaClientCommand {
   static description = 'Returns the name the primary environment of a project';
 
-  async run(): Promise<CmaClient.SimpleSchemaTypes.Environment> {
+  async run(): Promise<CmaClient.ApiTypes.Environment> {
     const environments = await this.client.environments.list();
     const primary = environments.find((e) => e.meta.primary)!;
 
