@@ -566,6 +566,8 @@ export class SchemaTypesGenerator {
           ts.factory.createLiteralTypeNode(ts.factory.createTrue()),
         ),
       );
+
+      return ts.factory.createTypeLiteralNode(properties);
     }
 
     return baseType;
