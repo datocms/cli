@@ -13,7 +13,7 @@ export class SchemaTypesGenerator {
   async generateSchemaTypes(
     options: SchemaTypesGeneratorOptions = {},
   ): Promise<string> {
-    const { included } = await this.client.site.rawFind({
+    const { data, included } = await this.client.site.rawFind({
       include: 'item_types,item_types.fields',
     });
 
@@ -21,6 +21,7 @@ export class SchemaTypesGenerator {
       throw new Error('This should not happen');
     }
 
+    const locales = data.attributes.locales;
     const allItemTypes = included.filter((item) => item.type === 'item_type');
     const allFields = included.filter((item) => item.type === 'field');
 
@@ -33,6 +34,7 @@ export class SchemaTypesGenerator {
     const generatedCode = this.generateTypeDefinitions(
       itemTypes,
       fields,
+      locales,
       '@datocms/cma-client',
     );
 
@@ -46,7 +48,7 @@ export class SchemaTypesGenerator {
   async generateSchemaTypesForMigration(
     options: SchemaTypesGeneratorOptions = {},
   ): Promise<string> {
-    const { included } = await this.client.site.rawFind({
+    const { data, included } = await this.client.site.rawFind({
       include: 'item_types,item_types.fields',
     });
 
@@ -54,6 +56,7 @@ export class SchemaTypesGenerator {
       throw new Error('This should not happen');
     }
 
+    const locales = data.attributes.locales;
     const allItemTypes = included.filter((item) => item.type === 'item_type');
     const allFields = included.filter((item) => item.type === 'field');
 
@@ -64,7 +67,11 @@ export class SchemaTypesGenerator {
     );
 
     // Generate only the type definitions without import statement
-    const generatedCode = this.generateTypeDefinitionsOnly(itemTypes, fields);
+    const generatedCode = this.generateTypeDefinitionsOnly(
+      itemTypes,
+      fields,
+      locales,
+    );
 
     return await prettier(generatedCode, {
       parser: 'typescript',
@@ -186,6 +193,7 @@ export class SchemaTypesGenerator {
   private generateTypeDefinitions(
     itemTypes: CmaClient.RawApiTypes.ItemType[],
     fields: CmaClient.RawApiTypes.Field[],
+    locales: string[],
     importPath: string,
   ): string {
     const fieldsByItemType = new Map<string, CmaClient.RawApiTypes.Field[]>();
@@ -231,7 +239,32 @@ export class SchemaTypesGenerator {
       ts.factory.createStringLiteral(importPath),
     );
 
-    const typeDeclarations: ts.TypeAliasDeclaration[] = [];
+    // Create EnvironmentSettings type with locale union
+    const localeUnion = ts.factory.createUnionTypeNode(
+      locales.map((locale) =>
+        ts.factory.createLiteralTypeNode(
+          ts.factory.createStringLiteral(locale),
+        ),
+      ),
+    );
+
+    const environmentSettingsType = ts.factory.createTypeAliasDeclaration(
+      undefined,
+      ts.factory.createIdentifier('EnvironmentSettings'),
+      undefined,
+      ts.factory.createTypeLiteralNode([
+        ts.factory.createPropertySignature(
+          undefined,
+          ts.factory.createIdentifier('locales'),
+          undefined,
+          localeUnion,
+        ),
+      ]),
+    );
+
+    const typeDeclarations: ts.TypeAliasDeclaration[] = [
+      environmentSettingsType,
+    ];
 
     for (const itemType of itemTypes) {
       const itemTypeFields = fieldsByItemType.get(itemType.id) || [];
@@ -240,7 +273,7 @@ export class SchemaTypesGenerator {
         itemTypeIdToTypeName,
       );
 
-      // Creates: export type Article = ItemTypeDefinition<"item_type_id", { title: { type: 'string' } }>;
+      // Creates: export type Article = ItemTypeDefinition<EnvironmentSettings, "item_type_id", { title: { type: 'string' } }>;
       const typeDeclaration = ts.factory.createTypeAliasDeclaration(
         [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
         ts.factory.createIdentifier(
@@ -250,6 +283,9 @@ export class SchemaTypesGenerator {
         ts.factory.createTypeReferenceNode(
           ts.factory.createIdentifier('ItemTypeDefinition'),
           [
+            ts.factory.createTypeReferenceNode(
+              ts.factory.createIdentifier('EnvironmentSettings'),
+            ),
             ts.factory.createLiteralTypeNode(
               ts.factory.createStringLiteral(itemType.id),
             ),
@@ -277,6 +313,7 @@ export class SchemaTypesGenerator {
   private generateTypeDefinitionsOnly(
     itemTypes: CmaClient.RawApiTypes.ItemType[],
     fields: CmaClient.RawApiTypes.Field[],
+    locales: string[],
   ): string {
     const fieldsByItemType = new Map<string, CmaClient.RawApiTypes.Field[]>();
     const itemTypeIdToTypeName = new Map<string, string>();
@@ -304,7 +341,32 @@ export class SchemaTypesGenerator {
       ts.ScriptKind.TS,
     );
 
-    const typeDeclarations: ts.TypeAliasDeclaration[] = [];
+    // Create EnvironmentSettings type with locale union
+    const localeUnion = ts.factory.createUnionTypeNode(
+      locales.map((locale) =>
+        ts.factory.createLiteralTypeNode(
+          ts.factory.createStringLiteral(locale),
+        ),
+      ),
+    );
+
+    const environmentSettingsType = ts.factory.createTypeAliasDeclaration(
+      undefined,
+      ts.factory.createIdentifier('EnvironmentSettings'),
+      undefined,
+      ts.factory.createTypeLiteralNode([
+        ts.factory.createPropertySignature(
+          undefined,
+          ts.factory.createIdentifier('locales'),
+          undefined,
+          localeUnion,
+        ),
+      ]),
+    );
+
+    const typeDeclarations: ts.TypeAliasDeclaration[] = [
+      environmentSettingsType,
+    ];
 
     for (const itemType of itemTypes) {
       const itemTypeFields = fieldsByItemType.get(itemType.id) || [];
@@ -313,7 +375,7 @@ export class SchemaTypesGenerator {
         itemTypeIdToTypeName,
       );
 
-      // Creates: export type Article = ItemTypeDefinition<"item_type_id", { title: { type: 'string' } }>;
+      // Creates: export type Article = ItemTypeDefinition<EnvironmentSettings, "item_type_id", { title: { type: 'string' } }>;
       const typeDeclaration = ts.factory.createTypeAliasDeclaration(
         [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
         ts.factory.createIdentifier(
@@ -323,6 +385,9 @@ export class SchemaTypesGenerator {
         ts.factory.createTypeReferenceNode(
           ts.factory.createIdentifier('ItemTypeDefinition'),
           [
+            ts.factory.createTypeReferenceNode(
+              ts.factory.createIdentifier('EnvironmentSettings'),
+            ),
             ts.factory.createLiteralTypeNode(
               ts.factory.createStringLiteral(itemType.id),
             ),
@@ -397,9 +462,9 @@ export class SchemaTypesGenerator {
         ]);
         break;
 
-      case 'structured_text':
+      case 'structured_text': {
         // Creates: { type: 'structured_text'; blocks: ImageBlock | VideoBlock; inline_blocks: LinkBlock }
-        baseType = ts.factory.createTypeLiteralNode([
+        const properties = [
           ts.factory.createPropertySignature(
             undefined,
             ts.factory.createIdentifier('type'),
@@ -408,26 +473,47 @@ export class SchemaTypesGenerator {
               ts.factory.createStringLiteral('structured_text'),
             ),
           ),
-          ts.factory.createPropertySignature(
-            undefined,
-            ts.factory.createIdentifier('blocks'),
-            undefined,
-            this.createBlocksUnion(
-              field.attributes.validators.structured_text_blocks.item_types,
-              itemTypeIdToTypeName,
+        ];
+
+        // Only add blocks property if there are configured block types
+        if (
+          field.attributes.validators.structured_text_blocks.item_types.length >
+          0
+        ) {
+          properties.push(
+            ts.factory.createPropertySignature(
+              undefined,
+              ts.factory.createIdentifier('blocks'),
+              undefined,
+              this.createBlocksUnion(
+                field.attributes.validators.structured_text_blocks.item_types,
+                itemTypeIdToTypeName,
+              ),
             ),
-          ),
-          ts.factory.createPropertySignature(
-            undefined,
-            ts.factory.createIdentifier('inline_blocks'),
-            undefined,
-            this.createBlocksUnion(
-              field.attributes.validators.structured_text_links.item_types,
-              itemTypeIdToTypeName,
+          );
+        }
+
+        // Only add inline_blocks property if there are configured inline block types
+        if (
+          field.attributes.validators.structured_text_links.item_types.length >
+          0
+        ) {
+          properties.push(
+            ts.factory.createPropertySignature(
+              undefined,
+              ts.factory.createIdentifier('inline_blocks'),
+              undefined,
+              this.createBlocksUnion(
+                field.attributes.validators.structured_text_links.item_types,
+                itemTypeIdToTypeName,
+              ),
             ),
-          ),
-        ]);
+          );
+        }
+
+        baseType = ts.factory.createTypeLiteralNode(properties);
         break;
+      }
 
       case 'single_block':
         // Creates: { type: 'single_block'; blocks: ImageBlock | VideoBlock }
