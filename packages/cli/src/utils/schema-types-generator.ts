@@ -271,6 +271,7 @@ export class SchemaTypesGenerator {
       const fieldDefinitions = this.createFieldDefinitions(
         itemTypeFields,
         itemTypeIdToTypeName,
+        itemType,
       );
 
       // Creates: export type Article = ItemTypeDefinition<EnvironmentSettings, "item_type_id", { title: { type: 'string' } }>;
@@ -373,6 +374,7 @@ export class SchemaTypesGenerator {
       const fieldDefinitions = this.createFieldDefinitions(
         itemTypeFields,
         itemTypeIdToTypeName,
+        itemType,
       );
 
       // Creates: export type Article = ItemTypeDefinition<EnvironmentSettings, "item_type_id", { title: { type: 'string' } }>;
@@ -413,6 +415,7 @@ export class SchemaTypesGenerator {
   private createFieldDefinitions(
     fields: CmaClient.RawApiTypes.Field[],
     itemTypeIdToTypeName: Map<string, string>,
+    itemType: CmaClient.RawApiTypes.ItemType,
   ): ts.TypeLiteralNode {
     const properties: ts.PropertySignature[] = [];
 
@@ -426,6 +429,15 @@ export class SchemaTypesGenerator {
         fieldType,
       );
       properties.push(property);
+    }
+
+    // Add virtual fields for sortable and tree models
+    if (itemType.attributes.sortable || itemType.attributes.tree) {
+      properties.push(this.createVirtualFieldProperty('position', 'integer'));
+    }
+
+    if (itemType.attributes.tree) {
+      properties.push(this.createVirtualFieldProperty('parent_id', 'string'));
     }
 
     // Creates: { title: { type: 'string' }; content: { type: 'rich_text' } }
@@ -605,6 +617,27 @@ export class SchemaTypesGenerator {
           ts.factory.createIdentifier(typeName),
         ),
       ),
+    );
+  }
+
+  private createVirtualFieldProperty(
+    fieldName: string,
+    fieldType: string,
+  ): ts.PropertySignature {
+    return ts.factory.createPropertySignature(
+      undefined,
+      ts.factory.createIdentifier(fieldName),
+      undefined,
+      ts.factory.createTypeLiteralNode([
+        ts.factory.createPropertySignature(
+          undefined,
+          ts.factory.createIdentifier('type'),
+          undefined,
+          ts.factory.createLiteralTypeNode(
+            ts.factory.createStringLiteral(fieldType),
+          ),
+        ),
+      ]),
     );
   }
 
