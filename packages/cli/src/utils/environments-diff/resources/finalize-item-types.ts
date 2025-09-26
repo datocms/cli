@@ -43,6 +43,20 @@ export function finalizeItemType(
   const oldItemType = oldItemTypeSchema?.entity;
   const newItemType = newItemTypeSchema.entity;
 
+  const changedRelationships = (
+    Object.keys(newItemType.relationships) as Array<
+      keyof CmaClient.RawApiTypes.ItemTypeRelationships
+    >
+  ).filter(
+    (relationship) =>
+      !isEqual(
+        oldItemType
+          ? oldItemType.relationships[relationship]
+          : defaultRelationshipsOnCreatedItemTypes[relationship],
+        newItemType.relationships[relationship],
+      ),
+  );
+
   const changedAttributes = oldItemTypeSchema
     ? (
         Object.keys(newItemType.attributes) as Array<
@@ -60,28 +74,27 @@ export function finalizeItemType(
       )
     : ['ordering_direction', 'ordering_meta'];
 
+  // If ordering_field changes, we must also include ordering_direction even if it didn't change
+  const attributesWithOrderingDirection = changedRelationships.includes(
+    'ordering_field',
+  )
+    ? [...new Set([...changedAttributes, 'ordering_direction'])]
+    : changedAttributes;
+
+  // When ordering_field changes, don't ignore ordering_direction
+  const attributesToIgnore = newItemType.attributes.modular_block
+    ? attributesToIgnoreOnBlockModels
+    : attributesToIgnoreOnModels;
+
+  const finalAttributesToIgnore = changedRelationships.includes(
+    'ordering_field',
+  )
+    ? attributesToIgnore.filter((attr) => attr !== 'ordering_direction')
+    : attributesToIgnore;
+
   const attributesToUpdate = pick(
     newItemType.attributes,
-    without(
-      changedAttributes,
-      ...(newItemType.attributes.modular_block
-        ? attributesToIgnoreOnBlockModels
-        : attributesToIgnoreOnModels),
-    ),
-  );
-
-  const changedRelationships = (
-    Object.keys(newItemType.relationships) as Array<
-      keyof CmaClient.RawApiTypes.ItemTypeRelationships
-    >
-  ).filter(
-    (relationship) =>
-      !isEqual(
-        oldItemType
-          ? oldItemType.relationships[relationship]
-          : defaultRelationshipsOnCreatedItemTypes[relationship],
-        newItemType.relationships[relationship],
-      ),
+    without(attributesWithOrderingDirection, ...finalAttributesToIgnore),
   );
 
   const relationshipsToUpdate = pick(
