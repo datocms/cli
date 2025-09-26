@@ -6,7 +6,7 @@ import { camelCase } from 'lodash';
 import mkdirp from 'mkdirp';
 import { diffEnvironments } from '../../utils/environments-diff';
 import { findNearestFile } from '../../utils/find-nearest-file';
-import { SchemaTypesGenerator } from '../../utils/schema-types-generator';
+import { generateSchemaTypesForMigration } from '../../utils/schema-types-generator';
 
 const jsTemplate = `
 'use strict';
@@ -256,11 +256,10 @@ export default class Command extends CmaClientCommand {
 
   private async generateSchemaTypes(schemaFilter: string): Promise<string> {
     const client = await this.buildClient();
-    const generator = new SchemaTypesGenerator(client);
     const itemTypesFilter =
       schemaFilter.toLowerCase() === 'all' ? undefined : schemaFilter;
 
-    return await generator.generateSchemaTypesForMigration({
+    return await generateSchemaTypesForMigration(client, {
       itemTypesFilter,
     });
   }

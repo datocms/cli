@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CmaClientCommand, oclif } from '@datocms/cli-utils';
-import { SchemaTypesGenerator } from '../../utils/schema-types-generator';
+import { generateSchemaTypes } from '../../utils/schema-types-generator';
 
 export default class Command extends CmaClientCommand {
   static description = 'Generate TypeScript definitions for the schema';
@@ -43,9 +43,8 @@ export default class Command extends CmaClientCommand {
     }
 
     const client = await this.buildClient({ environment });
-    const generator = new SchemaTypesGenerator(client);
 
-    const formattedCode = await generator.generateSchemaTypes({
+    const formattedCode = await generateSchemaTypes(client, {
       itemTypesFilter,
       environment,
     });
