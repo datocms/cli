@@ -798,7 +798,7 @@ function filterItemTypesAndFields(
  *
  * Example generated code:
  * ```typescript
- * import { ItemTypeDefinition } from '@datocms/cma-client';
+ * import type { ItemTypeDefinition } from '@datocms/cma-client';
  *
  * type EnvironmentSettings = { locales: 'en' | 'it'; };
  * export type BlogPost = ItemTypeDefinition<...>;
@@ -821,7 +821,7 @@ function generateTypeDefinitions(
   const importDeclaration = ts.factory.createImportDeclaration(
     undefined,
     ts.factory.createImportClause(
-      false,
+      true,
       undefined,
       ts.factory.createNamedImports([
         ts.factory.createImportSpecifier(
