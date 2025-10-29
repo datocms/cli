@@ -28,7 +28,7 @@ export interface SchemaTypesGeneratorOptions {
  *
  * Example generated code:
  * ```typescript
- * import { ItemTypeDefinition } from '@datocms/cma-client';
+ * import type { ItemTypeDefinition } from '@datocms/cma-client';
  *
  * type EnvironmentSettings = {
  *   locales: 'en' | 'it';
@@ -650,7 +650,7 @@ function createUnionTypes(
  *
  * Example generated code:
  * ```typescript
- * import { ItemTypeDefinition } from '@datocms/cma-client';
+ * import type { ItemTypeDefinition } from '@datocms/cma-client';
  *
  * type EnvironmentSettings = {
  *   locales: 'en' | 'it';
