@@ -42,6 +42,7 @@ USAGE
 * [`datocms environments:primary`](#datocms-environmentsprimary)
 * [`datocms environments:promote ENVIRONMENT_ID`](#datocms-environmentspromote-environment_id)
 * [`datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsrename-environment_id-new_environment_id)
+* [`datocms execute RESOURCE METHOD`](#datocms-execute-resource-method)
 * [`datocms help [COMMAND]`](#datocms-help-command)
 * [`datocms maintenance:off`](#datocms-maintenanceoff)
 * [`datocms maintenance:on`](#datocms-maintenanceon)
@@ -293,6 +294,65 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v3.1.7/packages/cli/src/commands/environments/rename.ts)_
+
+## `datocms execute RESOURCE METHOD`
+
+Execute any DatoCMS API method directly from the CLI
+
+```
+USAGE
+  $ datocms execute RESOURCE... METHOD... [--json] [--config-file <value>] [--profile <value>] [--api-token
+    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory] [--data <value>]
+    [--params <value>]
+
+ARGUMENTS
+  RESOURCE...  The resource to call (e.g., roles, items, itemTypes, etc.)
+  METHOD...    The method to execute (e.g., list, find, create, etc.)
+
+FLAGS
+  --data=<value>    JSON string containing the request body data (for create/update operations)
+  --params=<value>  JSON string containing query parameters
+
+GLOBAL FLAGS
+  --api-token=<value>    Specify a custom API key to access a DatoCMS project
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --json                 Format output as json.
+  --log-level=<option>   Level of logging for performed API calls
+                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --log-mode=<option>    Where logged output should be written to
+                         <options: stdout|file|directory>
+  --profile=<value>      Use settings of profile in datocms.config.js
+
+DESCRIPTION
+  Execute any DatoCMS API method directly from the CLI
+
+EXAMPLES
+  List all roles
+
+    $ datocms execute roles list
+
+  Find a specific role
+
+    $ datocms execute roles find 123
+
+  Create a new role
+
+    $ datocms execute roles create --data '{"name": "Editor", "can_edit_site": true}'
+
+  Update a role
+
+    $ datocms execute roles update 123 --data '{"name": "Updated Name"}'
+
+  Delete a role
+
+    $ datocms execute roles destroy 123
+
+  List items with query parameters
+
+    $ datocms execute items list --params '{"filter[type]": "blog_post"}'
+```
+
+_See code: [src/commands/execute.ts](https://github.com/datocms/cli/blob/v3.1.7/packages/cli/src/commands/execute.ts)_
 
 ## `datocms help [COMMAND]`
 
