@@ -24,8 +24,8 @@ type UrlPlaceholder = {
   isEntityId: boolean;
 };
 
-export default class Execute extends CmaClientCommand {
-  static description = 'Execute any DatoCMS API method directly from the CLI';
+export default class Call extends CmaClientCommand {
+  static description = 'Call any DatoCMS Content Management API method';
 
   static examples = [
     {
@@ -53,13 +53,18 @@ export default class Execute extends CmaClientCommand {
     {
       description: 'List items with query parameters',
       command:
-        '<%= config.bin %> <%= command.id %> items list --params \'{"filter[type]": "blog_post"}\'',
+        '<%= config.bin %> <%= command.id %> items list --params \'{"filter": { "type": "blog_post" }}\'',
+    },
+    {
+      description: 'Execute command in a specific environment',
+      command:
+        '<%= config.bin %> <%= command.id %> items list --environment my-environment',
     },
   ];
 
   static args = {
     resource: oclif.Args.string({
-      description: 'The resource to call (e.g., roles, items, itemTypes, etc.)',
+      description: 'The resource to call (e.g., items, itemTypes, etc.)',
       required: true,
     }),
     method: oclif.Args.string({
@@ -69,6 +74,12 @@ export default class Execute extends CmaClientCommand {
   };
 
   static flags = {
+    ...CmaClientCommand.flags,
+    environment: oclif.Flags.string({
+      char: 'e',
+      description: 'Environment to execute the command in',
+      required: false,
+    }),
     data: oclif.Flags.string({
       description:
         'JSON string containing the request body data (for create/update operations)',
@@ -87,20 +98,19 @@ export default class Execute extends CmaClientCommand {
   // Enable strict mode to false to allow dynamic flags
   static strict = false;
 
-  // Enable varargs to capture all remaining arguments
   static enableJsonFlag = true;
 
-  async run(): Promise<unknown> {
-    const { args, flags, argv } = await this.parse(Execute);
+  async run(): Promise<void> {
+    const { args, flags, argv } = await this.parse(Call);
     const positionalArgs = argv.slice(2) as string[]; // Skip resource and method
+    const { environment } = flags;
+
+    // Build client with specified environment (if provided)
+    const client = await this.buildClient({ environment });
 
     const resources = this.loadResources();
     const resource = this.findResource(resources, args.resource);
     const { endpoint, methodName } = this.findEndpoint(resource, args.method);
-
-    this.log(
-      `Executing: ${resource.jsonApiType}.${methodName}() - ${endpoint.comment}`,
-    );
 
     const urlPlaceholders = this.parseUrlPlaceholders(
       endpoint,
@@ -111,6 +121,7 @@ export default class Execute extends CmaClientCommand {
     const queryParams = this.parseQueryParams(flags.params);
 
     const result = await this.executeApiCall(
+      client,
       resource,
       endpoint,
       methodName,
@@ -119,10 +130,7 @@ export default class Execute extends CmaClientCommand {
       queryParams,
     );
 
-    this.log('\nResult:');
     this.log(JSON.stringify(result, null, 2));
-
-    return result;
   }
 
   private loadResources(): Resource[] {
@@ -237,6 +245,36 @@ export default class Execute extends CmaClientCommand {
   ): Record<string, string> {
     const urlPlaceholders: Record<string, string> = {};
 
+    const expectedPlaceholders = endpoint.urlPlaceholders?.length || 0;
+
+    // Check for too many arguments
+    if (positionalArgs.length > expectedPlaceholders) {
+      const placeholderNames =
+        expectedPlaceholders > 0
+          ? endpoint
+              .urlPlaceholders!.map((p) => `<${p.variableName}>`)
+              .join(' ')
+          : '';
+
+      this.error(`Too many arguments for ${args.method} method`, {
+        suggestions: [
+          `This method requires ${expectedPlaceholders} parameter(s)${
+            expectedPlaceholders > 0
+              ? `: ${endpoint
+                  .urlPlaceholders!.map((p) => p.variableName)
+                  .join(', ')}`
+              : ''
+          }`,
+          `You provided ${
+            positionalArgs.length
+          } argument(s): ${positionalArgs.join(', ')}`,
+          `Usage: ${this.config.bin} ${this.id} ${args.resource} ${
+            args.method
+          }${placeholderNames ? ` ${placeholderNames}` : ''}`,
+        ],
+      });
+    }
+
     if (!endpoint.urlPlaceholders || endpoint.urlPlaceholders.length === 0) {
       return urlPlaceholders;
     }
@@ -336,6 +374,7 @@ export default class Execute extends CmaClientCommand {
   }
 
   private async executeApiCall(
+    client: CmaClient.Client,
     resource: Resource,
     endpoint: Endpoint,
     methodName: string,
@@ -343,7 +382,7 @@ export default class Execute extends CmaClientCommand {
     bodyData: unknown,
     queryParams: Record<string, unknown>,
   ): Promise<unknown> {
-    const resourceClient = this.getResourceClient(resource);
+    const resourceClient = this.getResourceClient(client, resource);
     const method = this.getMethod(resourceClient, resource, methodName);
     const methodArgs = this.buildMethodArguments(
       endpoint,
@@ -364,23 +403,17 @@ export default class Execute extends CmaClientCommand {
     }
   }
 
-  private handleApiError(error: unknown, endpoint: Endpoint): void {
+  private handleApiError(error: unknown, _endpoint: Endpoint): void {
     if (error instanceof CmaClient.ApiError) {
-      this.error(`API Error: ${error.message}`, {
-        suggestions: [
-          'Check your API token has the necessary permissions',
-          'Verify the request data is correctly formatted',
-          `See: ${
-            endpoint.docUrl ||
-            'https://www.datocms.com/docs/content-management-api'
-          }`,
-        ],
-      });
+      this.error(`API Error: ${error.message}`);
     }
   }
 
-  private getResourceClient(resource: Resource): Record<string, unknown> {
-    const resourceClient = (this.client as unknown as Record<string, unknown>)[
+  private getResourceClient(
+    client: CmaClient.Client,
+    resource: Resource,
+  ): Record<string, unknown> {
+    const resourceClient = (client as unknown as Record<string, unknown>)[
       resource.namespace
     ];
 

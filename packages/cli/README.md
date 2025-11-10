@@ -35,6 +35,7 @@ USAGE
 
 <!-- commands -->
 * [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
+* [`datocms cma:call RESOURCE METHOD`](#datocms-cmacall-resource-method)
 * [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 * [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
 * [`datocms environments:index`](#datocms-environmentsindex)
@@ -42,7 +43,6 @@ USAGE
 * [`datocms environments:primary`](#datocms-environmentsprimary)
 * [`datocms environments:promote ENVIRONMENT_ID`](#datocms-environmentspromote-environment_id)
 * [`datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsrename-environment_id-new_environment_id)
-* [`datocms execute RESOURCE METHOD`](#datocms-execute-resource-method)
 * [`datocms help [COMMAND]`](#datocms-help-command)
 * [`datocms maintenance:off`](#datocms-maintenanceoff)
 * [`datocms maintenance:on`](#datocms-maintenanceon)
@@ -93,6 +93,70 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.34/src/commands/autocomplete/index.ts)_
+
+## `datocms cma:call RESOURCE METHOD`
+
+Call any DatoCMS Content Management API method
+
+```
+USAGE
+  $ datocms cma:call RESOURCE... METHOD... [--json] [--config-file <value>] [--profile <value>] [--api-token
+    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory] [-e <value>] [--data
+    <value>] [--params <value>]
+
+ARGUMENTS
+  RESOURCE...  The resource to call (e.g., items, itemTypes, etc.)
+  METHOD...    The method to execute (e.g., list, find, create, etc.)
+
+FLAGS
+  -e, --environment=<value>  Environment to execute the command in
+      --data=<value>         JSON string containing the request body data (for create/update operations)
+      --params=<value>       JSON string containing query parameters
+
+GLOBAL FLAGS
+  --api-token=<value>    Specify a custom API key to access a DatoCMS project
+  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --json                 Format output as json.
+  --log-level=<option>   Level of logging for performed API calls
+                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --log-mode=<option>    Where logged output should be written to
+                         <options: stdout|file|directory>
+  --profile=<value>      Use settings of profile in datocms.config.js
+
+DESCRIPTION
+  Call any DatoCMS Content Management API method
+
+EXAMPLES
+  List all roles
+
+    $ datocms cma:call roles list
+
+  Find a specific role
+
+    $ datocms cma:call roles find 123
+
+  Create a new role
+
+    $ datocms cma:call roles create --data '{"name": "Editor", "can_edit_site": true}'
+
+  Update a role
+
+    $ datocms cma:call roles update 123 --data '{"name": "Updated Name"}'
+
+  Delete a role
+
+    $ datocms cma:call roles destroy 123
+
+  List items with query parameters
+
+    $ datocms cma:call items list --params '{"filter": { "type": "blog_post" }}'
+
+  Execute command in a specific environment
+
+    $ datocms cma:call items list --environment my-environment
+```
+
+_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v3.1.7/packages/cli/src/commands/cma/call.ts)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
@@ -294,65 +358,6 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v3.1.7/packages/cli/src/commands/environments/rename.ts)_
-
-## `datocms execute RESOURCE METHOD`
-
-Execute any DatoCMS API method directly from the CLI
-
-```
-USAGE
-  $ datocms execute RESOURCE... METHOD... [--json] [--config-file <value>] [--profile <value>] [--api-token
-    <value>] [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory] [--data <value>]
-    [--params <value>]
-
-ARGUMENTS
-  RESOURCE...  The resource to call (e.g., roles, items, itemTypes, etc.)
-  METHOD...    The method to execute (e.g., list, find, create, etc.)
-
-FLAGS
-  --data=<value>    JSON string containing the request body data (for create/update operations)
-  --params=<value>  JSON string containing query parameters
-
-GLOBAL FLAGS
-  --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
-  --json                 Format output as json.
-  --log-level=<option>   Level of logging for performed API calls
-                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
-  --log-mode=<option>    Where logged output should be written to
-                         <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
-
-DESCRIPTION
-  Execute any DatoCMS API method directly from the CLI
-
-EXAMPLES
-  List all roles
-
-    $ datocms execute roles list
-
-  Find a specific role
-
-    $ datocms execute roles find 123
-
-  Create a new role
-
-    $ datocms execute roles create --data '{"name": "Editor", "can_edit_site": true}'
-
-  Update a role
-
-    $ datocms execute roles update 123 --data '{"name": "Updated Name"}'
-
-  Delete a role
-
-    $ datocms execute roles destroy 123
-
-  List items with query parameters
-
-    $ datocms execute items list --params '{"filter[type]": "blog_post"}'
-```
-
-_See code: [src/commands/execute.ts](https://github.com/datocms/cli/blob/v3.1.7/packages/cli/src/commands/execute.ts)_
 
 ## `datocms help [COMMAND]`
 

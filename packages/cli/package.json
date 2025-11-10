@@ -53,6 +53,9 @@
     "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli/<%- commandPath %>",
     "topicSeparator": ":",
     "topics": {
+      "cma": {
+        "description": "Interact with DatoCMS Content Management API"
+      },
       "maintenance": {
         "description": "Enable/disable maintenance mode for a project"
       },
