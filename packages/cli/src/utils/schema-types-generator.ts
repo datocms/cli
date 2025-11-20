@@ -54,13 +54,12 @@ export async function generateSchemaTypes(
   client: CmaClient.Client,
   options: SchemaTypesGeneratorOptions = {},
 ): Promise<string> {
-  const { data, included } = await client.site.rawFind({
+  const response = await client.site.rawFind({
     include: 'item_types,item_types.fields',
   });
 
-  if (!included) {
-    throw new Error('This should not happen');
-  }
+  const { data } = response;
+  const included = response.included || [];
 
   const locales = data.attributes.locales;
   const allItemTypes = included.filter((item) => item.type === 'item_type');

@@ -10,10 +10,7 @@
   "directories": {
     "lib": "lib"
   },
-  "files": [
-    "lib",
-    "src"
-  ],
+  "files": ["lib", "src"],
   "publishConfig": {
     "access": "public"
   },
@@ -31,7 +28,7 @@
     "build": "tsc",
     "prebuild": "rimraf lib"
   },
-  "gitHead": "e8ae0596ec245e175aed56e5746ac3eeb1048d9f",
+  "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {
     "@types/lodash": "^4.17.20"
   }
