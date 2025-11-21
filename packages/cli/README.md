@@ -72,7 +72,7 @@ USAGE
   $ datocms autocomplete [SHELL] [-r]
 
 ARGUMENTS
-  SHELL  (zsh|bash|powershell) Shell type
+  [SHELL]  (zsh|bash|powershell) Shell type
 
 FLAGS
   -r, --refresh-cache  Refresh cache (ignores displaying instructions)
@@ -110,18 +110,18 @@ ARGUMENTS
 
 FLAGS
   -e, --environment=<value>  Environment to execute the command in
-      --data=<value>         JSON string containing the request body data (for create/update operations)
-      --params=<value>       JSON string containing query parameters
+      --data=<value>         JSON/JSON5 string containing the request body data (for create/update operations)
+      --params=<value>       JSON/JSON5 string containing query parameters
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Call any DatoCMS Content Management API method
@@ -137,11 +137,11 @@ EXAMPLES
 
   Create a new role
 
-    $ datocms cma:call roles create --data '{"name": "Editor", "can_edit_site": true}'
+    $ datocms cma:call roles create --data '{name: "Editor", can_edit_site: true}'
 
   Update a role
 
-    $ datocms cma:call roles update 123 --data '{"name": "Updated Name"}'
+    $ datocms cma:call roles update 123 --data '{name: "Updated Name"}'
 
   Delete a role
 
@@ -149,14 +149,14 @@ EXAMPLES
 
   List items with query parameters
 
-    $ datocms cma:call items list --params '{"filter": { "type": "blog_post" }}'
+    $ datocms cma:call items list --params '{filter: {type: "blog_post"}}'
 
   Execute command in a specific environment
 
     $ datocms cma:call items list --environment my-environment
 ```
 
-_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/cma/call.ts)_
+_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/cma/call.ts)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
@@ -172,19 +172,19 @@ ARGUMENTS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/environments/destroy.ts)_
+_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/environments/destroy.ts)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -207,19 +207,19 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/environments/fork.ts)_
+_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/environments/fork.ts)_
 
 ## `datocms environments:index`
 
@@ -232,13 +232,13 @@ USAGE
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Lists primary/sandbox environments of a project
@@ -259,13 +259,13 @@ USAGE
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Lists primary/sandbox environments of a project
@@ -275,7 +275,7 @@ ALIASES
   $ datocms environments:list
 ```
 
-_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/environments/list.ts)_
+_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/environments/list.ts)_
 
 ## `datocms environments:primary`
 
@@ -288,19 +288,19 @@ USAGE
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/environments/primary.ts)_
+_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/environments/primary.ts)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -316,19 +316,19 @@ ARGUMENTS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/environments/promote.ts)_
+_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/environments/promote.ts)_
 
 ## `datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -345,19 +345,19 @@ ARGUMENTS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Renames an environment
 ```
 
-_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/environments/rename.ts)_
+_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/environments/rename.ts)_
 
 ## `datocms help [COMMAND]`
 
@@ -368,7 +368,7 @@ USAGE
   $ datocms help [COMMAND...] [-n]
 
 ARGUMENTS
-  COMMAND...  Command to show help for.
+  [COMMAND...]  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -390,19 +390,19 @@ USAGE
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/maintenance/off.ts)_
+_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/maintenance/off.ts)_
 
 ## `datocms maintenance:on`
 
@@ -418,19 +418,19 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/maintenance/on.ts)_
+_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/maintenance/on.ts)_
 
 ## `datocms migrations:new NAME`
 
@@ -468,19 +468,19 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/migrations/new.ts)_
+_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/migrations/new.ts)_
 
 ## `datocms migrations:run`
 
@@ -508,19 +508,19 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/migrations/run.ts)_
+_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/migrations/run.ts)_
 
 ## `datocms plugins`
 
@@ -607,7 +607,7 @@ DESCRIPTION
   Lists official DatoCMS CLI plugins
 ```
 
-_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/plugins/available.ts)_
+_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/plugins/available.ts)_
 
 ## `datocms plugins:inspect PLUGIN...`
 
@@ -725,7 +725,7 @@ USAGE
   $ datocms plugins:remove [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -766,7 +766,7 @@ USAGE
   $ datocms plugins:uninstall [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -794,7 +794,7 @@ USAGE
   $ datocms plugins:unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  PLUGIN...  plugin to uninstall
+  [PLUGIN...]  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
@@ -841,14 +841,14 @@ ARGUMENTS
   PROFILE_ID  The name of the profile
 
 GLOBAL FLAGS
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
 
 DESCRIPTION
   Remove a profile from DatoCMS config file
 ```
 
-_See code: [src/commands/profile/remove.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/profile/remove.ts)_
+_See code: [src/commands/profile/remove.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/profile/remove.ts)_
 
 ## `datocms profile:set PROFILE_ID`
 
@@ -872,14 +872,14 @@ FLAGS
   --migrations-tsconfig=<value>  Path of the tsconfig.json to use to run TS migration scripts
 
 GLOBAL FLAGS
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
 
 DESCRIPTION
   Add/update profile configuration in DatoCMS config file
 ```
 
-_See code: [src/commands/profile/set.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/profile/set.ts)_
+_See code: [src/commands/profile/set.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/profile/set.ts)_
 
 ## `datocms schema:generate FILENAME`
 
@@ -899,17 +899,17 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Generate TypeScript definitions for the schema
 ```
 
-_See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v3.1.11/packages/cli/src/commands/schema/generate.ts)_
+_See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v3.1.12/packages/cli/src/commands/schema/generate.ts)_
 <!-- commandsstop -->
