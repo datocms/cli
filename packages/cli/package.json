@@ -33,6 +33,7 @@
     "@oclif/plugin-not-found": "^3",
     "@oclif/plugin-plugins": "^5",
     "@oclif/plugin-warn-if-update-available": "^3",
+    "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "prettier": "^3.4.2",
@@ -81,10 +82,7 @@
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": [
-    "datocms",
-    "cli"
-  ],
+  "keywords": ["datocms", "cli"],
   "types": "lib/index.d.ts",
   "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {

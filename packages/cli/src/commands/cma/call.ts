@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
+import JSON5 from 'json5';
 
 type Resource = {
   jsonApiType: string;
@@ -39,12 +40,12 @@ export default class Call extends CmaClientCommand {
     {
       description: 'Create a new role',
       command:
-        '<%= config.bin %> <%= command.id %> roles create --data \'{"name": "Editor", "can_edit_site": true}\'',
+        '<%= config.bin %> <%= command.id %> roles create --data \'{name: "Editor", can_edit_site: true}\'',
     },
     {
       description: 'Update a role',
       command:
-        '<%= config.bin %> <%= command.id %> roles update 123 --data \'{"name": "Updated Name"}\'',
+        '<%= config.bin %> <%= command.id %> roles update 123 --data \'{name: "Updated Name"}\'',
     },
     {
       description: 'Delete a role',
@@ -53,7 +54,7 @@ export default class Call extends CmaClientCommand {
     {
       description: 'List items with query parameters',
       command:
-        '<%= config.bin %> <%= command.id %> items list --params \'{"filter": { "type": "blog_post" }}\'',
+        '<%= config.bin %> <%= command.id %> items list --params \'{filter: {type: "blog_post"}}\'',
     },
     {
       description: 'Execute command in a specific environment',
@@ -82,11 +83,11 @@ export default class Call extends CmaClientCommand {
     }),
     data: oclif.Flags.string({
       description:
-        'JSON string containing the request body data (for create/update operations)',
+        'JSON/JSON5 string containing the request body data (for create/update operations)',
       required: false,
     }),
     params: oclif.Flags.string({
-      description: 'JSON string containing query parameters',
+      description: 'JSON/JSON5 string containing query parameters',
       required: false,
     }),
     ...Object.fromEntries(
@@ -324,12 +325,12 @@ export default class Call extends CmaClientCommand {
 
   private parseJsonFlag(jsonString: string, flagName: string): unknown {
     try {
-      return JSON.parse(jsonString);
+      return JSON5.parse(jsonString);
     } catch {
-      this.error(`Invalid JSON in ${flagName} flag`, {
+      this.error(`Invalid JSON/JSON5 in ${flagName} flag`, {
         suggestions: [
-          'Make sure your JSON is properly formatted',
-          `Example: ${flagName} '{"name": "My Item", "value": 123}'`,
+          'Make sure your JSON/JSON5 is properly formatted',
+          `Example: ${flagName} '{name: "My Item", value: 123}'`,
         ],
       });
     }
@@ -357,7 +358,7 @@ export default class Call extends CmaClientCommand {
         {
           suggestions: [
             'Provide request body data using the --data flag',
-            `Example: ${this.config.bin} ${this.id} ${args.resource} ${args.method} --data '{"key": "value"}'`,
+            `Example: ${this.config.bin} ${this.id} ${args.resource} ${args.method} --data '{key: "value"}'`,
             ...(endpoint.docUrl ? [`See: ${endpoint.docUrl}`] : []),
           ],
         },
