@@ -52,7 +52,7 @@ export abstract class DatoProfileConfigCommand extends DatoConfigCommand {
         `Multiple profiles detected in config file "${this.datoConfigRelativePath}"`,
         {
           suggestions: [
-            `Specify which profile to use with the "--profile" flag, or the DATOCMS_PROFILE env variable (we look inside a local ".env" file too)`,
+            `Specify which profile to use with the "--profile" flag, or the DATOCMS_PROFILE env variable (we look inside .env.local and .env too)`,
           ],
         },
       );

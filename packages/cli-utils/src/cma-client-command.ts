@@ -85,7 +85,7 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
         suggestions: [
           `The API token to use is determined by looking at:
 * The --api-token flag
-* The ${apiTokenEnvName} environment variable (we look inside a local ".env" file too)`,
+* The ${apiTokenEnvName} environment variable (we look inside .env.local and .env too)`,
         ],
       });
     }
