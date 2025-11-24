@@ -128,6 +128,20 @@ export default class ImportCommand extends CmaClientCommand {
     const tasks = new Listr<Context>(
       [
         {
+          title: 'Download Contentful schema',
+          task: async (ctx, _task) => {
+            const contentfulTypes = await getAll(
+              this.cfEnvironmentApi.getContentTypes.bind(this.cfEnvironmentApi),
+            );
+
+            ctx.contentTypes = options.importOnly
+              ? contentfulTypes.filter((type) =>
+                  options.importOnly?.includes(type.sys.id),
+                )
+              : contentfulTypes;
+          },
+        },
+        {
           title: 'Destroy existing Contentful schema from DatoCMS project',
           task: async (ctx, task) => {
             return new DestroyDatoSchema({ ...options, ctx, task }).task(
