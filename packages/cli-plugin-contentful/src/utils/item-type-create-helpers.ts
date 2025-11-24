@@ -1,6 +1,6 @@
 import type { CmaClient } from '@datocms/cli-utils';
 import type { ContentFields, ContentTypeProps } from 'contentful-management';
-import { format } from 'date-fns-tz';
+import { format } from 'date-fns';
 import { decamelize } from 'humps';
 import type { Context } from '../commands/contentful/import';
 
