@@ -86,7 +86,10 @@ export default class ImportFields extends BaseStep {
 
           const fieldAttributes: CmaClient.ApiTypes.FieldCreateSchema = {
             label: contentfulField.name,
-            field_type: contentFieldTypeToDatoFieldType(contentfulField) as any,
+            field_type: contentFieldTypeToDatoFieldType(
+              contentfulField,
+              ctx.contentTypeIdToEditorInterface[contentTypeId],
+            ) as any,
             localized: contentfulField.localized,
             api_key: toFieldApiKey(contentfulField.id),
             position,

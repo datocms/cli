@@ -4,6 +4,7 @@ import type {
   Asset,
   ContentFields,
   ContentType,
+  EditorInterface,
   Entry,
   Environment,
 } from 'contentful-management';
@@ -53,6 +54,9 @@ export type Context = {
     [key: ContentType['sys']['id']]: {
       [key: ContentFields['id']]: ContentFields;
     };
+  };
+  contentTypeIdToEditorInterface: {
+    [key: ContentType['sys']['id']]: EditorInterface;
   };
   entriesWithLinkField: Entry[];
   entryIdToDatoItemId: {
@@ -139,6 +143,19 @@ export default class ImportCommand extends CmaClientCommand {
                   options.importOnly?.includes(type.sys.id),
                 )
               : contentfulTypes;
+
+            // We need EditorInterface API because some options in Contentful are just
+            // an editor setting; i.e. the slug field
+            ctx.contentTypeIdToEditorInterface = {};
+            for (const contentType of ctx.contentTypes) {
+              const editorInterface =
+                await this.cfEnvironmentApi.getEditorInterfaceForContentType(
+                  contentType.sys.id,
+                );
+
+              ctx.contentTypeIdToEditorInterface[contentType.sys.id] =
+                editorInterface;
+            }
           },
         },
         {
