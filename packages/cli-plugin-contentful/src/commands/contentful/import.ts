@@ -1,4 +1,9 @@
-import { type CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
+import {
+  type CmaClient,
+  CmaClientCommand,
+  type LogLevelFlagEnum,
+  oclif,
+} from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
 import type {
   Asset,
@@ -90,6 +95,10 @@ export default class ImportCommand extends CmaClientCommand {
     'ignore-errors': oclif.Flags.boolean({
       description: 'Ignore errors encountered during import',
     }),
+    'log-level': oclif.Flags.custom<LogLevelFlagEnum>({
+      options: ['NONE', 'BASIC', 'BODY', 'BODY_AND_HEADERS'],
+      description: 'Level of logging to use for the profile',
+    })(),
     'skip-content': oclif.Flags.boolean({
       description:
         'Exclusively import the schema (models) and ignore records and assets',
