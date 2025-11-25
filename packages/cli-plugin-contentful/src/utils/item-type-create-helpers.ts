@@ -254,10 +254,6 @@ export default function contentfulFieldValidatorsToDato(
   | DateValidators
   | ArrayValidators
   | AssetValidators {
-  if (!field) {
-    throw new Error('Missing field. This should not happen');
-  }
-
   switch (field.type) {
     case 'Symbol':
       if (isSlugField(field, editorInterface)) {
