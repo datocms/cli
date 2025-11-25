@@ -57,10 +57,6 @@ export function buildCreateFieldClientCommand(
     without(attributesToPick, 'position'),
   );
 
-  // This is a legacy property added to the entity
-  // only in some cases. We need to remove it.
-  (attributesToUpdate.appearance as any).type = undefined;
-
   return [
     buildComment(
       `Create ${buildFieldTitle(field)} in ${buildItemTypeTitle(itemType)}`,
