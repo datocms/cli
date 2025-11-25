@@ -6,6 +6,7 @@ import type {
 } from 'contentful-management';
 import { format } from 'date-fns';
 import { decamelize } from 'humps';
+import { compact, uniq } from 'lodash';
 import type { Context } from '../commands/contentful/import';
 
 const assetBlockFieldApiKey = 'file';
@@ -107,25 +108,92 @@ export function contentFieldTypeToDatoFieldType(
   }
 }
 
-export const findLinkedItemTypesFromContentField = (
-  itemTypeMapping: Context['contentTypeIdToDatoItemType'],
+export const findLinksFromContentMultipleLinksField = (
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'],
+  contentfulField: ContentFields,
+): string[] => {
+  const linkValidation = contentfulField?.items?.validations?.find(
+    (val) => val.linkContentType,
+  );
+
+  if (
+    linkValidation?.linkContentType &&
+    linkValidation?.linkContentType.length > 0
+  ) {
+    return compact(
+      linkValidation.linkContentType.map(
+        (contentTypeId) => contentTypeIdToDatoItemType[contentTypeId]?.id,
+      ),
+    );
+  }
+
+  return Object.values(contentTypeIdToDatoItemType).map(
+    (iT: CmaClient.ApiTypes.ItemType) => iT.id,
+  );
+};
+
+export const findLinksFromContentSingleLinkField = (
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'],
   contentfulField: ContentFields,
 ): string[] => {
   const linkValidation = contentfulField?.validations?.find(
     (val) => val.linkContentType,
   );
 
-  if (linkValidation) {
-    return linkValidation.linkContentType
-      ? linkValidation.linkContentType
-          .map((contentTypeId) => itemTypeMapping[contentTypeId]?.id)
-          .filter((x) => !!x)
-      : [];
+  if (
+    linkValidation?.linkContentType &&
+    linkValidation?.linkContentType.length > 0
+  ) {
+    return compact(
+      linkValidation.linkContentType.map(
+        (contentTypeId) => contentTypeIdToDatoItemType[contentTypeId]?.id,
+      ),
+    );
   }
 
-  return Object.values(itemTypeMapping).map(
+  return Object.values(contentTypeIdToDatoItemType).map(
     (iT: CmaClient.ApiTypes.ItemType) => iT.id,
   );
+};
+
+export const findLinksFromContentRichTextField = (
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'],
+  contentfulField: ContentFields,
+): string[] => {
+  const richTextValidation = contentfulField?.validations?.find(
+    (val) => val.nodes,
+  );
+
+  let datoValidations: string[] = [];
+  const embeddedEntries = richTextValidation?.nodes?.[
+    'embedded-entry-block'
+  ]?.find((node) => node.linkContentType)?.linkContentType;
+  const inlineEntries = richTextValidation?.nodes?.[
+    'embedded-entry-inline'
+  ]?.find((node) => node.linkContentType)?.linkContentType;
+
+  if (!embeddedEntries && !inlineEntries) {
+    return Object.values(contentTypeIdToDatoItemType).map(
+      (iT: CmaClient.ApiTypes.ItemType) => iT.id,
+    );
+  }
+
+  if (embeddedEntries && embeddedEntries.length > 0) {
+    datoValidations = embeddedEntries.map(
+      (entryId) => contentTypeIdToDatoItemType[entryId]?.id,
+    );
+  }
+
+  if (inlineEntries && inlineEntries.length > 0) {
+    datoValidations = [
+      ...datoValidations,
+      ...inlineEntries.map(
+        (entryId) => contentTypeIdToDatoItemType[entryId]?.id,
+      ),
+    ];
+  }
+
+  return uniq(compact(datoValidations));
 };
 
 export const findOrCreateStructuredTextAssetBlock = async (
