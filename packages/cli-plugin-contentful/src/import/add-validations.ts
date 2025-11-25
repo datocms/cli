@@ -35,6 +35,8 @@ export default class AddValidations extends BaseStep {
 
           const newValidators = contentfulFieldValidatorsToDato(
             contentfulField as ContentFields<KeyValueMap>,
+            ctx.contentTypeIdToEditorInterface[contentfulContentTypeId],
+            ctx.contentTypeIdToDatoFields[contentfulContentTypeId],
           );
 
           await this.client.fields.update(datoField.id, {
