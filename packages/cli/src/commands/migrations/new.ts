@@ -133,9 +133,11 @@ export default class Command extends CmaClientCommand {
 
     const config = this.datoProfileConfig!;
 
-    const template = config.migrations?.template
-      ? resolve(dirname(this.datoConfigPath), config.migrations?.template)
-      : undefined;
+    const template = flags.template
+      ? resolve(dirname(this.datoConfigPath), flags.template)
+      : config.migrations?.template
+        ? resolve(dirname(this.datoConfigPath), config.migrations?.template)
+        : undefined;
 
     const migrationsDir = config.migrations?.directory
       ? resolve(dirname(this.datoConfigPath), config.migrations?.directory)
