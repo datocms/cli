@@ -64,8 +64,8 @@ export type Context = {
     [key: ContentType['sys']['id']]: EditorInterface;
   };
   entriesWithLinkField: Entry[];
-  entryIdToDatoItemId: {
-    [k: Entry['sys']['id']]: CmaClient.ApiTypes.ItemIdentity;
+  entryIdToDatoItem: {
+    [k: Entry['sys']['id']]: CmaClient.ApiTypes.Item;
   };
   uploadIdToDatoUploadInfo: {
     [key: Asset['sys']['id']]: {

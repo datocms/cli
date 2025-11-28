@@ -1,4 +1,8 @@
 import type { CmaClient } from '@datocms/cli-utils';
+import type {
+  ContentFields,
+  Link as ContentfulLink,
+} from 'contentful-management';
 import {
   ContentfulRichTextTypes,
   type Handler,
@@ -16,7 +20,13 @@ import {
   allowedChildren,
   linkNodeType,
 } from 'datocms-structured-text-utils';
+import { compact } from 'lodash';
 import type { Context } from '../commands/contentful/import';
+import {
+  findLinksFromContentMultipleLinksField,
+  findLinksFromContentRichTextField,
+  findLinksFromContentSingleLinkField,
+} from './item-type-create-helpers';
 
 export const isLinkType = (datoFieldType: string): boolean => {
   return ['file', 'gallery', 'link', 'links', 'structured_text'].includes(
@@ -80,19 +90,24 @@ export type UploadData = {
   custom_data: Record<string, string>;
 };
 type LinkData = CmaClient.ApiTypes.ItemIdentity;
-type ContentfulSingleLinkData = {
-  sys: {
-    id: string;
-  };
-};
 
-export const datoLinkValueForFieldType = async (
-  contentfulValue: unknown,
-  fieldType: CmaClient.ApiTypes.Field['field_type'],
-  entryIdToDatoItemId: Context['entryIdToDatoItemId'],
-  uploadIdToDatoUploadInfo: Context['uploadIdToDatoUploadInfo'],
-  assetBlockId: string,
-): Promise<
+export const datoLinkValueForFieldType = async ({
+  contentfulValue,
+  datoFieldType,
+  entryIdToDatoItem,
+  uploadIdToDatoUploadInfo,
+  assetBlockId,
+  contentfulField,
+  contentTypeIdToDatoItemType,
+}: {
+  contentfulValue: unknown;
+  datoFieldType: CmaClient.ApiTypes.Field['field_type'];
+  entryIdToDatoItem: Context['entryIdToDatoItem'];
+  uploadIdToDatoUploadInfo: Context['uploadIdToDatoUploadInfo'];
+  assetBlockId: string;
+  contentfulField: ContentFields;
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'];
+}): Promise<
   | UploadData
   | UploadData[]
   | LinkData
@@ -104,8 +119,8 @@ export const datoLinkValueForFieldType = async (
     return null;
   }
 
-  if (fieldType === 'file') {
-    const contentfulUploadValue = contentfulValue as ContentfulSingleLinkData;
+  if (datoFieldType === 'file') {
+    const contentfulUploadValue = contentfulValue as ContentfulLink<'Asset'>;
     const datoUpload = uploadIdToDatoUploadInfo[contentfulUploadValue.sys.id];
 
     return datoUpload
@@ -118,10 +133,10 @@ export const datoLinkValueForFieldType = async (
       : null;
   }
 
-  if (fieldType === 'gallery') {
-    const contentfulUploadValue = contentfulValue as ContentfulSingleLinkData[];
+  if (datoFieldType === 'gallery') {
+    const contentfulUploadValue = contentfulValue as ContentfulLink<'Asset'>[];
 
-    const uploadData = contentfulUploadValue.map((link): UploadData | null => {
+    const uploadData = contentfulUploadValue.map((link) => {
       const datoUpload = uploadIdToDatoUploadInfo[link.sys.id];
       return datoUpload
         ? {
@@ -136,25 +151,42 @@ export const datoLinkValueForFieldType = async (
     return uploadData.filter((b) => Boolean(b)) as UploadData[];
   }
 
-  if (fieldType === 'link') {
-    const entryToLink = contentfulValue as ContentfulSingleLinkData;
+  if (datoFieldType === 'link') {
+    const allowedLinkedModels = findLinksFromContentSingleLinkField(
+      contentTypeIdToDatoItemType,
+      contentfulField,
+    );
 
-    return entryIdToDatoItemId[entryToLink.sys.id] || null;
+    const entryToLink = contentfulValue as ContentfulLink<'Entry'>;
+    const datoItem = entryIdToDatoItem[entryToLink.sys.id];
+
+    return allowedLinkedModels.includes(datoItem.item_type.id)
+      ? entryIdToDatoItem[entryToLink.sys.id].id
+      : null;
   }
 
-  if (fieldType === 'links') {
-    const entryToLink = contentfulValue as ContentfulSingleLinkData[];
+  if (datoFieldType === 'links') {
+    const allowedLinkedModels = findLinksFromContentMultipleLinksField(
+      contentTypeIdToDatoItemType,
+      contentfulField,
+    );
 
-    const newValue = entryToLink
-      .map((entry) => entryIdToDatoItemId[entry.sys.id] || null)
-      .filter(Boolean) as string[];
+    const entryToLink = contentfulValue as ContentfulLink<'Entry'>[];
 
-    return newValue || [];
+    return compact(
+      entryToLink.map((entry) => {
+        const datoItem = entryIdToDatoItem[entry.sys.id];
+
+        return allowedLinkedModels.includes(datoItem.item_type.id)
+          ? entryIdToDatoItem[entry.sys.id].id
+          : null;
+      }),
+    );
   }
 
-  if (fieldType === 'structured_text') {
+  if (datoFieldType === 'structured_text') {
     const handlers = generateStructuredTextHandlers(
-      entryIdToDatoItemId,
+      entryIdToDatoItem,
       uploadIdToDatoUploadInfo,
       assetBlockId,
     );
@@ -170,7 +202,7 @@ export const datoLinkValueForFieldType = async (
 };
 
 const generateStructuredTextHandlers = (
-  entryIdToDatoItemId: Context['entryIdToDatoItemId'],
+  entryIdToDatoItem: Context['entryIdToDatoItem'],
   uploadIdToDatoUploadInfo: Context['uploadIdToDatoUploadInfo'],
   assetBlockId: string,
 ): Handler[] => {
@@ -184,7 +216,7 @@ const generateStructuredTextHandlers = (
           allowedChildren[context.parentNodeType].includes('inlineItem');
 
         const contentfulId = node.data.target.sys.id;
-        const datoItemId = entryIdToDatoItemId[contentfulId];
+        const datoItemId = entryIdToDatoItem[contentfulId].id;
 
         return isAllowedAsChild && datoItemId
           ? { type: 'inlineItem', item: datoItemId }
@@ -199,7 +231,7 @@ const generateStructuredTextHandlers = (
         n.nodeType === ContentfulRichTextTypes.BLOCKS.EMBEDDED_ENTRY,
       async (node, context) => {
         const contentfulId = node.data.target.sys.id;
-        const datoItemId = entryIdToDatoItemId[contentfulId];
+        const datoItemId = entryIdToDatoItem[contentfulId].id;
 
         if (!datoItemId) {
           return {
@@ -231,7 +263,7 @@ const generateStructuredTextHandlers = (
           ...context,
           parentNodeType: isAllowedChild ? 'itemLink' : context.parentNodeType,
         });
-        const datoItemId = entryIdToDatoItemId[node.data.target.sys.id];
+        const datoItemId = entryIdToDatoItem[node.data.target.sys.id].id;
 
         return isAllowedChild && datoItemId
           ? ({ type: 'itemLink', item: datoItemId, children } as Node)
