@@ -44,7 +44,7 @@ export default class ImportRecords extends BaseStep {
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<void> {
     ctx.entriesWithLinkField = [];
-    ctx.entryIdToDatoItemId = {};
+    ctx.entryIdToDatoItem = {};
 
     const rawEntries = await getAll(
       this.cfEnvironmentApi.getEntries.bind(this.cfEnvironmentApi),
@@ -152,7 +152,7 @@ export default class ImportRecords extends BaseStep {
           ctx.entriesWithLinkField = [...ctx.entriesWithLinkField, entry];
         }
 
-        ctx.entryIdToDatoItemId[entryId] = record.id;
+        ctx.entryIdToDatoItem[entryId] = record;
       },
     );
   }
@@ -199,28 +199,38 @@ export default class ImportRecords extends BaseStep {
           if (datoField.localized) {
             for (const locale of ctx.locales) {
               (fieldValue as Record<string, unknown>)[locale] =
-                await datoLinkValueForFieldType(
-                  contentfulContent[locale],
-                  datoField.field_type,
-                  ctx.entryIdToDatoItemId,
-                  ctx.uploadIdToDatoUploadInfo,
-                  ctx.assetBlockId,
-                );
+                await datoLinkValueForFieldType({
+                  contentfulValue: contentfulContent[locale],
+                  datoFieldType: datoField.field_type,
+                  entryIdToDatoItem: ctx.entryIdToDatoItem,
+                  uploadIdToDatoUploadInfo: ctx.uploadIdToDatoUploadInfo,
+                  assetBlockId: ctx.assetBlockId,
+                  contentfulField:
+                    ctx.contentTypeIdToContentfulFields[contentType.sys.id][
+                      contentfulFieldApiKey
+                    ],
+                  contentTypeIdToDatoItemType: ctx.contentTypeIdToDatoItemType,
+                });
             }
           } else {
-            fieldValue = await datoLinkValueForFieldType(
-              contentfulContent[ctx.defaultLocale],
-              datoField.field_type,
-              ctx.entryIdToDatoItemId,
-              ctx.uploadIdToDatoUploadInfo,
-              ctx.assetBlockId,
-            );
+            fieldValue = await datoLinkValueForFieldType({
+              contentfulValue: contentfulContent[ctx.defaultLocale],
+              datoFieldType: datoField.field_type,
+              entryIdToDatoItem: ctx.entryIdToDatoItem,
+              uploadIdToDatoUploadInfo: ctx.uploadIdToDatoUploadInfo,
+              assetBlockId: ctx.assetBlockId,
+              contentfulField:
+                ctx.contentTypeIdToContentfulFields[contentType.sys.id][
+                  contentfulFieldApiKey
+                ],
+              contentTypeIdToDatoItemType: ctx.contentTypeIdToDatoItemType,
+            });
           }
 
           newRecordAttributes[datoField.api_key] = fieldValue;
         }
 
-        const datoItemId = ctx.entryIdToDatoItemId[id];
+        const datoItemId = ctx.entryIdToDatoItem[id];
         await this.client.items.update(datoItemId, newRecordAttributes);
 
         if (publishedVersion) {
