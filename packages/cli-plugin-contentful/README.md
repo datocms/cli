@@ -49,6 +49,8 @@ FLAGS
   --contentful-space-id=<value>     Your Contentful project space ID
   --contentful-token=<value>        Your Contentful project read-only API token
   --ignore-errors                   Ignore errors encountered during import
+  --log-level=<option>              Level of logging to use for the profile
+                                    <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --only-content-type=<value>       Exclusively import the specified content types. Specify the content types you want
                                     to import with comma separated Contentful IDs - Example: blogPost,landingPage,author
   --skip-content                    Exclusively import the schema (models) and ignore records and assets
@@ -57,8 +59,6 @@ GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
   --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
   --json                 Format output as json.
-  --log-level=<option>   Level of logging for performed API calls
-                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
   --profile=<value>      Use settings of profile in datocms.config.js
@@ -67,7 +67,7 @@ DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v3.1.15/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v3.1.16/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test
