@@ -1,9 +1,15 @@
-import { type CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
+import {
+  type CmaClient,
+  CmaClientCommand,
+  type LogLevelFlagEnum,
+  oclif,
+} from '@datocms/cli-utils';
 import { Scheduler } from 'async-scheduler';
 import type {
   Asset,
   ContentFields,
   ContentType,
+  EditorInterface,
   Entry,
   Environment,
 } from 'contentful-management';
@@ -54,9 +60,12 @@ export type Context = {
       [key: ContentFields['id']]: ContentFields;
     };
   };
+  contentTypeIdToEditorInterface: {
+    [key: ContentType['sys']['id']]: EditorInterface;
+  };
   entriesWithLinkField: Entry[];
-  entryIdToDatoItemId: {
-    [k: Entry['sys']['id']]: CmaClient.ApiTypes.ItemIdentity;
+  entryIdToDatoItem: {
+    [k: Entry['sys']['id']]: CmaClient.ApiTypes.Item;
   };
   uploadIdToDatoUploadInfo: {
     [key: Asset['sys']['id']]: {
@@ -86,6 +95,10 @@ export default class ImportCommand extends CmaClientCommand {
     'ignore-errors': oclif.Flags.boolean({
       description: 'Ignore errors encountered during import',
     }),
+    'log-level': oclif.Flags.custom<LogLevelFlagEnum>({
+      options: ['NONE', 'BASIC', 'BODY', 'BODY_AND_HEADERS'],
+      description: 'Level of logging to use for the profile',
+    })(),
     'skip-content': oclif.Flags.boolean({
       description:
         'Exclusively import the schema (models) and ignore records and assets',
@@ -127,6 +140,33 @@ export default class ImportCommand extends CmaClientCommand {
 
     const tasks = new Listr<Context>(
       [
+        {
+          title: 'Download Contentful schema',
+          task: async (ctx, _task) => {
+            const contentfulTypes = await getAll(
+              this.cfEnvironmentApi.getContentTypes.bind(this.cfEnvironmentApi),
+            );
+
+            ctx.contentTypes = options.importOnly
+              ? contentfulTypes.filter((type) =>
+                  options.importOnly?.includes(type.sys.id),
+                )
+              : contentfulTypes;
+
+            // We need EditorInterface API because some options in Contentful are just
+            // an editor setting; i.e. the slug field
+            ctx.contentTypeIdToEditorInterface = {};
+            for (const contentType of ctx.contentTypes) {
+              const editorInterface =
+                await this.cfEnvironmentApi.getEditorInterfaceForContentType(
+                  contentType.sys.id,
+                );
+
+              ctx.contentTypeIdToEditorInterface[contentType.sys.id] =
+                editorInterface;
+            }
+          },
+        },
         {
           title: 'Destroy existing Contentful schema from DatoCMS project',
           task: async (ctx, task) => {

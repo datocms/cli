@@ -16,16 +16,6 @@ export default class DestroyDatoSchema extends BaseStep {
     ctx: Context,
     task: ListrTaskWrapper<Context, ListrRendererFactory>,
   ): Promise<Listr> {
-    const contentfulTypes = await getAll(
-      this.cfEnvironmentApi.getContentTypes.bind(this.cfEnvironmentApi),
-    );
-
-    ctx.contentTypes = this.options.importOnly
-      ? contentfulTypes.filter((type) =>
-          this.options.importOnly?.includes(type.sys.id),
-        )
-      : contentfulTypes;
-
     ctx.datoItemTypes = await this.client.itemTypes.list();
 
     const contentfulTypeApiKeys = new Set(

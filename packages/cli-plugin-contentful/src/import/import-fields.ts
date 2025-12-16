@@ -3,7 +3,9 @@ import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context } from '../commands/contentful/import';
 import {
   contentFieldTypeToDatoFieldType,
-  findLinkedItemTypesFromContentField,
+  findLinksFromContentMultipleLinksField,
+  findLinksFromContentRichTextField,
+  findLinksFromContentSingleLinkField,
   findOrCreateStructuredTextAssetBlock,
   isMultipleLinksField,
   isSingleLinkField,
@@ -51,7 +53,7 @@ export default class ImportFields extends BaseStep {
           if (isSingleLinkField(contentfulField)) {
             validators = {
               item_item_type: {
-                item_types: findLinkedItemTypesFromContentField(
+                item_types: findLinksFromContentSingleLinkField(
                   ctx.contentTypeIdToDatoItemType,
                   contentfulField,
                 ),
@@ -62,7 +64,7 @@ export default class ImportFields extends BaseStep {
           if (isMultipleLinksField(contentfulField)) {
             validators = {
               items_item_type: {
-                item_types: findLinkedItemTypesFromContentField(
+                item_types: findLinksFromContentMultipleLinksField(
                   ctx.contentTypeIdToDatoItemType,
                   contentfulField,
                 ),
@@ -76,7 +78,7 @@ export default class ImportFields extends BaseStep {
                 item_types: ctx.assetBlockId ? [ctx.assetBlockId] : [],
               },
               structured_text_links: {
-                item_types: findLinkedItemTypesFromContentField(
+                item_types: findLinksFromContentRichTextField(
                   ctx.contentTypeIdToDatoItemType,
                   contentfulField,
                 ),
@@ -86,7 +88,10 @@ export default class ImportFields extends BaseStep {
 
           const fieldAttributes: CmaClient.ApiTypes.FieldCreateSchema = {
             label: contentfulField.name,
-            field_type: contentFieldTypeToDatoFieldType(contentfulField) as any,
+            field_type: contentFieldTypeToDatoFieldType(
+              contentfulField,
+              ctx.contentTypeIdToEditorInterface[contentTypeId],
+            ) as any,
             localized: contentfulField.localized,
             api_key: toFieldApiKey(contentfulField.id),
             position,

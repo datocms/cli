@@ -1,7 +1,12 @@
 import type { CmaClient } from '@datocms/cli-utils';
-import type { ContentFields, ContentTypeProps } from 'contentful-management';
-import { format } from 'date-fns-tz';
+import type {
+  ContentFields,
+  ContentTypeProps,
+  EditorInterface,
+} from 'contentful-management';
+import { format } from 'date-fns';
 import { decamelize } from 'humps';
+import { compact, uniq } from 'lodash';
 import type { Context } from '../commands/contentful/import';
 
 const assetBlockFieldApiKey = 'file';
@@ -50,9 +55,15 @@ export const toFieldApiKey = (value: string): string => {
   return apiKey;
 };
 
-export function contentFieldTypeToDatoFieldType(field: ContentFields) {
+export function contentFieldTypeToDatoFieldType(
+  field: ContentFields,
+  editorInterface: EditorInterface,
+): CmaClient.ApiTypes.FieldCreateSchema['field_type'] {
   switch (field.type) {
     case 'Symbol':
+      if (isSlugField(field, editorInterface)) {
+        return 'slug';
+      }
       return 'string' as const;
     case 'Text':
       return 'text' as const;
@@ -97,25 +108,92 @@ export function contentFieldTypeToDatoFieldType(field: ContentFields) {
   }
 }
 
-export const findLinkedItemTypesFromContentField = (
-  itemTypeMapping: Context['contentTypeIdToDatoItemType'],
+export const findLinksFromContentMultipleLinksField = (
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'],
+  contentfulField: ContentFields,
+): string[] => {
+  const linkValidation = contentfulField?.items?.validations?.find(
+    (val) => val.linkContentType,
+  );
+
+  if (
+    linkValidation?.linkContentType &&
+    linkValidation?.linkContentType.length > 0
+  ) {
+    return compact(
+      linkValidation.linkContentType.map(
+        (contentTypeId) => contentTypeIdToDatoItemType[contentTypeId]?.id,
+      ),
+    );
+  }
+
+  return Object.values(contentTypeIdToDatoItemType).map(
+    (iT: CmaClient.ApiTypes.ItemType) => iT.id,
+  );
+};
+
+export const findLinksFromContentSingleLinkField = (
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'],
   contentfulField: ContentFields,
 ): string[] => {
   const linkValidation = contentfulField?.validations?.find(
     (val) => val.linkContentType,
   );
 
-  if (linkValidation) {
-    return linkValidation.linkContentType
-      ? linkValidation.linkContentType
-          .map((contentTypeId) => itemTypeMapping[contentTypeId]?.id)
-          .filter((x) => !!x)
-      : [];
+  if (
+    linkValidation?.linkContentType &&
+    linkValidation?.linkContentType.length > 0
+  ) {
+    return compact(
+      linkValidation.linkContentType.map(
+        (contentTypeId) => contentTypeIdToDatoItemType[contentTypeId]?.id,
+      ),
+    );
   }
 
-  return Object.values(itemTypeMapping).map(
+  return Object.values(contentTypeIdToDatoItemType).map(
     (iT: CmaClient.ApiTypes.ItemType) => iT.id,
   );
+};
+
+export const findLinksFromContentRichTextField = (
+  contentTypeIdToDatoItemType: Context['contentTypeIdToDatoItemType'],
+  contentfulField: ContentFields,
+): string[] => {
+  const richTextValidation = contentfulField?.validations?.find(
+    (val) => val.nodes,
+  );
+
+  let datoValidations: string[] = [];
+  const embeddedEntries = richTextValidation?.nodes?.[
+    'embedded-entry-block'
+  ]?.find((node) => node.linkContentType)?.linkContentType;
+  const inlineEntries = richTextValidation?.nodes?.[
+    'embedded-entry-inline'
+  ]?.find((node) => node.linkContentType)?.linkContentType;
+
+  if (!embeddedEntries && !inlineEntries) {
+    return Object.values(contentTypeIdToDatoItemType).map(
+      (iT: CmaClient.ApiTypes.ItemType) => iT.id,
+    );
+  }
+
+  if (embeddedEntries && embeddedEntries.length > 0) {
+    datoValidations = embeddedEntries.map(
+      (entryId) => contentTypeIdToDatoItemType[entryId]?.id,
+    );
+  }
+
+  if (inlineEntries && inlineEntries.length > 0) {
+    datoValidations = [
+      ...datoValidations,
+      ...inlineEntries.map(
+        (entryId) => contentTypeIdToDatoItemType[entryId]?.id,
+      ),
+    ];
+  }
+
+  return uniq(compact(datoValidations));
 };
 
 export const findOrCreateStructuredTextAssetBlock = async (
@@ -146,6 +224,13 @@ export const findOrCreateStructuredTextAssetBlock = async (
   return contentfulAssetModularBlock.id;
 };
 
+export const getFieldControl = (
+  field: ContentFields,
+  editorInterface?: EditorInterface,
+) => {
+  return editorInterface?.controls?.find((c) => c.fieldId === field.id);
+};
+
 export const isMultipleLinksField = (
   field: ContentFields,
 ): boolean | undefined =>
@@ -163,6 +248,14 @@ export const isTitleField = (
 ): boolean | undefined =>
   field.id === contentType.displayField && field.type === 'Symbol';
 
+export const isSlugField = (
+  field: ContentFields,
+  editorInterface?: EditorInterface,
+): boolean | undefined => {
+  const control = getFieldControl(field, editorInterface);
+  return control?.widgetId === 'slugEditor';
+};
+
 type StringValidators = {
   required?: Record<string, never>;
   length?: {
@@ -177,6 +270,10 @@ type StringValidators = {
   format?: {
     custom_pattern: string | undefined;
   };
+};
+
+type SlugValidators = StringValidators & {
+  slug_title_field?: { title_field_id: string };
 };
 
 type IntegerValidators = {
@@ -216,18 +313,21 @@ type ArrayValidators = {
 
 export default function contentfulFieldValidatorsToDato(
   field: ContentFields,
+  editorInterface: EditorInterface,
+  datoFields: { [key: ContentFields['id']]: CmaClient.SimpleSchemaTypes.Field },
 ):
   | StringValidators
+  | SlugValidators
   | IntegerValidators
   | DateValidators
   | ArrayValidators
   | AssetValidators {
-  if (!field) {
-    throw new Error('Missing field. This should not happen');
-  }
-
   switch (field.type) {
     case 'Symbol':
+      if (isSlugField(field, editorInterface)) {
+        return datoValidatorsForSlug(field, editorInterface, datoFields);
+      }
+      return datoValidatorsForString(field);
     case 'Text':
       return datoValidatorsForString(field);
     case 'Date':
@@ -308,6 +408,26 @@ const datoValidatorsForString = (field: ContentFields) => {
   }
 
   return datoValidators;
+};
+
+const datoValidatorsForSlug = (
+  field: ContentFields,
+  editorInterface: EditorInterface,
+  datoFields: { [key: string]: CmaClient.SimpleSchemaTypes.Field },
+): SlugValidators => {
+  const stringValidators = datoValidatorsForString(field);
+  const control = getFieldControl(field, editorInterface);
+
+  return {
+    ...stringValidators,
+    ...(control?.settings?.trackingFieldId &&
+      datoFields[control.settings.trackingFieldId as string] && {
+        slug_title_field: {
+          title_field_id:
+            datoFields[control.settings.trackingFieldId as string].id,
+        },
+      }),
+  };
 };
 
 const datoValidatorsForNumber = (field: ContentFields) => {
