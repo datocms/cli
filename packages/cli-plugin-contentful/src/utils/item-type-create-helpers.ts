@@ -314,7 +314,7 @@ type ArrayValidators = {
 export default function contentfulFieldValidatorsToDato(
   field: ContentFields,
   editorInterface: EditorInterface,
-  datoFields: { [key: ContentFields['id']]: CmaClient.SimpleSchemaTypes.Field },
+  datoFields: { [key: ContentFields['id']]: CmaClient.ApiTypes.Field },
 ):
   | StringValidators
   | SlugValidators
@@ -413,7 +413,7 @@ const datoValidatorsForString = (field: ContentFields) => {
 const datoValidatorsForSlug = (
   field: ContentFields,
   editorInterface: EditorInterface,
-  datoFields: { [key: string]: CmaClient.SimpleSchemaTypes.Field },
+  datoFields: { [key: string]: CmaClient.ApiTypes.Field },
 ): SlugValidators => {
   const stringValidators = datoValidatorsForString(field);
   const control = getFieldControl(field, editorInterface);
