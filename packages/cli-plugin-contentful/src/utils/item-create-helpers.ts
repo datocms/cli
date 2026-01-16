@@ -158,10 +158,11 @@ export const datoLinkValueForFieldType = async ({
     );
 
     const entryToLink = contentfulValue as ContentfulLink<'Entry'>;
+
     const datoItem = entryIdToDatoItem[entryToLink.sys.id];
 
-    return allowedLinkedModels.includes(datoItem.item_type.id)
-      ? entryIdToDatoItem[entryToLink.sys.id].id
+    return datoItem && allowedLinkedModels.includes(datoItem.item_type.id)
+      ? datoItem.id
       : null;
   }
 
@@ -177,8 +178,8 @@ export const datoLinkValueForFieldType = async ({
       entryToLink.map((entry) => {
         const datoItem = entryIdToDatoItem[entry.sys.id];
 
-        return allowedLinkedModels.includes(datoItem.item_type.id)
-          ? entryIdToDatoItem[entry.sys.id].id
+        return datoItem && allowedLinkedModels.includes(datoItem.item_type.id)
+          ? datoItem.id
           : null;
       }),
     );
@@ -233,7 +234,7 @@ const generateStructuredTextHandlers = ({
 
         const datoItem = entryIdToDatoItem[contentfulId];
 
-        if (!allowedLinkedModels.includes(datoItem.item_type.id)) {
+        if (!datoItem || !allowedLinkedModels.includes(datoItem.item_type.id)) {
           return;
         }
 
@@ -291,7 +292,8 @@ const generateStructuredTextHandlers = ({
           ...context,
           parentNodeType: isAllowedChild ? 'itemLink' : context.parentNodeType,
         });
-        const datoItemId = entryIdToDatoItem[node.data.target.sys.id].id;
+
+        const datoItemId = entryIdToDatoItem[node.data.target.sys.id]?.id;
 
         return isAllowedChild && datoItemId
           ? ({ type: 'itemLink', item: datoItemId, children } as Node)
