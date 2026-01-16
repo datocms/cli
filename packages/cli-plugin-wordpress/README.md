@@ -18,9 +18,9 @@ DatoCMS CLI plugin to import a WordPress site into a DatoCMS project.
 # Usage
 
 ```sh-session
-$ npm install -g @datocms/cli
-$ datocms plugins:install @datocms/cli-plugin-wordpress
-$ datocms wordpress:import --help
+npm install -g @datocms/cli
+datocms plugins:install @datocms/cli-plugin-wordpress
+datocms wordpress:import --help
 ```
 
 # Commands
@@ -74,7 +74,7 @@ Tests require a working WordPress instance with specific data in it, and will im
 You can launch the WP instance with:
 
 ```
-docker-compose up
+docker compose up
 ```
 
 You can then run tests with:
@@ -86,5 +86,5 @@ npm run test
 To save a new dump:
 
 ```
-docker-compose exec db mysqldump -uwordpress -pwordpress wordpress > wp_test_data/mysql/dump.sql
+docker compose exec db mysqldump -uwordpress -pwordpress wordpress > wp_test_data/mysql/dump.sql
 ```
