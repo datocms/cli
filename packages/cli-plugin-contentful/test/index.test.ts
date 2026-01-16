@@ -63,9 +63,14 @@ describe('Import from Contentful', () => {
     });
 
     // ========= SKIP CONTENT ==================
-    await runCommand(
-      `contentful:import --contentful-token=${process.env.CONTENTFUL_TOKEN} --contentful-space-id=gjarw06urmh5 --autoconfirm --only-content-type=landingPage --skip-content`,
+
+    const { error: skipContentError } = await runCommand(
+      `contentful:import --contentful-token=${process.env.CONTENTFUL_TOKEN} --contentful-space-id=h8ccnsgl3udu --autoconfirm --only-content-type=landingPage --skip-content`,
     );
+
+    if (skipContentError) {
+      console.error('Skip content import error:', skipContentError.message);
+    }
 
     const skipContentModels = await client.itemTypes.list();
     expect(skipContentModels.length).to.eq(1);
@@ -74,9 +79,14 @@ describe('Import from Contentful', () => {
     expect(skipContentItems.length).to.eq(0);
 
     // ========= IMPORT FULL PROJECT ==================
-    await runCommand(
-      `contentful:import --contentful-token=${process.env.CONTENTFUL_TOKEN} --contentful-space-id=gjarw06urmh5 --autoconfirm`,
+
+    const { error } = await runCommand(
+      `contentful:import --contentful-token=${process.env.CONTENTFUL_TOKEN} --contentful-space-id=h8ccnsgl3udu --autoconfirm`,
     );
+
+    if (error) {
+      console.error('Importer error:', error.message);
+    }
 
     const createdSite = await client.site.find();
     expect(createdSite.locales).to.have.all.members(['en-US', 'it']);
@@ -104,7 +114,6 @@ describe('Import from Contentful', () => {
     // =================== FIELDS ===================
 
     const blogPostFields = await client.fields.list(blogPostModel.id);
-    // expect(blogPostFields.length).to.eq(8);
 
     const authorLinkField = blogPostFields.find(
       (f: CmaClient.ApiTypes.Field) => f.field_type === 'link',
@@ -147,21 +156,22 @@ describe('Import from Contentful', () => {
       required: {},
       date_time_range: {
         min: '2022-06-01T01:00:00+01:00',
-        max: '2022-06-10T23:00:00+01:00',
+        max: '2026-06-01T01:00:00+01:00',
       },
     });
 
     const assetField = blogPostFields.find(
       (f: CmaClient.ApiTypes.Field) => f.field_type === 'file',
     );
+
     expect(assetField?.validators).to.deep.equal({
-      required: {},
       file_size: {
-        min_value: 1,
-        max_value: 104_857_600,
-        min_unit: 'B',
         max_unit: 'B',
+        max_value: 104857600,
+        min_unit: 'B',
+        min_value: 1,
       },
+      required: {},
     });
 
     const galleryField = blogPostFields.find(
@@ -206,10 +216,10 @@ describe('Import from Contentful', () => {
     );
 
     expect(unpublishedArticle?.meta.created_at).to.eq(
-      '2022-05-30T15:30:54.682+01:00',
+      '2026-01-16T10:50:37.536+00:00',
     );
     expect(unpublishedArticle?.meta.first_published_at).to.eq(
-      '2022-05-30T15:30:56.711+01:00',
+      '2026-01-16T10:57:16.631+00:00',
     );
     expect(unpublishedArticle?.meta.status).to.eq('draft');
     expect(unpublishedArticle?.title).to.have.own.property('en-US');
@@ -220,11 +230,12 @@ describe('Import from Contentful', () => {
     expect(unpublishedArticle?.title?.it).to.eq('');
 
     const publishedArticle = blogPostArticles.find((a) => a.slug === 'hello');
+
     expect(publishedArticle?.meta.created_at).to.eq(
-      '2022-05-30T15:30:54.670+01:00',
+      '2026-01-16T10:51:47.834+00:00',
     );
     expect(publishedArticle?.meta.first_published_at).to.eq(
-      '2022-05-30T15:30:56.701+01:00',
+      '2026-01-16T10:55:20.882+00:00',
     );
     expect(publishedArticle?.meta.status).to.eq('published');
     expect(publishedArticle?.title.it).to.eq('Ciao Mondo!');
@@ -275,7 +286,7 @@ describe('Import from Contentful', () => {
       children: [
         {
           type: 'span',
-          value: 'Lorem ipsum',
+          value: 'Lorem Ipsum',
         },
       ],
     });
@@ -297,8 +308,16 @@ describe('Import from Contentful', () => {
       ],
     });
 
-    const expectedInlineItem = get(content, '[2].children[0].item');
-    expect(expectedInlineItem).to.eq(publishedArticle?.id);
+    const expectedInlineItem = get(content, '[2]');
+    expect(expectedInlineItem).to.deep.equal({
+      type: 'paragraph',
+      children: [
+        {
+          item: publishedArticle?.id,
+          type: 'inlineItem',
+        },
+      ],
+    });
 
     const expectedCode = get(content, '[3]');
     expect(expectedCode).to.deep.equal({
@@ -306,44 +325,115 @@ describe('Import from Contentful', () => {
       type: 'code',
     });
 
-    const expectedInlineLink = get(content, '[4].children');
-    expect(expectedInlineLink).to.deep.equal([
-      {
-        type: 'span',
-        value: 'Duis ',
-      },
-      {
-        item: author.id,
-        type: 'itemLink',
-        children: [
-          {
-            type: 'span',
-            value: 'in reprehenderit',
-          },
-        ],
-      },
-      {
-        type: 'span',
-        value: ' in nulla pariatur.',
-      },
-    ]);
-
-    expect(get(content, '[5].type')).to.eq('block');
-
-    expect(get(content, '[6].type')).to.eq('blockquote');
-
-    expect(get(content, '[7].children[0].item')).to.eq(author.id);
-
-    expect(get(content, '[8].type')).to.eq('thematicBreak');
-
-    const expectedLinkToAsset = get(content, '[9].children[1]');
-    expect(expectedLinkToAsset).to.deep.equal({
-      url: computerImage?.url,
-      type: 'link',
+    const expectedInlineLink = get(content, '[4]');
+    expect(expectedInlineLink).to.deep.equal({
+      type: 'paragraph',
       children: [
         {
           type: 'span',
-          value: 'Asset hyperlink',
+          value: 'Duis aute irure dolor ',
+        },
+        {
+          item: author.id,
+          type: 'itemLink',
+          children: [
+            {
+              type: 'span',
+              value: 'in reprehenderit',
+            },
+          ],
+        },
+        {
+          type: 'span',
+          value:
+            ' in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ',
+        },
+      ],
+    });
+
+    expect(get(content, '[5].type')).to.eq('block');
+
+    const expectedBlockquote = get(content, '[6]');
+    expect(expectedBlockquote).to.deep.equal({
+      type: 'blockquote',
+      children: [
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'span',
+              value:
+                'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ',
+            },
+          ],
+        },
+      ],
+    });
+
+    const expectedAuthorInline = get(content, '[7]');
+    expect(expectedAuthorInline).to.deep.equal({
+      type: 'paragraph',
+      children: [
+        {
+          item: author.id,
+          type: 'inlineItem',
+        },
+      ],
+    });
+
+    expect(get(content, '[8].type')).to.eq('thematicBreak');
+
+    const expectedLinkToAsset = get(content, '[9]');
+    expect(expectedLinkToAsset).to.deep.equal({
+      type: 'paragraph',
+      children: [
+        {
+          url: computerImage?.url,
+          type: 'link',
+          children: [
+            {
+              type: 'span',
+              value: 'Asset hyperlink',
+            },
+          ],
+        },
+      ],
+    });
+
+    const expectedList = get(content, '[10]');
+    expect(expectedList).to.deep.equal({
+      type: 'list',
+      style: 'numbered',
+      children: [
+        {
+          type: 'listItem',
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                {
+                  type: 'span',
+                  value:
+                    'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'listItem',
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                {
+                  type: 'span',
+                  value:
+                    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+                },
+              ],
+            },
+          ],
         },
       ],
     });
