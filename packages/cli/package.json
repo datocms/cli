@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@datocms/cli-utils": "^3.1.16",
+    "@datocms/dashboard-client": "^5.3.0",
     "@datocms/rest-client-utils": "^1",
     "@inquirer/prompts": "^7.8.4",
     "@oclif/plugin-autocomplete": "^3",
@@ -36,6 +37,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
+    "open": "^11.0.0",
     "prettier": "^3.4.2",
     "tsx": "^4.19.2",
     "typescript": "5.7.2"
@@ -63,9 +65,6 @@
       "environments": {
         "description": "Manage primary/sandbox environments of a project"
       },
-      "profile": {
-        "description": "Manage profiles stored in datocms.config.js file"
-      },
       "migrations": {
         "description": "Manage and run migration scripts"
       }
@@ -82,10 +81,7 @@
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": [
-    "datocms",
-    "cli"
-  ],
+  "keywords": ["datocms", "cli"],
   "types": "lib/index.d.ts",
   "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {

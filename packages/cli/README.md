@@ -38,12 +38,14 @@ USAGE
 * [`datocms cma:call RESOURCE METHOD`](#datocms-cmacall-resource-method)
 * [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 * [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
-* [`datocms environments:index`](#datocms-environmentsindex)
 * [`datocms environments:list`](#datocms-environmentslist)
 * [`datocms environments:primary`](#datocms-environmentsprimary)
 * [`datocms environments:promote ENVIRONMENT_ID`](#datocms-environmentspromote-environment_id)
 * [`datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsrename-environment_id-new_environment_id)
 * [`datocms help [COMMAND]`](#datocms-help-command)
+* [`datocms link`](#datocms-link)
+* [`datocms login`](#datocms-login)
+* [`datocms logout`](#datocms-logout)
 * [`datocms maintenance:off`](#datocms-maintenanceoff)
 * [`datocms maintenance:on`](#datocms-maintenanceon)
 * [`datocms migrations:new NAME`](#datocms-migrationsnew-name)
@@ -59,9 +61,9 @@ USAGE
 * [`datocms plugins:uninstall [PLUGIN]`](#datocms-pluginsuninstall-plugin)
 * [`datocms plugins:unlink [PLUGIN]`](#datocms-pluginsunlink-plugin)
 * [`datocms plugins:update`](#datocms-pluginsupdate)
-* [`datocms profile:remove PROFILE_ID`](#datocms-profileremove-profile_id)
-* [`datocms profile:set PROFILE_ID`](#datocms-profileset-profile_id)
 * [`datocms schema:generate FILENAME`](#datocms-schemagenerate-filename)
+* [`datocms unlink`](#datocms-unlink)
+* [`datocms whoami`](#datocms-whoami)
 
 ## `datocms autocomplete [SHELL]`
 
@@ -221,33 +223,6 @@ DESCRIPTION
 
 _See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/environments/fork.ts)_
 
-## `datocms environments:index`
-
-Lists primary/sandbox environments of a project
-
-```
-USAGE
-  $ datocms environments:index [--json] [--config-file <value>] [--profile <value>] [--api-token <value>] [--log-level
-    NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory]
-
-GLOBAL FLAGS
-  --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
-  --json                 Format output as json.
-  --log-level=<option>   Level of logging for performed API calls
-                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
-  --log-mode=<option>    Where logged output should be written to
-                         <options: stdout|file|directory>
-  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
-
-DESCRIPTION
-  Lists primary/sandbox environments of a project
-
-ALIASES
-  $ datocms environments:index
-  $ datocms environments:list
-```
-
 ## `datocms environments:list`
 
 Lists primary/sandbox environments of a project
@@ -269,10 +244,6 @@ GLOBAL FLAGS
 
 DESCRIPTION
   Lists primary/sandbox environments of a project
-
-ALIASES
-  $ datocms environments:index
-  $ datocms environments:list
 ```
 
 _See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/environments/list.ts)_
@@ -378,6 +349,77 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.32/src/commands/help.ts)_
+
+## `datocms link`
+
+Link the current directory to a DatoCMS project and configure it
+
+```
+USAGE
+  $ datocms link [--json] [--config-file <value>] [--profile <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--migrations-dir <value>] [--migrations-model <value>] [--migrations-template
+    <value>] [--migrations-tsconfig <value>] [--organization-id <value>] [--site-id <value>]
+
+FLAGS
+  --log-level=<option>           Level of logging to use for the profile
+                                 <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --migrations-dir=<value>       Directory where script migrations will be stored
+  --migrations-model=<value>     API key of the DatoCMS model used to store migration data
+  --migrations-template=<value>  Path of the file to use as migration script template
+  --migrations-tsconfig=<value>  Path of the tsconfig.json to use to run TS migration scripts
+  --organization-id=<value>      Organization ID to use
+  --profile=<value>              [default: default] Name of the profile to create/update
+  --site-id=<value>              Site ID to link to
+
+GLOBAL FLAGS
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
+  --json                 Format output as json.
+
+DESCRIPTION
+  Link the current directory to a DatoCMS project and configure it
+```
+
+_See code: [src/commands/link.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/link.ts)_
+
+## `datocms login`
+
+Authenticate with DatoCMS via OAuth
+
+```
+USAGE
+  $ datocms login [--json]
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Authenticate with DatoCMS via OAuth
+
+EXAMPLES
+  $ datocms login
+```
+
+_See code: [src/commands/login.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/login.ts)_
+
+## `datocms logout`
+
+Log out of DatoCMS by removing stored credentials
+
+```
+USAGE
+  $ datocms logout [--json]
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Log out of DatoCMS by removing stored credentials
+
+EXAMPLES
+  $ datocms logout
+```
+
+_See code: [src/commands/logout.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/logout.ts)_
 
 ## `datocms maintenance:off`
 
@@ -829,58 +871,6 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.46/src/commands/plugins/update.ts)_
 
-## `datocms profile:remove PROFILE_ID`
-
-Remove a profile from DatoCMS config file
-
-```
-USAGE
-  $ datocms profile:remove PROFILE_ID [--json] [--config-file <value>]
-
-ARGUMENTS
-  PROFILE_ID  The name of the profile
-
-GLOBAL FLAGS
-  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
-  --json                 Format output as json.
-
-DESCRIPTION
-  Remove a profile from DatoCMS config file
-```
-
-_See code: [src/commands/profile/remove.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/profile/remove.ts)_
-
-## `datocms profile:set PROFILE_ID`
-
-Add/update profile configuration in DatoCMS config file
-
-```
-USAGE
-  $ datocms profile:set PROFILE_ID [--json] [--config-file <value>] [--log-level
-    NONE|BASIC|BODY|BODY_AND_HEADERS] [--migrations-dir <value>] [--migrations-model <value>] [--migrations-template
-    <value>] [--migrations-tsconfig <value>]
-
-ARGUMENTS
-  PROFILE_ID  [default: default] Name of the profile to create/update
-
-FLAGS
-  --log-level=<option>           Level of logging to use for the profile
-                                 <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
-  --migrations-dir=<value>       Directory where script migrations will be stored
-  --migrations-model=<value>     API key of the DatoCMS model used to store migration data
-  --migrations-template=<value>  Path of the file to use as migration script template
-  --migrations-tsconfig=<value>  Path of the tsconfig.json to use to run TS migration scripts
-
-GLOBAL FLAGS
-  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
-  --json                 Format output as json.
-
-DESCRIPTION
-  Add/update profile configuration in DatoCMS config file
-```
-
-_See code: [src/commands/profile/set.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/profile/set.ts)_
-
 ## `datocms schema:generate FILENAME`
 
 Generate TypeScript definitions for the schema
@@ -912,4 +902,45 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/schema/generate.ts)_
+
+## `datocms unlink`
+
+Unlink the current directory from a DatoCMS project
+
+```
+USAGE
+  $ datocms unlink [--json] [--config-file <value>] [--profile <value>]
+
+FLAGS
+  --profile=<value>  [default: default] Name of the profile to remove
+
+GLOBAL FLAGS
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
+  --json                 Format output as json.
+
+DESCRIPTION
+  Unlink the current directory from a DatoCMS project
+```
+
+_See code: [src/commands/unlink.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/unlink.ts)_
+
+## `datocms whoami`
+
+Show the currently authenticated DatoCMS account
+
+```
+USAGE
+  $ datocms whoami [--json]
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Show the currently authenticated DatoCMS account
+
+EXAMPLES
+  $ datocms whoami
+```
+
+_See code: [src/commands/whoami.ts](https://github.com/datocms/cli/blob/v3.1.16/packages/cli/src/commands/whoami.ts)_
 <!-- commandsstop -->

@@ -10,15 +10,13 @@
   "directories": {
     "lib": "lib"
   },
-  "files": [
-    "lib",
-    "src"
-  ],
+  "files": ["lib", "src"],
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
     "@datocms/cma-client-node": "^5.1.13",
+    "@datocms/dashboard-client": "^5.3.0",
     "@oclif/core": "^4",
     "@whatwg-node/fetch": "^0.10.10",
     "chalk": "^4",

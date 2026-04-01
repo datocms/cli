@@ -7,9 +7,11 @@ import {
   LogLevel,
   buildClient,
 } from '@datocms/cma-client-node';
+import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
 import { Flags } from '@oclif/core';
 import { fetch as ponyfillFetch } from '@whatwg-node/fetch';
 import chalk from 'chalk';
+import { readCredentials } from './credentials';
 import { DatoProfileConfigCommand } from './dato-profile-config-command';
 
 const fetchFn = typeof fetch === 'undefined' ? ponyfillFetch : fetch;
@@ -60,14 +62,17 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
       apiToken: string;
     }
   > {
-    const apiTokenEnvName =
+    const defaultEnvName =
       this.profileId === 'default'
         ? 'DATOCMS_API_TOKEN'
         : `DATOCMS_${this.profileId.toUpperCase()}_PROFILE_API_TOKEN`;
 
+    const apiTokenEnvName =
+      this.datoProfileConfig?.apiTokenEnvName || defaultEnvName;
+
     const { flags } = await this.parse(this.ctor as typeof CmaClientCommand);
 
-    const apiToken = flags['api-token'] || process.env[apiTokenEnvName];
+    let apiToken = flags['api-token'] || process.env[apiTokenEnvName];
 
     const baseUrl = flags['base-url'] || this.datoProfileConfig?.baseUrl;
 
@@ -80,12 +85,20 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
         ? LogLevel.NONE
         : logLevelMap[logLevelCode];
 
+    if (!apiToken && this.datoProfileConfig?.siteId) {
+      apiToken = await this.resolveTokenFromSiteId(
+        this.datoProfileConfig.siteId,
+        this.datoProfileConfig.organizationId,
+      );
+    }
+
     if (!apiToken) {
       this.error('Cannot find an API token to use to call DatoCMS!', {
         suggestions: [
           `The API token to use is determined by looking at:
 * The --api-token flag
-* The ${apiTokenEnvName} environment variable (we look inside .env.local and .env too)`,
+* The ${apiTokenEnvName} environment variable (we look inside .env.local and .env too)
+* A linked project via "datocms link" (requires "datocms login" first)`,
         ],
       });
     }
@@ -136,6 +149,52 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
     });
   }
 
+  private async resolveTokenFromSiteId(
+    siteId: string,
+    organizationId?: string,
+  ): Promise<string | undefined> {
+    const credentials = await readCredentials();
+
+    if (!credentials) {
+      this.error('Project is linked but no OAuth credentials found.', {
+        suggestions: [
+          'Run "datocms login" to authenticate',
+          'Use --api-token to provide a token directly',
+        ],
+      });
+    }
+
+    const dashboardClient = buildDashboardClient({
+      apiToken: credentials.apiToken,
+      ...(credentials.dashboardBaseUrl
+        ? { baseUrl: credentials.dashboardBaseUrl }
+        : {}),
+      ...(organizationId ? { organization: organizationId } : {}),
+    });
+
+    try {
+      const site = await dashboardClient.sites.find(siteId);
+
+      if (!site.access_token) {
+        this.error(
+          `Could not retrieve an API token for project "${site.name}" (ID: ${siteId}). You may not have access to this project.`,
+        );
+      }
+
+      return site.access_token;
+    } catch {
+      this.error(
+        `Could not find linked project (ID: ${siteId}). It may have been deleted or moved to a different organization.`,
+        {
+          suggestions: [
+            'Run "datocms link" to re-link to a project',
+            'Use --api-token to provide a token directly',
+          ],
+        },
+      );
+    }
+  }
+
   protected async catch(
     err: Error & { exitCode?: number | undefined },
   ): Promise<void> {
@@ -144,12 +203,23 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.findError('INVALID_AUTHORIZATION_HEADER')) {
-          this.error('Invalid API token');
+          this.error('Invalid API token', {
+            suggestions: [
+              'Run "datocms login" to re-authenticate',
+              'Use --api-token to provide a valid token',
+            ],
+          });
         }
 
         if (err.findError('INSUFFICIENT_PERMISSIONS')) {
           this.error(
             'The API token does not have the necessary permission to perform the operation',
+            {
+              suggestions: [
+                'Check your project permissions in the DatoCMS dashboard',
+                'Use --api-token to provide a token with the required permissions',
+              ],
+            },
           );
         }
       }

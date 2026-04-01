@@ -1,7 +1,7 @@
 import { type CmaClient, CmaClientCommand } from '@datocms/cli-utils';
 
 export default class Command extends CmaClientCommand {
-  static aliases = ['environments:index', 'environments:list'];
+  static hiddenAliases = ['environments:index'];
 
   static description = 'Lists primary/sandbox environments of a project';
 

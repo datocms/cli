@@ -3,6 +3,9 @@ import { get } from 'lodash';
 import type { LogLevelFlagEnum, LogLevelModeEnum } from '.';
 
 export type ProfileConfig = {
+  siteId?: string;
+  organizationId?: string;
+  apiTokenEnvName?: string;
   baseUrl?: string;
   logLevel?: LogLevelFlagEnum;
   logMode?: LogLevelModeEnum;
@@ -25,6 +28,9 @@ function isProfileConfig(thing: unknown): thing is ProfileConfig {
 
   for (const key of [
     'apiToken',
+    'siteId',
+    'organizationId',
+    'apiTokenEnvName',
     'baseUrl',
     'logLevel',
     'migrations.directory',
