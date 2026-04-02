@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 const CREDENTIALS_PATH = join(
   homedir(),
   '.config',
-  'datocms',
+  'datocms-cli',
   'credentials.json',
 );
 
