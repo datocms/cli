@@ -402,9 +402,10 @@ export default class Command extends DatoConfigCommand {
       type: 'personal' | 'organization';
       organizationId?: string;
       label: string;
+      sites: Array<{ id: string; name: string }>;
     };
 
-    const workspaceChoices: WorkspaceChoice[] = [
+    const allWorkspaces: Array<Omit<WorkspaceChoice, 'sites'>> = [
       {
         type: 'personal',
         label: `Personal account (${account.email})`,
@@ -415,6 +416,34 @@ export default class Command extends DatoConfigCommand {
         label: org.name || `Organization ${org.id}`,
       })),
     ];
+
+    // Fetch projects for each workspace in parallel, filtering out empty ones
+    const workspaceChoices = (
+      await Promise.all(
+        allWorkspaces.map(async (ws) => {
+          const wsClient = buildClient({
+            apiToken: credentials.apiToken,
+            ...(credentials.dashboardBaseUrl
+              ? { baseUrl: credentials.dashboardBaseUrl }
+              : {}),
+            ...(ws.organizationId ? { organization: ws.organizationId } : {}),
+          });
+
+          const sites: Array<{ id: string; name: string }> = [];
+          for await (const site of wsClient.sites.listPagedIterator()) {
+            sites.push({ id: site.id, name: site.name });
+          }
+
+          return sites.length > 0 ? { ...ws, sites } : null;
+        }),
+      )
+    ).filter((ws): ws is WorkspaceChoice => ws !== null);
+
+    if (workspaceChoices.length === 0) {
+      this.error('No projects found in any workspace.', {
+        suggestions: ['Create a project at https://dashboard.datocms.com'],
+      });
+    }
 
     let selectedWorkspace: WorkspaceChoice;
 
@@ -430,30 +459,7 @@ export default class Command extends DatoConfigCommand {
       });
     }
 
-    const scopedClient = buildClient({
-      apiToken: credentials.apiToken,
-      ...(credentials.dashboardBaseUrl
-        ? { baseUrl: credentials.dashboardBaseUrl }
-        : {}),
-      ...(selectedWorkspace.organizationId
-        ? { organization: selectedWorkspace.organizationId }
-        : {}),
-    });
-
-    const sites: Array<{ id: string; name: string }> = [];
-
-    for await (const site of scopedClient.sites.listPagedIterator()) {
-      sites.push({ id: site.id, name: site.name });
-    }
-
-    if (sites.length === 0) {
-      this.error('No projects found in the selected workspace.', {
-        suggestions: [
-          'Create a project at https://dashboard.datocms.com',
-          'Select a different workspace',
-        ],
-      });
-    }
+    const sites = selectedWorkspace.sites;
 
     const selectedSite = await search({
       message: 'Search for a project:',
