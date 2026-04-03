@@ -431,7 +431,9 @@ export default class Command extends DatoConfigCommand {
 
           const sites: Array<{ id: string; name: string }> = [];
           for await (const site of wsClient.sites.listPagedIterator()) {
-            sites.push({ id: site.id, name: site.name });
+            if (site.access_token) {
+              sites.push({ id: site.id, name: site.name });
+            }
           }
 
           return sites.length > 0 ? { ...ws, sites } : null;
