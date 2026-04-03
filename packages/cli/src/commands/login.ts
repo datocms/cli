@@ -26,10 +26,9 @@ export default class Login extends BaseCommand {
     if (existing) {
       this.log(
         chalk.yellow(
-          'You are already logged in. Run "datocms logout" first to re-authenticate.',
+          'You are already logged in. Proceeding will replace your existing credentials.\n',
         ),
       );
-      return;
     }
 
     const accessToken = await performOAuthLogin({
