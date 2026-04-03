@@ -72,7 +72,7 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
 
     const { flags } = await this.parse(this.ctor as typeof CmaClientCommand);
 
-    let apiToken = flags['api-token'] || process.env[apiTokenEnvName];
+    let apiToken = flags['api-token'];
 
     const baseUrl = flags['base-url'] || this.datoProfileConfig?.baseUrl;
 
@@ -90,6 +90,10 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
         this.datoProfileConfig.siteId,
         this.datoProfileConfig.organizationId,
       );
+    }
+
+    if (!apiToken) {
+      apiToken = process.env[apiTokenEnvName];
     }
 
     if (!apiToken) {
@@ -184,9 +188,10 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
       return site.access_token;
     } catch {
       this.error(
-        `Could not find linked project (ID: ${siteId}). It may have been deleted or moved to a different organization.`,
+        `Could not access linked project (ID: ${siteId}). Possible causes:\n  - The project has been deleted or moved to a different organization\n  - Your OAuth permissions have changed and you no longer have access to this project`,
         {
           suggestions: [
+            'Run "datocms login" to re-authenticate with updated permissions',
             'Run "datocms link" to re-link to a project',
             'Use --api-token to provide a token directly',
           ],
