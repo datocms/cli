@@ -78,6 +78,22 @@ const SUCCESS_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
+export async function revokeOAuthToken(
+  token: string,
+  oauthBaseUrl?: string,
+): Promise<void> {
+  const baseUrl = oauthBaseUrl || DEFAULT_OAUTH_BASE_URL;
+
+  await fetch(`${baseUrl}/oauth/revoke`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: CLIENT_ID,
+      token,
+    }).toString(),
+  });
+}
+
 export type PerformOAuthLoginOptions = {
   oauthBaseUrl?: string;
   openBrowser: (url: string) => Promise<void>;

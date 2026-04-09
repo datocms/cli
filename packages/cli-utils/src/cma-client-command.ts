@@ -7,7 +7,10 @@ import {
   LogLevel,
   buildClient,
 } from '@datocms/cma-client-node';
-import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
+import {
+  ApiError as DashboardApiError,
+  buildClient as buildDashboardClient,
+} from '@datocms/dashboard-client';
 import { Flags } from '@oclif/core';
 import { fetch as ponyfillFetch } from '@whatwg-node/fetch';
 import chalk from 'chalk';
@@ -186,7 +189,19 @@ export abstract class CmaClientCommand extends DatoProfileConfigCommand {
       }
 
       return site.access_token;
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof DashboardApiError &&
+        error.findError('INVALID_AUTHORIZATION_HEADER')
+      ) {
+        this.error('Your OAuth token is invalid or has been revoked.', {
+          suggestions: [
+            'Run "datocms login" to re-authenticate',
+            'Use --api-token to provide a token directly',
+          ],
+        });
+      }
+
       this.error(
         `Could not access linked project (ID: ${siteId}). Possible causes:\n  - The project has been deleted or moved to a different organization\n  - Your OAuth permissions have changed and you no longer have access to this project`,
         {
