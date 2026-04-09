@@ -27,6 +27,7 @@
   "dependencies": {
     "@datocms/cli-utils": "^4.0.4",
     "@datocms/dashboard-client": "^5.3.0",
+    "@datocms/rest-api-reference": "^5.4.1",
     "@datocms/rest-client-utils": "^1",
     "@inquirer/prompts": "^7.8.4",
     "@oclif/plugin-autocomplete": "^3",

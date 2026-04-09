@@ -36,6 +36,7 @@ USAGE
 <!-- commands -->
 * [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
 * [`datocms cma:call RESOURCE METHOD`](#datocms-cmacall-resource-method)
+* [`datocms cma:docs [RESOURCE] [ACTION]`](#datocms-cmadocs-resource-action)
 * [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 * [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
 * [`datocms environments:list`](#datocms-environmentslist)
@@ -159,6 +160,44 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v4.0.4/packages/cli/src/commands/cma/call.ts)_
+
+## `datocms cma:docs [RESOURCE] [ACTION]`
+
+Browse the DatoCMS Content Management API reference documentation
+
+```
+USAGE
+  $ datocms cma:docs [RESOURCE] [ACTION] [--expand <value>...]
+
+ARGUMENTS
+  [RESOURCE]  The resource to describe (e.g., items, uploads)
+  [ACTION]    The action to describe (e.g., create, instances)
+
+FLAGS
+  --expand=<value>...  Expand a collapsed <details> section by its summary text (can be repeated)
+
+DESCRIPTION
+  Browse the DatoCMS Content Management API reference documentation
+
+EXAMPLES
+  List all available resources
+
+    $ datocms cma:docs
+
+  Describe a specific resource and its actions
+
+    $ datocms cma:docs items
+
+  Describe a specific action with examples
+
+    $ datocms cma:docs items create
+
+  Expand a collapsed details section
+
+    $ datocms cma:docs items create --expand "Example: Basic example"
+```
+
+_See code: [src/commands/cma/docs.ts](https://github.com/datocms/cli/blob/v4.0.4/packages/cli/src/commands/cma/docs.ts)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
