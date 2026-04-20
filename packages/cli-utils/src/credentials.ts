@@ -1,11 +1,9 @@
 import { chmod, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
+import envPaths from 'env-paths';
 
 const CREDENTIALS_PATH = join(
-  homedir(),
-  '.config',
-  'datocms-cli',
+  envPaths('datocms-cli', { suffix: '' }).config,
   'credentials.json',
 );
 

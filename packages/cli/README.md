@@ -37,6 +37,7 @@ USAGE
 * [`datocms autocomplete [SHELL]`](#datocms-autocomplete-shell)
 * [`datocms cma:call RESOURCE METHOD`](#datocms-cmacall-resource-method)
 * [`datocms cma:docs [RESOURCE] [ACTION]`](#datocms-cmadocs-resource-action)
+* [`datocms cma:script`](#datocms-cmascript)
 * [`datocms environments:destroy ENVIRONMENT_ID`](#datocms-environmentsdestroy-environment_id)
 * [`datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`](#datocms-environmentsfork-source_environment_id-new_environment_id)
 * [`datocms environments:list`](#datocms-environmentslist)
@@ -198,6 +199,97 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cma/docs.ts](https://github.com/datocms/cli/blob/v4.0.5/packages/cli/src/commands/cma/docs.ts)_
+
+## `datocms cma:script`
+
+Run a one-off TypeScript script against the Content Management API.
+
+```
+USAGE
+  $ datocms cma:script [--json] [--config-file <value>] [--profile <value>] [--api-token <value>] [--log-level
+    NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory] [-e <value>] [-f <value>] [--timeout <value>]
+    [--rebuild-workspace] [--skip-validation]
+
+FLAGS
+  -e, --environment=<value>  Environment to execute the script against
+  -f, --file=<value>         Path to a TypeScript file to run. If omitted, the script is read from stdin.
+      --rebuild-workspace    Wipe and rebuild the internal workspace (node_modules, tsconfig). Use after a CLI upgrade
+                             if scripts fail with module resolution errors.
+      --skip-validation      Skip TypeScript type-checking before execution
+      --timeout=<value>      Kill the script if it runs longer than this many seconds. Default: no timeout.
+
+GLOBAL FLAGS
+  --api-token=<value>    Specify a custom API key to access a DatoCMS project
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
+  --json                 Format output as json.
+  --log-level=<option>   Level of logging for performed API calls
+                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --log-mode=<option>    Where logged output should be written to
+                         <options: stdout|file|directory>
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
+
+DESCRIPTION
+  Run a one-off TypeScript script against the Content Management API.
+
+  Two formats are accepted:
+  A) A module exporting a default async function of
+  (client: Client) => Promise<void>. Portable, compatible with
+  migrations:run.
+  B) A plain script using top-level await. `client` (a pre-authenticated
+  CMA client) and `Schema` (project-specific ItemTypeDefinition types,
+  e.g. `Schema.BlogPost`) are available as ambient globals. Ideal for
+  stdin one-liners.
+
+  Scripts are type-checked with `tsc --noEmit` before execution. `any`
+  and `unknown` are rejected — use `Schema.*` types for record operations.
+
+  Available npm packages (pre-installed, importable in both formats):
+  - @datocms/cma-client-node
+  - datocms-html-to-structured-text
+  - datocms-structured-text-utils
+  - datocms-structured-text-to-plain-text
+  - datocms-structured-text-to-html-string
+  - datocms-structured-text-to-markdown
+  - parse5
+
+  Use `console.log()` for output. stdout is piped through cleanly so the
+  command composes with `| jq` and similar.
+
+EXAMPLES
+  Format A — default export, run from a file
+
+    $ datocms cma:script --file ./my-script.ts
+
+  Format B — one-liner via stdin
+
+    echo 'console.log((await client.itemTypes.list()).map(t => t.api_key))' | datocms cma:script
+
+  Format A — inline heredoc with typed client
+
+    $ datocms cma:script <<'EOF' \
+      import type { Client } from '@datocms/cma-client-node'; \
+      export default async function(client: Client) { \
+      const itemTypes = await client.itemTypes.list(); \
+      console.log(itemTypes.map((t) => t.api_key)); \
+      } \
+      EOF
+
+  Format B — type-safe record creation using Schema
+
+    $ datocms cma:script <<'EOF' \
+      await client.items.create<Schema.Article>({ \
+      item_type: { id: 'ABC123', type: 'item_type' }, \
+      title: 'Hello world', \
+      }); \
+      EOF
+
+  Pipe output into jq
+
+    echo 'console.log(JSON.stringify(await client.itemTypes.list()))' | datocms cma:script 2>/dev/null | jq \
+      '.[].api_key'
+```
+
+_See code: [src/commands/cma/script.ts](https://github.com/datocms/cli/blob/v4.0.5/packages/cli/src/commands/cma/script.ts)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
