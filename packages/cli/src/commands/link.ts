@@ -59,6 +59,7 @@ export default class Command extends DatoConfigCommand {
     const { flags } = await this.parse(Command);
 
     const profileId = flags.profile;
+    const interactive = Boolean(process.stdin.isTTY);
 
     if (!this.datoConfig) {
       this.log(
@@ -93,6 +94,16 @@ export default class Command extends DatoConfigCommand {
 
     if (flags['site-id']) {
       if (!credentials) {
+        if (!interactive) {
+          this.error(
+            'Not logged in, and OAuth login requires an interactive terminal.',
+            {
+              suggestions: [
+                'Run "datocms login" in a terminal first, then retry this command',
+              ],
+            },
+          );
+        }
         credentials = await this.performLogin(flags);
       }
 
@@ -102,6 +113,18 @@ export default class Command extends DatoConfigCommand {
         flags['organization-id'],
       );
     } else {
+      if (!interactive) {
+        this.error(
+          'Running in a non-interactive shell and no --site-id was provided.',
+          {
+            suggestions: [
+              'Pass --site-id=<ID> (and --organization-id=<ID> if needed) to skip the project selection prompt',
+              'Run the command in an interactive terminal to pick a project via browser login',
+            ],
+          },
+        );
+      }
+
       // Resolve current project name for display
       let currentProjectName: string | undefined;
 
@@ -157,59 +180,73 @@ export default class Command extends DatoConfigCommand {
       }
     }
 
+    const logLevelDefault = existingProfileConfig?.logLevel || 'NONE';
     const logLevel =
-      flags['log-level'] ||
-      (await select({
-        message: `* Level of logging to use for the profile (${logLevelOptions.join(
-          ', ',
-        )})`,
-        default: existingProfileConfig?.logLevel || 'NONE',
-        choices: logLevelOptions.map((option) => ({
-          name: option,
-          value: option,
-        })),
-      }));
+      flags['log-level'] ??
+      (interactive
+        ? await select({
+            message: `* Level of logging to use for the profile (${logLevelOptions.join(
+              ', ',
+            )})`,
+            default: logLevelDefault,
+            choices: logLevelOptions.map((option) => ({
+              name: option,
+              value: option,
+            })),
+          })
+        : logLevelDefault);
 
+    const migrationsDirDefault =
+      existingProfileConfig?.migrations?.directory ||
+      (Object.keys(this.datoConfig?.profiles || {}).length -
+        (existingProfileConfig ? 1 : 0) ===
+      0
+        ? './migrations'
+        : `./${camelCase(`${profileId} migrations`)}`);
     const migrationsDir =
-      flags['migrations-dir'] ||
-      (await input({
-        message: '* Directory where script migrations will be stored',
-        default:
-          existingProfileConfig?.migrations?.directory ||
-          (Object.keys(this.datoConfig?.profiles || {}).length -
-            (existingProfileConfig ? 1 : 0) ===
-          0
-            ? './migrations'
-            : `./${camelCase(`${profileId} migrations`)}`),
-        required: true,
-      }));
+      flags['migrations-dir'] ??
+      (interactive
+        ? await input({
+            message: '* Directory where script migrations will be stored',
+            default: migrationsDirDefault,
+            required: true,
+          })
+        : migrationsDirDefault);
 
+    const migrationModelApiKeyDefault =
+      existingProfileConfig?.migrations?.modelApiKey || 'schema_migration';
     const migrationModelApiKey =
-      flags['migrations-model'] ||
-      (await input({
-        message: '* API key of the DatoCMS model used to store migration data',
-        default:
-          existingProfileConfig?.migrations?.modelApiKey || 'schema_migration',
-        required: true,
-      }));
+      flags['migrations-model'] ??
+      (interactive
+        ? await input({
+            message:
+              '* API key of the DatoCMS model used to store migration data',
+            default: migrationModelApiKeyDefault,
+            required: true,
+          })
+        : migrationModelApiKeyDefault);
 
     const migrationTemplate =
-      flags['migrations-template'] ||
-      (await input({
-        message:
-          '* Path of the file to use as migration script template (optional)',
-        default: existingProfileConfig?.migrations?.template,
-        required: false,
-      }));
+      flags['migrations-template'] ??
+      (interactive
+        ? await input({
+            message:
+              '* Path of the file to use as migration script template (optional)',
+            default: existingProfileConfig?.migrations?.template,
+            required: false,
+          })
+        : existingProfileConfig?.migrations?.template);
 
     const migrationTsconfig =
-      flags['migrations-tsconfig'] ||
-      (await input({
-        message:
-          '* Path of the tsconfig.json to use to run TS migration scripts (optional)',
-        default: existingProfileConfig?.migrations?.tsconfig,
-        required: false,
-      }));
+      flags['migrations-tsconfig'] ??
+      (interactive
+        ? await input({
+            message:
+              '* Path of the tsconfig.json to use to run TS migration scripts (optional)',
+            default: existingProfileConfig?.migrations?.tsconfig,
+            required: false,
+          })
+        : existingProfileConfig?.migrations?.tsconfig);
 
     const newProfileConfig: ProfileConfig = {
       ...(siteId ? { siteId } : {}),
