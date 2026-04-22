@@ -21,6 +21,11 @@ export default class Command extends CmaClientCommand {
         'Run the migrations in the --source environment, without forking',
       exclusive: ['destination'],
     }),
+    'allow-primary': oclif.Flags.boolean({
+      description:
+        'Allow running migrations in-place on the primary environment. Only use for strictly additive migrations (no data/schema destruction): there is no rollback if the run fails partway through',
+      dependsOn: ['in-place'],
+    }),
     'dry-run': oclif.Flags.boolean({
       description:
         'Simulate the execution of the migrations, without making any actual change',
@@ -61,6 +66,7 @@ export default class Command extends CmaClientCommand {
     const {
       'dry-run': dryRun,
       'in-place': inPlace,
+      'allow-primary': allowPrimary,
       'fast-fork': fastFork,
       force,
       source: sourceEnvId,
@@ -126,7 +132,22 @@ export default class Command extends CmaClientCommand {
 
     if (inPlace) {
       if (primaryEnv && primaryEnv.id === destinationEnvId) {
-        this.error('Running migrations on primary environment is not allowed!');
+        if (!allowPrimary) {
+          this.error(
+            'Running migrations on primary environment is not allowed!',
+            {
+              suggestions: [
+                'The recommended workflow is to fork, run migrations on the sandbox, and then promote it.',
+                'If your migration is strictly additive (no data or schema destruction) you can override this guard with --allow-primary. WARNING: there is no rollback if the run fails partway through — the primary environment may be left in a partially-migrated state.',
+              ],
+            },
+          );
+        }
+
+        this.warn(
+          'Running migrations in-place on the primary environment (--allow-primary). ' +
+            'Ensure the migration is strictly additive: a failure partway through will leave primary in an inconsistent state with no automatic rollback.',
+        );
       }
     } else {
       destinationEnvId = await this.forkEnvironment(
