@@ -69,6 +69,9 @@
       },
       "migrations": {
         "description": "Manage and run migration scripts"
+      },
+      "projects": {
+        "description": "Discover DatoCMS projects accessible to the authenticated account"
       }
     }
   },
@@ -83,10 +86,7 @@
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": [
-    "datocms",
-    "cli"
-  ],
+  "keywords": ["datocms", "cli"],
   "types": "lib/index.d.ts",
   "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {
