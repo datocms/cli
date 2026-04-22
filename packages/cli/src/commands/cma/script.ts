@@ -35,6 +35,10 @@ export default class Command extends CmaClientCommand {
   static examples = [
     {
       description: 'Format A — default export, run from a file',
+      command: '<%= config.bin %> <%= command.id %> ./my-script.ts',
+    },
+    {
+      description: 'Same as above, using the --file flag',
       command: '<%= config.bin %> <%= command.id %> --file ./my-script.ts',
     },
     {
@@ -70,6 +74,14 @@ export default class Command extends CmaClientCommand {
     },
   ];
 
+  static args = {
+    file: oclif.Args.string({
+      description:
+        'Path to a TypeScript file to run. Alternative to --file. If omitted and --file is not set, the script is read from stdin.',
+      required: false,
+    }),
+  };
+
   static flags = {
     ...CmaClientCommand.flags,
     environment: oclif.Flags.string({
@@ -102,9 +114,22 @@ export default class Command extends CmaClientCommand {
   };
 
   async run(): Promise<void> {
-    const { flags } = await this.parse(Command);
+    const { args, flags } = await this.parse(Command);
 
-    const content = await this.readScriptSource(flags.file);
+    if (flags.file && args.file && flags.file !== args.file) {
+      this.error(
+        `Conflicting file paths: --file "${flags.file}" vs positional "${args.file}"`,
+        {
+          suggestions: [
+            'Pass the file path once, either as --file or as a positional argument',
+          ],
+        },
+      );
+    }
+
+    const filePath = flags.file ?? args.file;
+
+    const content = await this.readScriptSource(filePath);
     this.validateStructure(content);
 
     const client = await this.buildClient({ environment: flags.environment });
@@ -189,7 +214,8 @@ export default class Command extends CmaClientCommand {
     if (process.stdin.isTTY) {
       this.error('No script provided', {
         suggestions: [
-          'Pass a file path with --file <path>',
+          'Pass a file path as a positional argument: `datocms cma:script <path>`',
+          'Or use the --file flag: `datocms cma:script --file <path>`',
           'Pipe the script via stdin: `cat my-script.ts | datocms cma:script`',
         ],
       });
