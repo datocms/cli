@@ -17,13 +17,13 @@ DatoCMS CLI tool for managing DatoCMS projects, environments and schemas.
 # Usage
 
 ```sh-session
-$ npm install -g @datocms/cli
+$ npm install -g datocms
 
 $ datocms COMMAND
 running command...
 
 $ datocms (--version)
-@datocms/cli/0.1.6 darwin-x64 node-v16.20.0
+datocms/0.1.6 darwin-x64 node-v16.20.0
 
 $ datocms --help [COMMAND]
 USAGE
@@ -287,10 +287,10 @@ EXAMPLES
 
     $ datocms cma:script --file ./my-script.ts
 
-  File-mode — typical script shape (requires `@datocms/cli` installed in the script's project)
+  File-mode — typical script shape (requires `datocms` installed in the script's project)
 
     $ datocms cma:script <<'EOF' > ./my-script.ts && datocms cma:script ./my-script.ts \
-      import type { Client } from '@datocms/cli/lib/cma-client-node'; \
+      import type { Client } from 'datocms/lib/cma-client-node'; \
       export default async function(client: Client) { \
       const itemTypes = await client.itemTypes.list(); \
       console.log(itemTypes.map((t) => t.api_key)); \

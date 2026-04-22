@@ -18,7 +18,7 @@ DatoCMS CLI plugin to import a WordPress site into a DatoCMS project.
 # Usage
 
 ```sh-session
-npm install -g @datocms/cli
+npm install -g datocms
 datocms plugins:install @datocms/cli-plugin-wordpress
 datocms wordpress:import --help
 ```

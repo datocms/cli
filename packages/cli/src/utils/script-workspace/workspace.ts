@@ -355,7 +355,7 @@ export {};
       return version;
     } catch {
       throw new Error(
-        `Could not resolve ${pkg}/package.json — is it installed as a dependency of @datocms/cli?`,
+        `Could not resolve ${pkg}/package.json — is it installed as a dependency of datocms?`,
       );
     }
   }

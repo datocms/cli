@@ -1,32 +1,36 @@
 {
-  "name": "datocms",
-  "version": "4.0.11",
-  "description": "CLI to interact with DatoCMS APIs",
+  "name": "@datocms/cli",
+  "version": "4.0.10",
+  "description": "Legacy scoped alias for the `datocms` package",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
     "datocms": "./bin/run"
   },
   "homepage": "https://github.com/datocms/cli",
   "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/datocms/cli.git",
-    "directory": "packages/cli-bare"
+    "directory": "packages/cli-legacy"
   },
   "files": [
-    "/bin"
+    "/bin",
+    "/lib"
   ],
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli": "4.0.10"
+    "@oclif/core": "^4",
+    "datocms": "4.0.10"
   },
   "oclif": {
     "bin": "datocms",
     "dirname": "datocms",
     "plugins": [
-      "@datocms/cli"
+      "datocms"
     ]
   },
   "engines": {

@@ -4,6 +4,7 @@
 /tmp
 /yarn.lock
 lib
+!packages/cli-legacy/lib
 node_modules
 oclif.manifest.json
 datocms.config.json

@@ -11,7 +11,7 @@ import { generateSchemaTypesForMigration } from '../../utils/schema-types-genera
 const jsTemplate = `
 'use strict';
 
-/** @param client { import("@datocms/cli/lib/cma-client-node").Client } */
+/** @param client { import("datocms/lib/cma-client-node").Client } */
 module.exports = async (client) => {
   // DatoCMS migration script
 
@@ -49,7 +49,7 @@ module.exports = async (client) => {
 `.trim();
 
 const tsTemplate = `
-import { Client } from '@datocms/cli/lib/cma-client-node';
+import { Client } from 'datocms/lib/cma-client-node';
 
 export default async function(client: Client): Promise<void> {
   // DatoCMS migration script
@@ -270,15 +270,16 @@ export default class Command extends CmaClientCommand {
     content: string,
     schemaTypes: string,
   ): string {
-    // Update the import to include ItemTypeDefinition
+    // Update the import to include ItemTypeDefinition.
+    // Match either package name: `datocms` (current) or `@datocms/cli` (legacy).
     const importMatch = content.match(
-      /^import { Client } from '@datocms\/cli\/lib\/cma-client-node';/m,
+      /^import { Client } from '(datocms|@datocms\/cli)\/lib\/cma-client-node';/m,
     );
 
     let updatedContent = content;
     if (importMatch) {
-      const updatedImport =
-        "import { Client, ItemTypeDefinition } from '@datocms/cli/lib/cma-client-node';";
+      const pkg = importMatch[1];
+      const updatedImport = `import { Client, ItemTypeDefinition } from '${pkg}/lib/cma-client-node';`;
       updatedContent = updatedContent.replace(importMatch[0], updatedImport);
     }
 

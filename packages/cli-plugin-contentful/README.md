@@ -19,7 +19,7 @@ Read a more detailed documentation [on the website](https://www.datocms.com/docs
 # Usage
 
 ```sh-session
-$ npm install -g @datocms/cli
+$ npm install -g datocms
 $ datocms plugins:install @datocms/cli-plugin-contentful
 $ datocms contentful:import --help
 ```

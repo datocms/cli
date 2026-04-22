@@ -72,10 +72,10 @@ export default class Command extends CmaClientCommand {
     },
     {
       description:
-        "File-mode — typical script shape (requires `@datocms/cli` installed in the script's project)",
+        "File-mode — typical script shape (requires `datocms` installed in the script's project)",
       command:
         "<%= config.bin %> <%= command.id %> <<'EOF' > ./my-script.ts && <%= config.bin %> <%= command.id %> ./my-script.ts\n" +
-        "import type { Client } from '@datocms/cli/lib/cma-client-node';\n" +
+        "import type { Client } from 'datocms/lib/cma-client-node';\n" +
         'export default async function(client: Client) {\n' +
         '  const itemTypes = await client.itemTypes.list();\n' +
         '  console.log(itemTypes.map((t) => t.api_key));\n' +
@@ -379,12 +379,14 @@ export default class Command extends CmaClientCommand {
       const scriptDir = dirname(absolutePath);
 
       if (
+        missingModule === 'datocms' ||
+        missingModule === 'datocms/lib/cma-client-node' ||
         missingModule === '@datocms/cli' ||
         missingModule === '@datocms/cli/lib/cma-client-node'
       ) {
         this.error(`Cannot resolve "${missingModule}" from the script`, {
           suggestions: [
-            `Install it in the script's project: cd "${scriptDir}" && npm i @datocms/cli`,
+            `Install it in the script's project: cd "${scriptDir}" && npm i datocms`,
           ],
         });
       }

@@ -162,7 +162,7 @@ function writeApiCallClientCommand(
   }
 }
 
-const jsHeader = `'use strict';\n\n/** @param client { import("@datocms/cli/lib/cma-client-node").Client } */\n`;
+const jsHeader = `'use strict';\n\n/** @param client { import("datocms/lib/cma-client-node").Client } */\n`;
 
 export function write(
   commands: Types.Command[],
@@ -187,7 +187,7 @@ export function write(
   const skeleton =
     format === 'ts'
       ? `
-      import { Client, SimpleSchemaTypes } from '@datocms/cli/lib/cma-client-node';
+      import { Client, SimpleSchemaTypes } from 'datocms/lib/cma-client-node';
 
       export default async function(client: Client): Promise<void> {
         ${Object.entries(entityIdsToBeRecreated)
