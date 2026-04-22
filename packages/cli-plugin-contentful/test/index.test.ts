@@ -2,7 +2,7 @@ import { CmaClient } from '@datocms/cli-utils';
 import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
-import type { StructuredText } from 'datocms-structured-text-utils';
+import type { Document } from 'datocms-structured-text-utils';
 import get from 'lodash/get';
 import type { UploadData } from '../src/utils/item-create-helpers';
 
@@ -18,7 +18,7 @@ interface AuthorType extends CmaClient.ApiTypes.Item {
 interface LandingPageType extends CmaClient.ApiTypes.Item {
   title: string;
   latest_posts: CmaClient.ApiTypes.ItemIdentity | null;
-  content: StructuredText['value'];
+  content: Document;
 }
 
 describe('Import from Contentful', () => {
