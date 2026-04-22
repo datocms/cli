@@ -1,26 +1,53 @@
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 import { CmaClientCommand, oclif } from '@datocms/cli-utils';
-import { validateScriptStructure } from '../../utils/script-workspace/validation';
+import { require as tsxRequire } from 'tsx/cjs/api';
+import {
+  type ScriptFormat,
+  validateScriptStructure,
+} from '../../utils/script-workspace/validation';
 import { ScriptWorkspace } from '../../utils/script-workspace/workspace';
+
+type ParsedFlags = {
+  environment?: string;
+  file?: string;
+  timeout?: number;
+  'rebuild-workspace': boolean;
+  'skip-validation': boolean;
+};
 
 export default class Command extends CmaClientCommand {
   static description =
     'Run a one-off TypeScript script against the Content Management API.\n' +
     '\n' +
-    'Two formats are accepted:\n' +
-    '  A) A module exporting a default async function of\n' +
-    '     (client: Client) => Promise<void>. Portable, compatible with\n' +
-    '     migrations:run.\n' +
-    '  B) A plain script using top-level await. `client` (a pre-authenticated\n' +
-    '     CMA client) and `Schema` (project-specific ItemTypeDefinition types,\n' +
-    '     e.g. `Schema.BlogPost`) are available as ambient globals. Ideal for\n' +
-    '     stdin one-liners.\n' +
+    'Two modes of invocation, different ergonomics:\n' +
     '\n' +
-    'Scripts are type-checked with `tsc --noEmit` before execution. `any`\n' +
-    'and `unknown` are rejected — use `Schema.*` types for record operations.\n' +
+    '  File-mode  — Pass a .ts file path. The script must export a default\n' +
+    '               async function `(client: Client) => Promise<void>`.\n' +
+    '               It is loaded from its original location (via tsx), which\n' +
+    "               means imports resolve against your project's node_modules\n" +
+    '               and your editor LSP gives you full type feedback. No\n' +
+    '               typecheck is performed before execution — same behavior as\n' +
+    '               `migrations:run`. Use it for scripts that are long enough\n' +
+    '               that a shell heredoc becomes awkward, use local helper\n' +
+    '               modules, or need to be rerunnable by filename.\n' +
     '\n' +
-    'Available npm packages (pre-installed, importable in both formats):\n' +
+    '  Stdin-mode — Pipe plain top-level-await code via stdin. `client` (a\n' +
+    '               pre-authenticated CMA client) and, on-demand, `Schema`\n' +
+    '               (project-specific ItemTypeDefinition types) are available\n' +
+    '               as ambient globals. `export default` is not supported here.\n' +
+    '               Ideal for throwaway one-liners and pipes.\n' +
+    '\n' +
+    'These are *both* for one-off, throwaway work. If you need to commit and\n' +
+    'replay a script across environments, use `migrations:new` /\n' +
+    '`migrations:run` instead.\n' +
+    '\n' +
+    'Source validation (both modes):\n' +
+    '  - Explicit `any` / `unknown` types are rejected. Use specific types.\n' +
+    '  - File-mode: script must have a default export; top-level is rejected.\n' +
+    '  - Stdin-mode: script must be top-level; default export is rejected.\n' +
+    '\n' +
+    'Stdin-mode — pre-installed packages (importable only here):\n' +
     '  - @datocms/cma-client-node\n' +
     '  - datocms-html-to-structured-text\n' +
     '  - datocms-structured-text-utils\n' +
@@ -28,13 +55,15 @@ export default class Command extends CmaClientCommand {
     '  - datocms-structured-text-to-html-string\n' +
     '  - datocms-structured-text-to-markdown\n' +
     '  - parse5\n' +
+    'In file-mode you have your own `node_modules` — install whatever you\n' +
+    'need there.\n' +
     '\n' +
     'Use `console.log()` for output. stdout is piped through cleanly so the\n' +
     'command composes with `| jq` and similar.';
 
   static examples = [
     {
-      description: 'Format A — default export, run from a file',
+      description: 'File-mode — run a script from a file',
       command: '<%= config.bin %> <%= command.id %> ./my-script.ts',
     },
     {
@@ -42,15 +71,11 @@ export default class Command extends CmaClientCommand {
       command: '<%= config.bin %> <%= command.id %> --file ./my-script.ts',
     },
     {
-      description: 'Format B — one-liner via stdin',
+      description:
+        "File-mode — typical script shape (requires `@datocms/cli` installed in the script's project)",
       command:
-        "echo 'console.log((await client.itemTypes.list()).map(t => t.api_key))' | <%= config.bin %> <%= command.id %>",
-    },
-    {
-      description: 'Format A — inline heredoc with typed client',
-      command:
-        "<%= config.bin %> <%= command.id %> <<'EOF'\n" +
-        "import type { Client } from '@datocms/cma-client-node';\n" +
+        "<%= config.bin %> <%= command.id %> <<'EOF' > ./my-script.ts && <%= config.bin %> <%= command.id %> ./my-script.ts\n" +
+        "import type { Client } from '@datocms/cli/lib/cma-client-node';\n" +
         'export default async function(client: Client) {\n' +
         '  const itemTypes = await client.itemTypes.list();\n' +
         '  console.log(itemTypes.map((t) => t.api_key));\n' +
@@ -58,7 +83,13 @@ export default class Command extends CmaClientCommand {
         'EOF',
     },
     {
-      description: 'Format B — type-safe record creation using Schema',
+      description: 'Stdin-mode — one-liner via pipe',
+      command:
+        "echo 'console.log((await client.itemTypes.list()).map(t => t.api_key))' | <%= config.bin %> <%= command.id %>",
+    },
+    {
+      description:
+        'Stdin-mode — type-safe record creation using the ambient Schema',
       command:
         "<%= config.bin %> <%= command.id %> <<'EOF'\n" +
         'await client.items.create<Schema.Article>({\n' +
@@ -68,7 +99,7 @@ export default class Command extends CmaClientCommand {
         'EOF',
     },
     {
-      description: 'Pipe output into jq',
+      description: 'Stdin-mode — pipe output into jq',
       command:
         "echo 'console.log(JSON.stringify(await client.itemTypes.list()))' | <%= config.bin %> <%= command.id %> 2>/dev/null | jq '.[].api_key'",
     },
@@ -77,8 +108,12 @@ export default class Command extends CmaClientCommand {
   static args = {
     file: oclif.Args.string({
       description:
-        'Path to a TypeScript file to run. Alternative to --file. If omitted and --file is not set, the script is read from stdin.',
+        'Path to a TypeScript file to run (file-mode). Alternative to --file. If omitted and --file is not set, the script is read from stdin (stdin-mode).',
       required: false,
+      // Prevent oclif from auto-filling this from piped stdin. We read stdin
+      // ourselves in stdin-mode; letting oclif consume it would swallow the
+      // script and misroute the run into a "file not found" error.
+      ignoreStdin: true,
     }),
   };
 
@@ -92,7 +127,7 @@ export default class Command extends CmaClientCommand {
     file: oclif.Flags.string({
       char: 'f',
       description:
-        'Path to a TypeScript file to run. If omitted, the script is read from stdin.',
+        'Path to a TypeScript file to run (file-mode). If omitted, the script is read from stdin (stdin-mode).',
       required: false,
     }),
     timeout: oclif.Flags.integer({
@@ -102,12 +137,13 @@ export default class Command extends CmaClientCommand {
     }),
     'rebuild-workspace': oclif.Flags.boolean({
       description:
-        'Wipe and rebuild the internal workspace (node_modules, tsconfig). Use after a CLI upgrade if scripts fail with module resolution errors.',
+        'Stdin-mode only: wipe and rebuild the internal workspace (node_modules, tsconfig). Use after a CLI upgrade if stdin scripts fail with module resolution errors.',
       required: false,
       default: false,
     }),
     'skip-validation': oclif.Flags.boolean({
-      description: 'Skip TypeScript type-checking before execution',
+      description:
+        'Skip source validation and (stdin-mode only) TypeScript type-checking before execution',
       required: false,
       default: false,
     }),
@@ -129,8 +165,85 @@ export default class Command extends CmaClientCommand {
 
     const filePath = flags.file ?? args.file;
 
-    const content = await this.readScriptSource(filePath);
-    this.validateStructure(content);
+    if (filePath) {
+      await this.runFileMode(filePath, flags);
+    } else {
+      await this.runStdinMode(flags);
+    }
+  }
+
+  private async runFileMode(
+    filePath: string,
+    flags: ParsedFlags,
+  ): Promise<void> {
+    const absolutePath = resolve(process.cwd(), filePath);
+
+    let content: string;
+    try {
+      content = readFileSync(absolutePath, 'utf-8');
+    } catch (err) {
+      this.error(
+        `Could not read script from "${filePath}": ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
+
+    if (!flags['skip-validation']) {
+      this.validateSource(content, {
+        allowedPackages: null,
+        requiredFormat: 'default-export',
+      });
+    }
+
+    const client = await this.buildClient({ environment: flags.environment });
+
+    const timeoutHandle = this.scheduleTimeout(flags.timeout);
+
+    let exported: unknown;
+    try {
+      exported = tsxRequire(absolutePath, __filename);
+    } catch (err) {
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      this.handleFileModeLoadError(err, absolutePath);
+    }
+
+    const defaultExport = this.extractDefaultExport(exported);
+    if (!defaultExport) {
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      this.error('Script does not export a valid default function', {
+        suggestions: [
+          'Add `export default async function(client) { ... }` to the script',
+          'For top-level-await scripts, pipe the source via stdin instead of passing a file path',
+        ],
+      });
+    }
+
+    try {
+      await defaultExport(client);
+    } catch (err) {
+      if (err instanceof Error) {
+        this.log();
+        this.log('----');
+        this.log(err.stack ?? err.message);
+        this.log('----');
+        this.log();
+      }
+      this.error(`Script "${relative(process.cwd(), absolutePath)}" failed`);
+    } finally {
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+    }
+  }
+
+  private async runStdinMode(flags: ParsedFlags): Promise<void> {
+    const content = await this.readStdin();
+
+    if (!flags['skip-validation']) {
+      this.validateSource(content, {
+        allowedPackages: undefined,
+        requiredFormat: 'top-level',
+      });
+    }
 
     const client = await this.buildClient({ environment: flags.environment });
 
@@ -145,10 +258,17 @@ export default class Command extends CmaClientCommand {
     }
     this.stopSpinner();
 
-    this.startSpinner('Generating schema types');
+    const needsSchema = /\bSchema\./.test(content);
+
+    if (needsSchema) {
+      this.startSpinner('Generating schema types');
+    } else {
+      this.startSpinner('Preparing script');
+    }
     const { scriptPath } = await workspace.writeScriptAndSchema(
       client,
       content,
+      { generateSchema: needsSchema },
     );
     this.stopSpinner();
 
@@ -198,19 +318,117 @@ export default class Command extends CmaClientCommand {
     }
   }
 
-  private async readScriptSource(filePath?: string): Promise<string> {
-    if (filePath) {
-      try {
-        return readFileSync(resolve(process.cwd(), filePath), 'utf-8');
-      } catch (err) {
-        this.error(
-          `Could not read script from "${filePath}": ${
-            err instanceof Error ? err.message : String(err)
-          }`,
-        );
+  private validateSource(
+    content: string,
+    options: {
+      allowedPackages: string[] | null | undefined;
+      requiredFormat: ScriptFormat;
+    },
+  ): void {
+    const result = validateScriptStructure(content, {
+      allowedPackages: options.allowedPackages,
+      requiredFormat: options.requiredFormat,
+    });
+    if (result.valid) return;
+
+    const message =
+      result.errors.length === 1
+        ? result.errors[0]!
+        : `Script has structural issues:\n${result.errors
+            .map((e) => `  • ${e}`)
+            .join('\n')}`;
+
+    this.error(message);
+  }
+
+  private scheduleTimeout(
+    timeoutSeconds: number | undefined,
+  ): NodeJS.Timeout | undefined {
+    if (typeof timeoutSeconds !== 'number' || timeoutSeconds <= 0) {
+      return undefined;
+    }
+    return setTimeout(() => {
+      this.error(
+        `Script exceeded the timeout of ${timeoutSeconds} seconds and was terminated`,
+      );
+    }, timeoutSeconds * 1000);
+  }
+
+  private extractDefaultExport(
+    exported: unknown,
+  ): ((client: unknown) => Promise<void> | void) | undefined {
+    if (typeof exported === 'function') {
+      return exported as (client: unknown) => Promise<void> | void;
+    }
+    if (exported && typeof exported === 'object' && 'default' in exported) {
+      const fn = (exported as { default?: unknown }).default;
+      if (typeof fn === 'function') {
+        return fn as (client: unknown) => Promise<void> | void;
       }
     }
+    return undefined;
+  }
 
+  private handleFileModeLoadError(err: unknown, absolutePath: string): never {
+    const message = err instanceof Error ? err.message : String(err);
+    const code = (err as { code?: string } | null)?.code;
+
+    if (code === 'MODULE_NOT_FOUND' || code === 'ERR_MODULE_NOT_FOUND') {
+      const match = message.match(/[Cc]annot find module ['"]([^'"]+)['"]/);
+      const missingModule = match?.[1];
+      const scriptDir = dirname(absolutePath);
+
+      if (
+        missingModule === '@datocms/cli' ||
+        missingModule === '@datocms/cli/lib/cma-client-node'
+      ) {
+        this.error(`Cannot resolve "${missingModule}" from the script`, {
+          suggestions: [
+            `Install it in the script's project: cd "${scriptDir}" && npm i @datocms/cli`,
+          ],
+        });
+      }
+
+      if (
+        missingModule &&
+        (missingModule.startsWith('./') || missingModule.startsWith('../'))
+      ) {
+        const isSchemaLike =
+          /schema/i.test(missingModule) ||
+          /datocms-schema/i.test(missingModule);
+        if (isSchemaLike) {
+          this.error(
+            `Cannot resolve local module "${missingModule}" imported by the script`,
+            {
+              suggestions: [
+                `Generate schema types with: datocms schema:generate ${missingModule}.ts`,
+                'Or remove `Schema.*` usages from the script if you do not need typed records',
+              ],
+            },
+          );
+        }
+        this.error(
+          `Cannot resolve local module "${missingModule}" imported by the script`,
+          {
+            suggestions: [
+              `Check the path is correct relative to ${absolutePath}`,
+            ],
+          },
+        );
+      }
+
+      this.error(`Cannot resolve "${missingModule ?? 'a module'}"`, {
+        suggestions: [
+          "Install the missing package in your script's project",
+          'Make sure the script is inside a directory that resolves to a valid node_modules',
+        ],
+      });
+    }
+
+    throw err;
+  }
+
+  private async readStdin(): Promise<string> {
     if (process.stdin.isTTY) {
       this.error('No script provided', {
         suggestions: [
@@ -228,20 +446,6 @@ export default class Command extends CmaClientCommand {
         resolveFn(Buffer.concat(chunks).toString('utf-8')),
       );
       process.stdin.on('error', rejectFn);
-    });
-  }
-
-  private validateStructure(content: string): void {
-    const validation = validateScriptStructure(content);
-    if (validation.valid) return;
-
-    this.error('Script has structural issues', {
-      suggestions: [
-        ...validation.errors,
-        'Supported formats:',
-        '  A) `export default async function(client: Client) { ... }`',
-        '  B) plain top-level code using `client` and `Schema` as globals',
-      ],
     });
   }
 }

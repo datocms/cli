@@ -85,9 +85,14 @@ export class ScriptWorkspace {
   async writeScriptAndSchema(
     client: CmaClient.Client,
     scriptContent: string,
+    options: { generateSchema?: boolean } = {},
   ): Promise<{ scriptPath: string; schemaPath: string }> {
-    const schemaTypes = await generateSchemaTypes(client);
+    const { generateSchema = true } = options;
+
     const schemaPath = path.join(this.scriptsPath, 'schema.ts');
+    const schemaTypes = generateSchema
+      ? await generateSchemaTypes(client)
+      : '// Schema types not generated (script does not reference `Schema.*`).\nexport {};\n';
     await fs.writeFile(schemaPath, schemaTypes, { encoding: 'utf8' });
 
     const filename = `script-${Date.now()}-${process.pid}.ts`;

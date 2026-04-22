@@ -8,6 +8,22 @@ export interface ValidationResult {
   format: ScriptFormat;
 }
 
+export interface ValidationOptions {
+  /**
+   * Patterns of allowed import specifiers. If `null` or omitted, the import
+   * allowlist check is disabled entirely (any import passes).
+   */
+  allowedPackages?: string[] | null;
+  /**
+   * If set, the script must match this format and anything else is rejected:
+   * - `'default-export'`: script must export a default async function.
+   *   Top-level scripts without a default export are rejected.
+   * - `'top-level'`: script must be plain top-level code. Any default export
+   *   is rejected.
+   */
+  requiredFormat?: ScriptFormat;
+}
+
 export const DEFAULT_ALLOWED_PACKAGES = [
   '@datocms/*',
   'datocms-*',
@@ -47,8 +63,12 @@ function isImportAllowed(
  */
 export function validateScriptStructure(
   content: string,
-  allowedPackages: string[] = DEFAULT_ALLOWED_PACKAGES,
+  options: ValidationOptions = {},
 ): ValidationResult {
+  const allowedPackages =
+    options.allowedPackages === undefined
+      ? DEFAULT_ALLOWED_PACKAGES
+      : options.allowedPackages;
   const errors: string[] = [];
 
   const sourceFile = ts.createSourceFile(
@@ -84,7 +104,7 @@ export function validateScriptStructure(
       );
     }
 
-    if (ts.isImportDeclaration(node)) {
+    if (ts.isImportDeclaration(node) && allowedPackages) {
       const moduleSpecifier = node.moduleSpecifier;
       if (ts.isStringLiteral(moduleSpecifier)) {
         const importPath = moduleSpecifier.text;
@@ -179,10 +199,26 @@ export function validateScriptStructure(
     : 'top-level';
 
   // If a default export is present, its signature must be valid.
-  // If no default export, we fall back to Format B (top-level) — no signature
-  // check needed; validateFunctionSignature already added any errors.
+  // If no default export, we fall back to top-level — no signature check
+  // needed; validateFunctionSignature already added any errors.
   if (hasDefaultExport && !defaultExportIsValidFunction) {
     // Errors already pushed by validateFunctionSignature.
+  }
+
+  if (options.requiredFormat && options.requiredFormat !== format) {
+    // Format mismatch makes any other structural error noise — the script is
+    // in the wrong place entirely. Replace the error list with just the
+    // mismatch message so the user sees the real issue.
+    const mismatchMessage =
+      options.requiredFormat === 'default-export'
+        ? 'File-mode scripts must export a default async function with signature `(client: Client) => Promise<void>`. For top-level scripts, pipe the source via stdin instead.'
+        : 'Stdin scripts must use top-level code only; `export default` is not supported here. Move the script into a file and run `datocms cma:script <file>` to use a default-export function.';
+
+    return {
+      valid: false,
+      errors: [mismatchMessage],
+      format,
+    };
   }
 
   return {
