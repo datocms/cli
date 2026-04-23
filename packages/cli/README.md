@@ -65,6 +65,7 @@ USAGE
 * [`datocms plugins:update`](#datocms-pluginsupdate)
 * [`datocms projects:list [QUERY]`](#datocms-projectslist-query)
 * [`datocms schema:generate FILENAME`](#datocms-schemagenerate-filename)
+* [`datocms schema:inspect [FILTER]`](#datocms-schemainspect-filter)
 * [`datocms unlink`](#datocms-unlink)
 * [`datocms whoami`](#datocms-whoami)
 
@@ -161,7 +162,7 @@ EXAMPLES
     $ datocms cma:call items list --environment my-environment
 ```
 
-_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/cma/call.ts)_
+_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/cma/call.ts)_
 
 ## `datocms cma:docs [RESOURCE] [ACTION]`
 
@@ -199,7 +200,7 @@ EXAMPLES
     $ datocms cma:docs items create --expand "Example: Basic example"
 ```
 
-_See code: [src/commands/cma/docs.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/cma/docs.ts)_
+_See code: [src/commands/cma/docs.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/cma/docs.ts)_
 
 ## `datocms cma:script [FILE]`
 
@@ -261,6 +262,9 @@ DESCRIPTION
 
   Source validation (both modes):
   - Explicit `any` / `unknown` types are rejected. Use specific types.
+  - Casts to `never` (e.g. `x as never`, `<never>x`) are rejected.
+  - `@ts-ignore`, `@ts-expect-error`, and `@ts-nocheck` directives are
+  rejected — fix the underlying type error instead.
   - File-mode: script must have a default export; top-level is rejected.
   - Stdin-mode: script must be top-level; default export is rejected.
 
@@ -316,7 +320,7 @@ EXAMPLES
       '.[].api_key'
 ```
 
-_See code: [src/commands/cma/script.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/cma/script.ts)_
+_See code: [src/commands/cma/script.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/cma/script.ts)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
@@ -344,7 +348,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/environments/destroy.ts)_
+_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/environments/destroy.ts)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -379,7 +383,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/environments/fork.ts)_
+_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/environments/fork.ts)_
 
 ## `datocms environments:list`
 
@@ -404,7 +408,7 @@ DESCRIPTION
   Lists primary/sandbox environments of a project
 ```
 
-_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/environments/list.ts)_
+_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/environments/list.ts)_
 
 ## `datocms environments:primary`
 
@@ -429,7 +433,7 @@ DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/environments/primary.ts)_
+_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/environments/primary.ts)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -457,7 +461,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/environments/promote.ts)_
+_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/environments/promote.ts)_
 
 ## `datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -486,7 +490,7 @@ DESCRIPTION
   Renames an environment
 ```
 
-_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/environments/rename.ts)_
+_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/environments/rename.ts)_
 
 ## `datocms help [COMMAND]`
 
@@ -537,7 +541,7 @@ DESCRIPTION
   Link the current directory to a DatoCMS project and configure it
 ```
 
-_See code: [src/commands/link.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/link.ts)_
+_See code: [src/commands/link.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/link.ts)_
 
 ## `datocms login`
 
@@ -557,7 +561,7 @@ EXAMPLES
   $ datocms login
 ```
 
-_See code: [src/commands/login.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/login.ts)_
+_See code: [src/commands/login.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/login.ts)_
 
 ## `datocms logout`
 
@@ -577,7 +581,7 @@ EXAMPLES
   $ datocms logout
 ```
 
-_See code: [src/commands/logout.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/logout.ts)_
+_See code: [src/commands/logout.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/logout.ts)_
 
 ## `datocms maintenance:off`
 
@@ -602,7 +606,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/maintenance/off.ts)_
+_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/maintenance/off.ts)_
 
 ## `datocms maintenance:on`
 
@@ -630,7 +634,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/maintenance/on.ts)_
+_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/maintenance/on.ts)_
 
 ## `datocms migrations:new NAME`
 
@@ -680,7 +684,7 @@ DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/migrations/new.ts)_
+_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/migrations/new.ts)_
 
 ## `datocms migrations:run`
 
@@ -723,7 +727,7 @@ DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/migrations/run.ts)_
+_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/migrations/run.ts)_
 
 ## `datocms plugins`
 
@@ -810,7 +814,7 @@ DESCRIPTION
   Lists official DatoCMS CLI plugins
 ```
 
-_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/plugins/available.ts)_
+_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/plugins/available.ts)_
 
 ## `datocms plugins:inspect PLUGIN...`
 
@@ -1064,7 +1068,7 @@ EXAMPLES
   $ datocms projects:list --json
 ```
 
-_See code: [src/commands/projects/list.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/projects/list.ts)_
+_See code: [src/commands/projects/list.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/projects/list.ts)_
 
 ## `datocms schema:generate FILENAME`
 
@@ -1096,7 +1100,93 @@ DESCRIPTION
   Generate TypeScript definitions for the schema
 ```
 
-_See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/schema/generate.ts)_
+_See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/schema/generate.ts)_
+
+## `datocms schema:inspect [FILTER]`
+
+Inspect DatoCMS models and modular blocks — emits JSON with models, fields, fieldsets, nested blocks, and relationships.
+
+```
+USAGE
+  $ datocms schema:inspect [FILTER] [--json] [--config-file <value>] [--profile <value>] [--api-token <value>]
+    [--log-level NONE|BASIC|BODY|BODY_AND_HEADERS] [--log-mode stdout|file|directory] [-e <value>] [--type
+    all|models_only|blocks_only] [--fields-details basic|complete] [--include-validators] [--include-appearance]
+    [--include-default-values] [--include-fieldsets] [--include-nested-blocks] [--include-referenced-models]
+    [--include-embedding-models]
+
+ARGUMENTS
+  [FILTER]  Filter by API key, ID, or display name. Falls back to fuzzy search if no exact match is found. If omitted,
+            all models/blocks are returned.
+
+FLAGS
+  -e, --environment=<value>        Environment to inspect
+      --fields-details=<option>    [default: basic] Level of detail returned for each field. `basic` drops validators,
+                                   appearance, and default values; `complete` includes everything (very verbose). For
+                                   selective inclusion use the `--include-*` flags instead.
+                                   <options: basic|complete>
+      --include-appearance         Include field appearance configuration
+      --include-default-values     Include field default values
+      --include-embedding-models   For blocks only: include every model that embeds the selected blocks (direct or
+                                   transitive)
+      --include-fieldsets          Include UI fieldset organization
+      --include-nested-blocks      Recursively include every block nested in the selected item types
+      --include-referenced-models  Include models referenced by link, links, or structured_text fields
+      --include-validators         Include field validators
+      --type=<option>              [default: all] Restrict to models, blocks, or both
+                                   <options: all|models_only|blocks_only>
+
+GLOBAL FLAGS
+  --api-token=<value>    Specify a custom API key to access a DatoCMS project
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
+  --json                 Format output as json.
+  --log-level=<option>   Level of logging for performed API calls
+                         <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
+  --log-mode=<option>    Where logged output should be written to
+                         <options: stdout|file|directory>
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
+
+DESCRIPTION
+  Inspect DatoCMS models and modular blocks — emits JSON with models, fields, fieldsets, nested blocks, and
+  relationships.
+
+  Without arguments, lists every model and block in the project. Pass a
+  filter to narrow down by API key (e.g. "blog_post"), ID, or display
+  name; if no exact match is found a fuzzy search is used.
+
+  By default, fields are returned without validators, appearance, or
+  default values. Use `--include-validators`, `--include-appearance`,
+  `--include-default-values`, or `--fields-details=complete` to opt in.
+
+  Output is TOON on stdout (compact, agent-friendly). Pass `--json` for
+  JSON output that composes with `| jq` and similar.
+
+EXAMPLES
+  List every model and block in the project
+
+    $ datocms schema:inspect
+
+  Inspect a single model by API key
+
+    $ datocms schema:inspect blog_post
+
+  Only modular blocks, with fieldsets
+
+    $ datocms schema:inspect --type=blocks_only --include-fieldsets
+
+  Include validators and appearance for the given model
+
+    $ datocms schema:inspect blog_post --include-validators --include-appearance
+
+  Full detail (verbose), piped through jq
+
+    $ datocms schema:inspect blog_post --fields-details=complete --json | jq '.[].fields[].api_key'
+
+  Inspect a block plus every model that embeds it (directly or indirectly)
+
+    $ datocms schema:inspect my_block --type=blocks_only --include-embedding-models
+```
+
+_See code: [src/commands/schema/inspect.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/schema/inspect.ts)_
 
 ## `datocms unlink`
 
@@ -1117,7 +1207,7 @@ DESCRIPTION
   Unlink the current directory from a DatoCMS project
 ```
 
-_See code: [src/commands/unlink.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/unlink.ts)_
+_See code: [src/commands/unlink.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/unlink.ts)_
 
 ## `datocms whoami`
 
@@ -1137,5 +1227,5 @@ EXAMPLES
   $ datocms whoami
 ```
 
-_See code: [src/commands/whoami.ts](https://github.com/datocms/cli/blob/v4.0.12/packages/cli/src/commands/whoami.ts)_
+_See code: [src/commands/whoami.ts](https://github.com/datocms/cli/blob/v4.0.13/packages/cli/src/commands/whoami.ts)_
 <!-- commandsstop -->

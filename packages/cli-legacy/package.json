@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli",
-  "version": "4.0.12",
+  "version": "4.0.13",
   "description": "Legacy scoped alias for the `datocms` package",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@oclif/core": "^4",
-    "datocms": "^4.0.12"
+    "datocms": "^4.0.13"
   },
   "oclif": {
     "bin": "datocms",
