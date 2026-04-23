@@ -1,10 +1,12 @@
-import { CmaClient, CmaClientCommand, oclif } from '@datocms/cli-utils';
 import {
+  CmaClient,
+  CmaClientCommand,
   type FieldDetailsOption,
   type FieldsDetails,
   type SchemaFilterType,
   collectSchemaInfo,
-} from '../../utils/schema-info';
+  oclif,
+} from '@datocms/cli-utils';
 
 export default class Command extends CmaClientCommand {
   static description =

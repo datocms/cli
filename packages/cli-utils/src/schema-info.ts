@@ -1,10 +1,13 @@
-import type { CmaClient } from '@datocms/cli-utils';
+import type {
+  ApiTypes,
+  SchemaRepository as SchemaRepositoryClass,
+} from '@datocms/cma-client-node';
 import { fuzzyScore } from './fuzzyScore';
 
-type ItemType = CmaClient.ApiTypes.ItemType;
-type Field = CmaClient.ApiTypes.Field;
-type Fieldset = CmaClient.ApiTypes.Fieldset;
-type SchemaRepository = InstanceType<typeof CmaClient.SchemaRepository>;
+type ItemType = ApiTypes.ItemType;
+type Field = ApiTypes.Field;
+type Fieldset = ApiTypes.Fieldset;
+type SchemaRepository = InstanceType<typeof SchemaRepositoryClass>;
 
 export type SchemaFilterType = 'all' | 'models_only' | 'blocks_only';
 

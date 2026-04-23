@@ -1,7 +1,11 @@
-import { BaseCommand, oclif, readCredentials } from '@datocms/cli-utils';
+import {
+  BaseCommand,
+  fuzzyScore,
+  oclif,
+  readCredentials,
+} from '@datocms/cli-utils';
 import { type Client, buildClient } from '@datocms/dashboard-client';
 import chalk from 'chalk';
-import { fuzzyScore } from '../../utils/fuzzyScore';
 
 type WorkspaceInfo = {
   type: 'personal_account' | 'organization';

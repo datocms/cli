@@ -11,4 +11,6 @@ export * from './config';
 export * from './credentials';
 export * from './dato-config-command';
 export * from './dato-profile-config-command';
+export * from './fuzzyScore';
 export * from './oauth';
+export * from './schema-info';
