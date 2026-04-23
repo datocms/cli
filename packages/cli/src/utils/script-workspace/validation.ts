@@ -32,6 +32,9 @@ export const DEFAULT_ALLOWED_PACKAGES = [
   './schema',
 ];
 
+const TS_DIRECTIVE_PATTERN =
+  /(\/\/|\/\*)\s*@ts-(ignore|expect-error|nocheck)\b/g;
+
 function isImportAllowed(
   importPath: string,
   allowedPatterns: string[],
@@ -81,26 +84,29 @@ export function validateScriptStructure(
   let hasDefaultExport = false;
   let defaultExportIsValidFunction = false;
 
+  function reportAt(node: ts.Node, message: string) {
+    const { line, character } = sourceFile.getLineAndCharacterOfPosition(
+      node.getStart(),
+    );
+    errors.push(`${message} at line ${line + 1}, column ${character + 1}.`);
+  }
+
   function visit(node: ts.Node) {
     if (node.kind === ts.SyntaxKind.AnyKeyword) {
-      const { line, character } = sourceFile.getLineAndCharacterOfPosition(
-        node.getStart(),
-      );
-      errors.push(
-        `Explicit 'any' type at line ${line + 1}, column ${
-          character + 1
-        }. Use a specific type instead.`,
-      );
+      reportAt(node, "Explicit 'any' type — use a specific type instead");
     }
 
     if (node.kind === ts.SyntaxKind.UnknownKeyword) {
-      const { line, character } = sourceFile.getLineAndCharacterOfPosition(
-        node.getStart(),
-      );
-      errors.push(
-        `Explicit 'unknown' type at line ${line + 1}, column ${
-          character + 1
-        }. Use a specific type instead.`,
+      reportAt(node, "Explicit 'unknown' type — use a specific type instead");
+    }
+
+    if (
+      (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) &&
+      node.type.kind === ts.SyntaxKind.NeverKeyword
+    ) {
+      reportAt(
+        node.type,
+        "Cast to 'never' is not allowed — it bypasses type safety",
       );
     }
 
@@ -193,6 +199,19 @@ export function validateScriptStructure(
   }
 
   visit(sourceFile);
+
+  for (const match of content.matchAll(TS_DIRECTIVE_PATTERN)) {
+    const offset = match.index ?? 0;
+    const { line, character } =
+      sourceFile.getLineAndCharacterOfPosition(offset);
+    errors.push(
+      `Directive '@ts-${
+        match[2]
+      }' is not allowed — fix the underlying type error instead (line ${
+        line + 1
+      }, column ${character + 1}).`,
+    );
+  }
 
   const format: ScriptFormat = hasDefaultExport
     ? 'default-export'

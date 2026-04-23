@@ -3,6 +3,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { CmaClientCommand, oclif } from '@datocms/cli-utils';
 import { require as tsxRequire } from 'tsx/cjs/api';
 import {
+  DEFAULT_ALLOWED_PACKAGES,
   type ScriptFormat,
   validateScriptStructure,
 } from '../../utils/script-workspace/validation';
@@ -44,6 +45,9 @@ export default class Command extends CmaClientCommand {
     '\n' +
     'Source validation (both modes):\n' +
     '  - Explicit `any` / `unknown` types are rejected. Use specific types.\n' +
+    '  - Casts to `never` (e.g. `x as never`, `<never>x`) are rejected.\n' +
+    '  - `@ts-ignore`, `@ts-expect-error`, and `@ts-nocheck` directives are\n' +
+    '    rejected — fix the underlying type error instead.\n' +
     '  - File-mode: script must have a default export; top-level is rejected.\n' +
     '  - Stdin-mode: script must be top-level; default export is rejected.\n' +
     '\n' +
@@ -249,45 +253,29 @@ export default class Command extends CmaClientCommand {
 
     const workspace = new ScriptWorkspace();
 
-    this.startSpinner('Preparing script workspace');
-    try {
-      await workspace.ensure({ rebuild: flags['rebuild-workspace'] });
-    } catch (err) {
-      this.stopSpinnerWithFailure();
-      throw err;
-    }
-    this.stopSpinner();
+    await workspace.ensure({ rebuild: flags['rebuild-workspace'] });
 
     const needsSchema = /\bSchema\./.test(content);
 
-    if (needsSchema) {
-      this.startSpinner('Generating schema types');
-    } else {
-      this.startSpinner('Preparing script');
-    }
     const { scriptPath } = await workspace.writeScriptAndSchema(
       client,
       content,
       { generateSchema: needsSchema },
     );
-    this.stopSpinner();
 
     try {
       if (!flags['skip-validation']) {
-        this.startSpinner('Type-checking script');
         const validation = await workspace.validate();
         if (!validation.passed) {
-          this.stopSpinnerWithFailure();
           this.log();
           this.log(validation.output);
           this.error('Script failed TypeScript validation', {
             suggestions: [
               'Fix the errors above and try again',
-              'Use --skip-validation to run without type-checking',
+              'Browse the API reference with `datocms cma:docs` (list resources), `datocms cma:docs <resource>` (e.g. `items`), or `datocms cma:docs <resource> <action>` (e.g. `items create`) to learn how to use the client',
             ],
           });
         }
-        this.stopSpinner();
       }
 
       const timeoutMs =
@@ -331,14 +319,62 @@ export default class Command extends CmaClientCommand {
     });
     if (result.valid) return;
 
-    const message =
+    const header =
       result.errors.length === 1
         ? result.errors[0]!
         : `Script has structural issues:\n${result.errors
             .map((e) => `  • ${e}`)
             .join('\n')}`;
 
+    const blocked = this.formatBlockedPatterns(options);
+    const message = `${header}\n\n${blocked}`;
+
     this.error(message);
+  }
+
+  private formatBlockedPatterns(options: {
+    allowedPackages: string[] | null | undefined;
+    requiredFormat: ScriptFormat;
+  }): string {
+    const lines: string[] = ['The following patterns are blocked:'];
+
+    lines.push(
+      "  • Explicit 'any' type annotations — use a specific type instead",
+    );
+    lines.push(
+      "  • Explicit 'unknown' type annotations — use a specific type instead",
+    );
+    lines.push(
+      "  • Casts to 'never' (e.g. `x as never`, `<never>x`) — they bypass type safety",
+    );
+    lines.push(
+      '  • `@ts-ignore`, `@ts-expect-error`, and `@ts-nocheck` directive comments — fix the underlying type error instead',
+    );
+
+    const resolvedAllowed =
+      options.allowedPackages === undefined
+        ? DEFAULT_ALLOWED_PACKAGES
+        : options.allowedPackages;
+
+    if (resolvedAllowed && resolvedAllowed.length > 0) {
+      lines.push(
+        `  • Imports outside the allowlist. Allowed patterns: ${resolvedAllowed.join(
+          ', ',
+        )}`,
+      );
+    }
+
+    if (options.requiredFormat === 'default-export') {
+      lines.push(
+        '  • Top-level code without a default export (file-mode requires `export default async function(client: Client) { ... }`)',
+      );
+    } else if (options.requiredFormat === 'top-level') {
+      lines.push(
+        '  • `export default` statements (stdin-mode requires plain top-level code)',
+      );
+    }
+
+    return lines.join('\n');
   }
 
   private scheduleTimeout(
