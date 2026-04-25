@@ -91,8 +91,8 @@ export class ScriptWorkspace {
 
     const schemaPath = path.join(this.scriptsPath, 'schema.ts');
     const schemaTypes = generateSchema
-      ? await generateSchemaTypes(client)
-      : '// Schema types not generated (script does not reference `Schema.*`).\nexport {};\n';
+      ? await generateSchemaTypes(client, { wrapInGlobalNamespace: true })
+      : '// Schema types not generated (script does not reference `Schema.*`).\ndeclare global {\n  namespace Schema {}\n}\nexport {};\n';
     await fs.writeFile(schemaPath, schemaTypes, { encoding: 'utf8' });
 
     const filename = `script-${Date.now()}-${process.pid}.ts`;
@@ -330,11 +330,9 @@ main().catch((err) => {
 
   private async writeGlobalsDeclaration(): Promise<void> {
     const content = `import type { Client } from '@datocms/cma-client-node';
-import type * as SchemaModule from './scripts/schema.js';
 
 declare global {
   const client: Client;
-  const Schema: typeof SchemaModule;
 }
 
 export {};

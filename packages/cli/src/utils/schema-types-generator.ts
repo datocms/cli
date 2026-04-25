@@ -20,6 +20,14 @@ import * as ts from 'typescript';
 export interface SchemaTypesGeneratorOptions {
   itemTypesFilter?: string;
   environment?: string;
+  /**
+   * If true, the generated type declarations are wrapped in
+   * `declare global { namespace Schema { … } }` so they become accessible
+   * as `Schema.<TypeName>` from any module in the project. The file remains
+   * a module (the `@datocms/cma-client` import keeps it so), allowing
+   * `declare global` to apply.
+   */
+  wrapInGlobalNamespace?: boolean;
 }
 
 /**
@@ -76,6 +84,7 @@ export async function generateSchemaTypes(
     fields,
     locales,
     '@datocms/cma-client',
+    { wrapInGlobalNamespace: options.wrapInGlobalNamespace },
   );
 
   return await prettier(generatedCode, {
@@ -666,6 +675,7 @@ function createUnionTypes(
 function printTypeDeclarations(
   typeDeclarations: ts.TypeAliasDeclaration[],
   importDeclaration?: ts.ImportDeclaration,
+  options: { wrapInGlobalNamespace?: boolean } = {},
 ): string {
   const sourceFile = ts.createSourceFile(
     'schema.ts',
@@ -675,9 +685,13 @@ function printTypeDeclarations(
     ts.ScriptKind.TS,
   );
 
-  const statements = importDeclaration
-    ? [importDeclaration, ...typeDeclarations]
+  const bodyStatements: ts.Statement[] = options.wrapInGlobalNamespace
+    ? [wrapDeclarationsInGlobalNamespace(typeDeclarations)]
     : typeDeclarations;
+
+  const statements = importDeclaration
+    ? [importDeclaration, ...bodyStatements]
+    : bodyStatements;
 
   const printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
@@ -687,6 +701,30 @@ function printTypeDeclarations(
     ts.ListFormat.MultiLine,
     ts.factory.createNodeArray(statements),
     sourceFile,
+  );
+}
+
+/**
+ * Wraps type aliases in `declare global { namespace Schema { … } }` so that
+ * `Schema.<TypeName>` resolves as an ambient namespace member from any file
+ * in the project. The host file must be a module (have at least one
+ * import/export) for `declare global` to apply.
+ */
+function wrapDeclarationsInGlobalNamespace(
+  typeDeclarations: ts.TypeAliasDeclaration[],
+): ts.ModuleDeclaration {
+  const schemaNamespace = ts.factory.createModuleDeclaration(
+    undefined,
+    ts.factory.createIdentifier('Schema'),
+    ts.factory.createModuleBlock(typeDeclarations),
+    ts.NodeFlags.Namespace,
+  );
+
+  return ts.factory.createModuleDeclaration(
+    [ts.factory.createToken(ts.SyntaxKind.DeclareKeyword)],
+    ts.factory.createIdentifier('global'),
+    ts.factory.createModuleBlock([schemaNamespace]),
+    ts.NodeFlags.GlobalAugmentation,
   );
 }
 
@@ -811,6 +849,7 @@ function generateTypeDefinitions(
   fields: CmaClient.RawApiTypes.Field[],
   locales: string[],
   importPath: string,
+  options: { wrapInGlobalNamespace?: boolean } = {},
 ): string {
   const { fieldsByItemType, itemTypeIdToTypeName } = createMapsFromData(
     itemTypes,
@@ -847,7 +886,9 @@ function generateTypeDefinitions(
     ...unionTypes,
   ];
 
-  return printTypeDeclarations(typeDeclarations, importDeclaration);
+  return printTypeDeclarations(typeDeclarations, importDeclaration, {
+    wrapInGlobalNamespace: options.wrapInGlobalNamespace,
+  });
 }
 
 /**
