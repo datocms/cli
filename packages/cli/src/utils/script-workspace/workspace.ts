@@ -228,7 +228,7 @@ export class ScriptWorkspace {
       private: true,
       type: 'module',
       dependencies: {
-        '@datocms/cma-client-node': cmaClientNodeVersion,
+        '@datocms/cma-client-node': `^${cmaClientNodeVersion}`,
         'datocms-html-to-structured-text': '^5.1.8',
         'datocms-structured-text-utils': '^5.1.7',
         'datocms-structured-text-to-plain-text': '^5.1.7',
@@ -238,8 +238,8 @@ export class ScriptWorkspace {
       },
       devDependencies: {
         '@types/node': '^24.10.1',
-        tsx: tsxVersion,
-        typescript: typescriptVersion,
+        tsx: `^${tsxVersion}`,
+        typescript: `^${typescriptVersion}`,
       },
     };
 
