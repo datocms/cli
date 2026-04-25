@@ -1,40 +1,36 @@
 {
-  "name": "@datocms/cli-utils",
-  "version": "4.0.14",
-  "description": "Utils for DatoCMS CLI",
-  "author": "Stefano Verna <s.verna@datocms.com>",
-  "homepage": "https://github.com/datocms/cli",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "directories": {
-    "lib": "lib"
-  },
-  "files": [
-    "lib",
-    "src"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@datocms/cma-client-node": "^5.4.3",
-    "@datocms/dashboard-client": "^5.4.3",
-    "@oclif/core": "^4",
-    "@whatwg-node/fetch": "^0.10.13",
-    "chalk": "^4",
-    "dotenv": "^17.2.3",
-    "env-paths": "^2.2.1",
-    "lodash": "^4.17.21",
-    "serialize-error": "^8",
-    "tty-table": "^4.2.3"
-  },
-  "scripts": {
-    "build": "tsc",
-    "prebuild": "rimraf lib"
-  },
-  "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
-  "devDependencies": {
-    "@types/lodash": "^4.17.20"
-  }
+	"name": "@datocms/cli-utils",
+	"version": "4.0.14",
+	"description": "Utils for DatoCMS CLI",
+	"author": "Stefano Verna <s.verna@datocms.com>",
+	"homepage": "https://github.com/datocms/cli",
+	"license": "MIT",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"directories": {
+		"lib": "lib"
+	},
+	"files": [
+		"lib",
+		"src"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@datocms/cma-client-node": "^5.4.6",
+		"@datocms/dashboard-client": "^5.4.3",
+		"@oclif/core": "^4",
+		"@whatwg-node/fetch": "^0.10.13",
+		"chalk": "^4",
+		"dotenv": "^17.2.3",
+		"env-paths": "^2.2.1",
+		"lodash": "^4.17.21",
+		"serialize-error": "^8",
+		"tty-table": "^4.2.3"
+	},
+	"gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
+	"devDependencies": {
+		"@types/lodash": "^4.17.20"
+	}
 }
