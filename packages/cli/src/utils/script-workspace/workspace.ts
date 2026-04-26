@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -8,7 +9,8 @@ import { generateSchemaTypes } from '../schema-types-generator';
 import { withLock } from './locks';
 
 const WORKSPACE_LOCK_NAME = 'script-workspace-init';
-const SCRIPTS_DIRNAME = 'scripts';
+const RUNS_DIRNAME = 'runs';
+const VERSION_FILENAME = '.cli-version';
 
 export interface EnsureResult {
   rebuilt: boolean;
@@ -35,10 +37,16 @@ export interface WorkspaceOptions {
  * The workspace lives in the user's platform data dir and owns its own
  * node_modules with @datocms/cma-client-node / tsx / typescript versions
  * synced from whatever the CLI currently resolves.
+ *
+ * Concurrent invocations are isolated via per-run subdirectories under
+ * `runs/<uuid>/`: each contains its own `schema.ts`, `script.ts`, and
+ * `tsconfig.json` so `tsc --noEmit` only sees that run's files. Heavy bits
+ * (`node_modules`, `runner.ts`, `globals.d.ts`, `package.json`) stay shared
+ * at the workspace root.
  */
 export class ScriptWorkspace {
   readonly rootPath: string;
-  readonly scriptsPath: string;
+  readonly runsPath: string;
 
   constructor(rootPath?: string) {
     this.rootPath =
@@ -47,22 +55,33 @@ export class ScriptWorkspace {
         envPaths('datocms-cli', { suffix: '' }).data,
         'script-workspace',
       );
-    this.scriptsPath = path.join(this.rootPath, SCRIPTS_DIRNAME);
+    this.runsPath = path.join(this.rootPath, RUNS_DIRNAME);
   }
 
   async ensure(opts: WorkspaceOptions = {}): Promise<EnsureResult> {
     return withLock(
       WORKSPACE_LOCK_NAME,
       async () => {
-        if (opts.rebuild) {
+        const cliVersion = this.getCliVersion();
+        const versionFile = path.join(this.rootPath, VERSION_FILENAME);
+        const recordedVersion = (await this.readFileSafe(versionFile))?.trim();
+        const rootExists = await this.fileExists(this.rootPath);
+        // Missing version file on a pre-existing root means a legacy (or
+        // crashed) workspace from before version-tracking was introduced —
+        // treat it as a mismatch so we wipe stale shape (e.g. legacy
+        // `scripts/` dir, root `tsconfig.json`).
+        const versionMismatch = rootExists && recordedVersion !== cliVersion;
+
+        const shouldRebuild = opts.rebuild || versionMismatch;
+
+        if (shouldRebuild) {
           await fs.rm(this.rootPath, { recursive: true, force: true });
         }
 
         await fs.mkdir(this.rootPath, { recursive: true });
-        await fs.mkdir(this.scriptsPath, { recursive: true });
+        await fs.mkdir(this.runsPath, { recursive: true });
 
         const pkgChanged = await this.writePackageJson();
-        await this.writeTsConfig();
         await this.writeGlobalsDeclaration();
         await this.writeRunner();
 
@@ -70,13 +89,15 @@ export class ScriptWorkspace {
           path.join(this.rootPath, 'node_modules'),
         );
 
-        const needsInstall = opts.rebuild || pkgChanged || !nodeModulesExists;
+        const needsInstall = shouldRebuild || pkgChanged || !nodeModulesExists;
 
         if (needsInstall) {
           await this.installDeps();
         }
 
-        return { rebuilt: Boolean(opts.rebuild), installed: needsInstall };
+        await fs.writeFile(versionFile, cliVersion, { encoding: 'utf8' });
+
+        return { rebuilt: shouldRebuild, installed: needsInstall };
       },
       { timeoutMs: 5 * 60 * 1000 },
     );
@@ -86,32 +107,36 @@ export class ScriptWorkspace {
     client: CmaClient.Client,
     scriptContent: string,
     options: { generateSchema?: boolean } = {},
-  ): Promise<{ scriptPath: string; schemaPath: string }> {
+  ): Promise<{ runDir: string; scriptPath: string; schemaPath: string }> {
     const { generateSchema = true } = options;
 
-    const schemaPath = path.join(this.scriptsPath, 'schema.ts');
+    const runDir = path.join(this.runsPath, randomUUID());
+    await fs.mkdir(runDir, { recursive: true });
+
+    const schemaPath = path.join(runDir, 'schema.ts');
     const schemaTypes = generateSchema
       ? await generateSchemaTypes(client, { wrapInGlobalNamespace: true })
       : '// Schema types not generated (script does not reference `Schema.*`).\ndeclare global {\n  namespace Schema {}\n}\nexport {};\n';
     await fs.writeFile(schemaPath, schemaTypes, { encoding: 'utf8' });
 
-    const filename = `script-${Date.now()}-${process.pid}.ts`;
-    const scriptPath = path.join(this.scriptsPath, filename);
+    const scriptPath = path.join(runDir, 'script.ts');
     await fs.writeFile(scriptPath, scriptContent, { encoding: 'utf8' });
 
-    return { scriptPath, schemaPath };
+    await this.writeRunTsConfig(runDir);
+
+    return { runDir, scriptPath, schemaPath };
   }
 
-  async cleanupScript(scriptPath: string): Promise<void> {
-    await fs.unlink(scriptPath).catch(() => {});
+  async cleanupRun(runDir: string): Promise<void> {
+    await fs.rm(runDir, { recursive: true, force: true }).catch(() => {});
   }
 
-  async validate(): Promise<ValidationOutput> {
+  async validate(runDir: string): Promise<ValidationOutput> {
     return new Promise((resolve, reject) => {
       const tsc = spawn(
         'npx',
         ['tsc', '--noEmit', '-p', '.', '--pretty', 'false'],
-        { cwd: this.rootPath, env: process.env },
+        { cwd: runDir, env: process.env },
       );
 
       let stdout = '';
@@ -255,7 +280,7 @@ export class ScriptWorkspace {
     return true;
   }
 
-  private async writeTsConfig(): Promise<void> {
+  private async writeRunTsConfig(runDir: string): Promise<void> {
     const tsConfig = {
       compilerOptions: {
         target: 'ES2020',
@@ -266,16 +291,20 @@ export class ScriptWorkspace {
         skipLibCheck: true,
         forceConsistentCasingInFileNames: true,
         resolveJsonModule: true,
-        outDir: './dist',
+        noEmit: true,
       },
-      include: ['scripts/**/*.ts', 'runner.ts', 'globals.d.ts'],
+      include: ['./schema.ts', './script.ts', '../../globals.d.ts'],
     };
 
     const serialized = `${JSON.stringify(tsConfig, null, 2)}\n`;
-    const tsconfigPath = path.join(this.rootPath, 'tsconfig.json');
-    const existing = await this.readFileSafe(tsconfigPath);
-    if (existing === serialized) return;
-    await fs.writeFile(tsconfigPath, serialized, { encoding: 'utf8' });
+    await fs.writeFile(path.join(runDir, 'tsconfig.json'), serialized, {
+      encoding: 'utf8',
+    });
+  }
+
+  private getCliVersion(): string {
+    const pkgPath = path.join(__dirname, '..', '..', '..', 'package.json');
+    return JSON.parse(readFileSync(pkgPath, 'utf-8')).version;
   }
 
   private async writeRunner(): Promise<void> {

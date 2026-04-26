@@ -257,7 +257,7 @@ export default class Command extends CmaClientCommand {
 
     const needsSchema = /\bSchema\./.test(content);
 
-    const { scriptPath } = await workspace.writeScriptAndSchema(
+    const { runDir, scriptPath } = await workspace.writeScriptAndSchema(
       client,
       content,
       { generateSchema: needsSchema },
@@ -265,7 +265,7 @@ export default class Command extends CmaClientCommand {
 
     try {
       if (!flags['skip-validation']) {
-        const validation = await workspace.validate();
+        const validation = await workspace.validate(runDir);
         if (!validation.passed) {
           this.log();
           this.log(validation.output);
@@ -302,7 +302,7 @@ export default class Command extends CmaClientCommand {
         this.exit(result.exitCode || 1);
       }
     } finally {
-      await workspace.cleanupScript(scriptPath);
+      await workspace.cleanupRun(runDir);
     }
   }
 
