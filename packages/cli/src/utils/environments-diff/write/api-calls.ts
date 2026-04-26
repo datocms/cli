@@ -106,6 +106,7 @@ function deserializeBody(
               case 'validators.rich_text_blocks.item_types':
               case 'validators.single_block_blocks.item_types':
               case 'validators.structured_text_blocks.item_types':
+              case 'validators.structured_text_inline_blocks.item_types':
               case 'validators.structured_text_links.item_types':
               case 'validators.item_item_type.item_types':
               case 'validators.items_item_type.item_types': {

@@ -321,7 +321,8 @@ function mapFieldType(
       }
 
       if (
-        field.attributes.validators.structured_text_links.item_types.length > 0
+        (field.attributes.validators.structured_text_inline_blocks?.item_types
+          .length ?? 0) > 0
       ) {
         properties.push(
           ts.factory.createPropertySignature(
@@ -329,7 +330,8 @@ function mapFieldType(
             ts.factory.createIdentifier('inline_blocks'),
             undefined,
             createBlocksUnion(
-              field.attributes.validators.structured_text_links.item_types,
+              field.attributes.validators.structured_text_inline_blocks!
+                .item_types,
               itemTypeIdToTypeName,
             ),
           ),
@@ -797,9 +799,10 @@ function filterItemTypesAndFields(
       } else if (fieldType === 'structured_text') {
         const blockIds =
           field.attributes.validators.structured_text_blocks?.item_types || [];
-        const linkIds =
-          field.attributes.validators.structured_text_links?.item_types || [];
-        dependentItemTypeIds = [...blockIds, ...linkIds];
+        const inlineBlockIds =
+          field.attributes.validators.structured_text_inline_blocks
+            ?.item_types || [];
+        dependentItemTypeIds = [...blockIds, ...inlineBlockIds];
       } else if (
         fieldType === 'single_block' &&
         field.attributes.validators.single_block_blocks
