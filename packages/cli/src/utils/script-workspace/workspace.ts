@@ -259,6 +259,7 @@ export class ScriptWorkspace {
         'datocms-structured-text-to-plain-text': '^5.1.7',
         'datocms-structured-text-to-html-string': '^5.1.7',
         'datocms-structured-text-to-markdown': '^5.1.7',
+        'datocms-structured-text-dastdown': '^5.1.11',
         parse5: '^8.0.1',
       },
       devDependencies: {
