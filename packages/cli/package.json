@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@datocms/cli-utils": "^4.0.15",
+    "@datocms/cma-client-analysis": "^5.4.8",
     "@datocms/dashboard-client": "^5.4.3",
     "@datocms/rest-api-reference": "^5.4.1",
     "@datocms/rest-client-utils": "^5.2.8",
