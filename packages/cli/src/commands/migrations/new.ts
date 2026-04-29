@@ -2,11 +2,11 @@ import { readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { CmaClientCommand, oclif } from '@datocms/cli-utils';
+import { generateSchemaTypesForMigration } from '@datocms/cma-schema-types-generator';
 import { camelCase } from 'lodash';
 import mkdirp from 'mkdirp';
 import { diffEnvironments } from '../../utils/environments-diff';
 import { findNearestFile } from '../../utils/find-nearest-file';
-import { generateSchemaTypesForMigration } from '../../utils/schema-types-generator';
 
 const jsTemplate = `
 'use strict';

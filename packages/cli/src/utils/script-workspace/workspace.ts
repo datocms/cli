@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { CmaClient } from '@datocms/cli-utils';
+import { generateSchemaTypes } from '@datocms/cma-schema-types-generator';
 import envPaths from 'env-paths';
-import { generateSchemaTypes } from '../schema-types-generator';
 import { withLock } from './locks';
 
 const WORKSPACE_LOCK_NAME = 'script-workspace-init';
@@ -115,16 +115,33 @@ export class ScriptWorkspace {
 
     const schemaPath = path.join(runDir, 'schema.ts');
     const schemaTypes = generateSchema
-      ? await generateSchemaTypes(client, { wrapInGlobalNamespace: true })
-      : '// Schema types not generated (script does not reference `Schema.*`).\ndeclare global {\n  namespace Schema {}\n}\nexport {};\n';
+      ? await generateSchemaTypes(client)
+      : '// Schema types not generated (script does not reference `Schema.*`).\nexport {};\n';
     await fs.writeFile(schemaPath, schemaTypes, { encoding: 'utf8' });
 
     const scriptPath = path.join(runDir, 'script.ts');
     await fs.writeFile(scriptPath, scriptContent, { encoding: 'utf8' });
 
+    await this.writeSchemaGlobals(runDir);
     await this.writeRunTsConfig(runDir);
 
     return { runDir, scriptPath, schemaPath };
+  }
+
+  private async writeSchemaGlobals(runDir: string): Promise<void> {
+    const content = `import * as SchemaModule from './schema.js';
+
+declare global {
+  export import Schema = SchemaModule;
+}
+
+(globalThis as unknown as { Schema: typeof SchemaModule }).Schema =
+  SchemaModule;
+`;
+
+    await fs.writeFile(path.join(runDir, 'schema-globals.ts'), content, {
+      encoding: 'utf8',
+    });
   }
 
   async cleanupRun(runDir: string): Promise<void> {
@@ -294,7 +311,12 @@ export class ScriptWorkspace {
         resolveJsonModule: true,
         noEmit: true,
       },
-      include: ['./schema.ts', './script.ts', '../../globals.d.ts'],
+      include: [
+        './schema.ts',
+        './schema-globals.ts',
+        './script.ts',
+        '../../globals.d.ts',
+      ],
     };
 
     const serialized = `${JSON.stringify(tsConfig, null, 2)}\n`;
@@ -310,6 +332,8 @@ export class ScriptWorkspace {
 
   private async writeRunner(): Promise<void> {
     const runner = `import { buildClient } from '@datocms/cma-client-node';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 async function main() {
   const scriptPath = process.argv[2];
@@ -330,12 +354,16 @@ async function main() {
   const client = buildClient({ apiToken, environment, baseUrl });
 
   // Expose client as ambient global for Format B (top-level) scripts.
-  // Schema is types-only, so no runtime binding is needed.
   (globalThis as unknown as { client: typeof client }).client = client;
+
+  // Wire up the runtime \`Schema\` global from the per-run schema-globals.ts.
+  // The type-side global is declared inside that file via \`declare global\`.
+  const runDir = path.dirname(scriptPath);
+  await import(pathToFileURL(path.join(runDir, 'schema-globals.ts')).href);
 
   const scriptUrl = scriptPath.startsWith('file://')
     ? scriptPath
-    : 'file://' + scriptPath;
+    : pathToFileURL(scriptPath).href;
 
   const mod = await import(scriptUrl);
 
