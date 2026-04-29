@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@datocms/cli-utils": "^4.0.22",
-    "@datocms/cma-client-analysis": "^5.4.9",
-    "@datocms/cma-schema-types-generator": "^5.4.12",
+    "@datocms/cma-client-analysis": "^5.4.13",
+    "@datocms/cma-schema-types-generator": "^5.4.13",
     "@datocms/dashboard-client": "^5.4.9",
     "@datocms/rest-api-reference": "^5.4.9",
     "@datocms/rest-client-utils": "^5.4.9",
@@ -89,10 +89,7 @@
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": [
-    "datocms",
-    "cli"
-  ],
+  "keywords": ["datocms", "cli"],
   "types": "lib/index.d.ts",
   "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {

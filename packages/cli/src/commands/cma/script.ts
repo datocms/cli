@@ -141,7 +141,7 @@ export default class Command extends CmaClientCommand {
     }),
     'rebuild-workspace': oclif.Flags.boolean({
       description:
-        'Stdin-mode only: wipe and rebuild the internal workspace (node_modules, tsconfig). Use after a CLI upgrade if stdin scripts fail with module resolution errors.',
+        'Wipe and rebuild the internal workspace used by stdin-mode (node_modules, tsconfig), then exit without running any script. Use after a CLI upgrade if stdin scripts fail with module resolution errors.',
       required: false,
       default: false,
     }),
@@ -155,6 +155,15 @@ export default class Command extends CmaClientCommand {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Command);
+
+    if (flags['rebuild-workspace']) {
+      const workspace = new ScriptWorkspace();
+      this.log(`Rebuilding script workspace at: ${workspace.rootPath}`);
+      this.log('Reinstalling dependencies (this may take a minute)...');
+      await workspace.ensure({ rebuild: true });
+      this.log('Done.');
+      return;
+    }
 
     if (flags.file && args.file && flags.file !== args.file) {
       this.error(
@@ -253,7 +262,7 @@ export default class Command extends CmaClientCommand {
 
     const workspace = new ScriptWorkspace();
 
-    await workspace.ensure({ rebuild: flags['rebuild-workspace'] });
+    await workspace.ensure();
 
     const needsSchema = /\bSchema\./.test(content);
 
