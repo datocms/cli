@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli",
-  "version": "4.0.22",
+  "version": "4.0.23",
   "description": "Legacy scoped alias for the `datocms` package",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -15,22 +15,30 @@
     "url": "https://github.com/datocms/cli.git",
     "directory": "packages/cli-legacy"
   },
-  "files": ["/bin", "/lib"],
+  "files": [
+    "/bin",
+    "/lib"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
     "@oclif/core": "^4",
-    "datocms": "^4.0.22"
+    "datocms": "^4.0.23"
   },
   "oclif": {
     "bin": "datocms",
     "dirname": "datocms",
-    "plugins": ["datocms"]
+    "plugins": [
+      "datocms"
+    ]
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": ["datocms", "cli"]
+  "keywords": [
+    "datocms",
+    "cli"
+  ]
 }

@@ -162,7 +162,7 @@ EXAMPLES
     $ datocms cma:call items list --environment my-environment
 ```
 
-_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/cma/call.ts)_
+_See code: [src/commands/cma/call.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/cma/call.ts)_
 
 ## `datocms cma:docs [RESOURCE] [ACTION]`
 
@@ -214,7 +214,7 @@ EXAMPLES
     $ datocms cma:docs items create --expand-types ItemCreateSchema
 ```
 
-_See code: [src/commands/cma/docs.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/cma/docs.ts)_
+_See code: [src/commands/cma/docs.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/cma/docs.ts)_
 
 ## `datocms cma:script [FILE]`
 
@@ -234,8 +234,9 @@ FLAGS
   -e, --environment=<value>  Environment to execute the script against
   -f, --file=<value>         Path to a TypeScript file to run (file-mode). If omitted, the script is read from stdin
                              (stdin-mode).
-      --rebuild-workspace    Stdin-mode only: wipe and rebuild the internal workspace (node_modules, tsconfig). Use
-                             after a CLI upgrade if stdin scripts fail with module resolution errors.
+      --rebuild-workspace    Wipe and rebuild the internal workspace used by stdin-mode (node_modules, tsconfig), then
+                             exit without running any script. Use after a CLI upgrade if stdin scripts fail with module
+                             resolution errors.
       --skip-validation      Skip source validation and (stdin-mode only) TypeScript type-checking before execution
       --timeout=<value>      Kill the script if it runs longer than this many seconds. Default: no timeout.
 
@@ -334,7 +335,7 @@ EXAMPLES
       '.[].api_key'
 ```
 
-_See code: [src/commands/cma/script.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/cma/script.ts)_
+_See code: [src/commands/cma/script.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/cma/script.ts)_
 
 ## `datocms environments:destroy ENVIRONMENT_ID`
 
@@ -362,7 +363,7 @@ DESCRIPTION
   Destroys a sandbox environment
 ```
 
-_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/environments/destroy.ts)_
+_See code: [src/commands/environments/destroy.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/environments/destroy.ts)_
 
 ## `datocms environments:fork SOURCE_ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -397,7 +398,7 @@ DESCRIPTION
   Creates a new sandbox environment by forking an existing one
 ```
 
-_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/environments/fork.ts)_
+_See code: [src/commands/environments/fork.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/environments/fork.ts)_
 
 ## `datocms environments:list`
 
@@ -422,7 +423,7 @@ DESCRIPTION
   Lists primary/sandbox environments of a project
 ```
 
-_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/environments/list.ts)_
+_See code: [src/commands/environments/list.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/environments/list.ts)_
 
 ## `datocms environments:primary`
 
@@ -447,7 +448,7 @@ DESCRIPTION
   Returns the name the primary environment of a project
 ```
 
-_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/environments/primary.ts)_
+_See code: [src/commands/environments/primary.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/environments/primary.ts)_
 
 ## `datocms environments:promote ENVIRONMENT_ID`
 
@@ -475,7 +476,7 @@ DESCRIPTION
   Promotes a sandbox environment to primary
 ```
 
-_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/environments/promote.ts)_
+_See code: [src/commands/environments/promote.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/environments/promote.ts)_
 
 ## `datocms environments:rename ENVIRONMENT_ID NEW_ENVIRONMENT_ID`
 
@@ -504,7 +505,7 @@ DESCRIPTION
   Renames an environment
 ```
 
-_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/environments/rename.ts)_
+_See code: [src/commands/environments/rename.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/environments/rename.ts)_
 
 ## `datocms help [COMMAND]`
 
@@ -555,7 +556,7 @@ DESCRIPTION
   Link the current directory to a DatoCMS project and configure it
 ```
 
-_See code: [src/commands/link.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/link.ts)_
+_See code: [src/commands/link.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/link.ts)_
 
 ## `datocms login`
 
@@ -575,7 +576,7 @@ EXAMPLES
   $ datocms login
 ```
 
-_See code: [src/commands/login.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/login.ts)_
+_See code: [src/commands/login.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/login.ts)_
 
 ## `datocms logout`
 
@@ -595,7 +596,7 @@ EXAMPLES
   $ datocms logout
 ```
 
-_See code: [src/commands/logout.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/logout.ts)_
+_See code: [src/commands/logout.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/logout.ts)_
 
 ## `datocms maintenance:off`
 
@@ -620,7 +621,7 @@ DESCRIPTION
   Take a project out of maintenance mode
 ```
 
-_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/maintenance/off.ts)_
+_See code: [src/commands/maintenance/off.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/maintenance/off.ts)_
 
 ## `datocms maintenance:on`
 
@@ -648,7 +649,7 @@ DESCRIPTION
   Put a project in maintenance mode
 ```
 
-_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/maintenance/on.ts)_
+_See code: [src/commands/maintenance/on.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/maintenance/on.ts)_
 
 ## `datocms migrations:new NAME`
 
@@ -698,7 +699,7 @@ DESCRIPTION
   Create a new migration script
 ```
 
-_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/migrations/new.ts)_
+_See code: [src/commands/migrations/new.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/migrations/new.ts)_
 
 ## `datocms migrations:run`
 
@@ -741,7 +742,7 @@ DESCRIPTION
   Run migration scripts that have not run yet
 ```
 
-_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/migrations/run.ts)_
+_See code: [src/commands/migrations/run.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/migrations/run.ts)_
 
 ## `datocms plugins`
 
@@ -828,7 +829,7 @@ DESCRIPTION
   Lists official DatoCMS CLI plugins
 ```
 
-_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/plugins/available.ts)_
+_See code: [src/commands/plugins/available.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/plugins/available.ts)_
 
 ## `datocms plugins:inspect PLUGIN...`
 
@@ -1082,7 +1083,7 @@ EXAMPLES
   $ datocms projects:list --json
 ```
 
-_See code: [src/commands/projects/list.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/projects/list.ts)_
+_See code: [src/commands/projects/list.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/projects/list.ts)_
 
 ## `datocms schema:generate FILENAME`
 
@@ -1114,7 +1115,7 @@ DESCRIPTION
   Generate TypeScript definitions for the schema
 ```
 
-_See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/schema/generate.ts)_
+_See code: [src/commands/schema/generate.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/schema/generate.ts)_
 
 ## `datocms schema:inspect [FILTER]`
 
@@ -1200,7 +1201,7 @@ EXAMPLES
     $ datocms schema:inspect my_block --type=blocks_only --include-embedding-models
 ```
 
-_See code: [src/commands/schema/inspect.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/schema/inspect.ts)_
+_See code: [src/commands/schema/inspect.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/schema/inspect.ts)_
 
 ## `datocms unlink`
 
@@ -1221,7 +1222,7 @@ DESCRIPTION
   Unlink the current directory from a DatoCMS project
 ```
 
-_See code: [src/commands/unlink.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/unlink.ts)_
+_See code: [src/commands/unlink.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/unlink.ts)_
 
 ## `datocms whoami`
 
@@ -1241,5 +1242,5 @@ EXAMPLES
   $ datocms whoami
 ```
 
-_See code: [src/commands/whoami.ts](https://github.com/datocms/cli/blob/v4.0.22/packages/cli/src/commands/whoami.ts)_
+_See code: [src/commands/whoami.ts](https://github.com/datocms/cli/blob/v4.0.23/packages/cli/src/commands/whoami.ts)_
 <!-- commandsstop -->

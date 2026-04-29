@@ -1,6 +1,6 @@
 {
   "name": "datocms",
-  "version": "4.0.22",
+  "version": "4.0.23",
   "description": "CLI to interact with DatoCMS APIs",
   "author": "Stefano Verna <s.verna@datocms.com>",
   "bin": {
@@ -25,7 +25,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^4.0.22",
+    "@datocms/cli-utils": "^4.0.23",
     "@datocms/cma-client-analysis": "^5.4.13",
     "@datocms/cma-schema-types-generator": "^5.4.13",
     "@datocms/dashboard-client": "^5.4.9",
@@ -89,7 +89,10 @@
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": ["datocms", "cli"],
+  "keywords": [
+    "datocms",
+    "cli"
+  ],
   "types": "lib/index.d.ts",
   "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {
