@@ -53,14 +53,19 @@ export default class Command extends CmaClientCommand {
     '\n' +
     'Stdin-mode — pre-installed packages (importable only here):\n' +
     '  - @datocms/cma-client-node\n' +
-    '  - datocms-html-to-structured-text\n' +
     '  - datocms-structured-text-utils\n' +
-    '  - datocms-structured-text-to-plain-text\n' +
-    '  - datocms-structured-text-to-html-string\n' +
-    '  - datocms-structured-text-to-markdown\n' +
-    '  - parse5\n' +
+    '  - datocms-structured-text-dastdown\n' +
     'In file-mode you have your own `node_modules` — install whatever you\n' +
     'need there.\n' +
+    '\n' +
+    'Stdin-mode — ambient globals (no import needed):\n' +
+    '  - `client` (pre-authenticated CMA client)\n' +
+    '  - `Schema.*` (project-specific ItemTypeDefinition types, on demand)\n' +
+    '  - All named exports of `@datocms/cma-client-node`,\n' +
+    '    `datocms-structured-text-utils`, and\n' +
+    '    `datocms-structured-text-dastdown` are exposed as globals — e.g.\n' +
+    '    `buildBlockRecord(...)`, `mapNodes(...)`, `parse(...)`,\n' +
+    '    `ApiTypes.Item`, `SchemaRepository`.' +
     '\n' +
     'Use `console.log()` for output. stdout is piped through cleanly so the\n' +
     'command composes with `| jq` and similar.';

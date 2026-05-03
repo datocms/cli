@@ -24,13 +24,7 @@ export interface ValidationOptions {
   requiredFormat?: ScriptFormat;
 }
 
-export const DEFAULT_ALLOWED_PACKAGES = [
-  '@datocms/*',
-  'datocms-*',
-  'parse5',
-  'parse5/*',
-  './schema',
-];
+export const DEFAULT_ALLOWED_PACKAGES = ['@datocms/*', 'datocms-*', './schema'];
 
 const TS_DIRECTIVE_PATTERN =
   /(\/\/|\/\*)\s*@ts-(ignore|expect-error|nocheck)\b/g;
