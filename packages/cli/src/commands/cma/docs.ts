@@ -21,6 +21,8 @@ import {
 
 type SymbolMap = MethodSignatureInfo['referencedTypeSymbols'];
 
+const AUTO_EXPAND_THRESHOLD = 2000;
+
 export default class Docs extends BaseCommand {
   static description =
     'Browse the DatoCMS Content Management API reference documentation';
@@ -41,7 +43,7 @@ export default class Docs extends BaseCommand {
     {
       description: 'Expand a collapsed details section',
       command:
-        '<%= config.bin %> <%= command.id %> items create --expand "Example: Basic example"',
+        '<%= config.bin %> <%= command.id %> items create --expand-details "Example: Basic example"',
     },
     {
       description: 'Inline definitions for every reachable referenced type',
@@ -68,21 +70,21 @@ export default class Docs extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    expand: oclif.Flags.string({
+    'expand-details': oclif.Flags.string({
       description:
-        'Expand a collapsed <details> section by its summary text (can be repeated)',
+        'Expand a collapsed <details> section by its summary text (repeatable). Pass `*` to expand every collapsed section',
       multiple: true,
       required: false,
     }),
     'expand-types': oclif.Flags.string({
       description:
-        'Inline TypeScript definitions for types referenced by the action. Pass `*` to expand every reachable type, or specific type names (repeatable) to expand just those',
+        'Inline TypeScript definitions for types referenced by the action, suppressing all other output. Pass `*` to expand every reachable type, or specific type names (repeatable) to expand just those',
       multiple: true,
       required: false,
     }),
     'types-depth': oclif.Flags.integer({
       description:
-        'Maximum depth when walking referenced types at default expansion (default: 2). Useful only when --expand-types is omitted but you still want types output — set the flag to surface a deeper "Not expanded" list',
+        'Maximum depth when walking referenced types (default: 2). Has no effect with `--expand-types "*"`, which disables the depth limit',
       required: false,
     }),
   };
@@ -106,12 +108,15 @@ export default class Docs extends BaseCommand {
       return;
     }
 
+    const expandDetails = flags['expand-details'];
+
     if (!args.action) {
       const result = describeResource(
         hyperschema,
         resourcesSchema,
         args.resource,
-        flags.expand,
+        expandDetails,
+        AUTO_EXPAND_THRESHOLD,
       );
 
       if (!result) {
@@ -131,7 +136,8 @@ export default class Docs extends BaseCommand {
       resourcesSchema,
       args.resource,
       args.action,
-      flags.expand,
+      expandDetails,
+      AUTO_EXPAND_THRESHOLD,
     );
 
     if (!result) {
@@ -151,14 +157,17 @@ export default class Docs extends BaseCommand {
       args.action,
     );
 
-    const sections: string[] = [result];
+    const typesOnly = flags['expand-types'] !== undefined;
+    const sections: string[] = typesOnly ? [] : [result];
     if (endpoint) {
       // Build the TS program once: getCmaClientProgram() does not cache, and
       // both renderers below need the same checker/clientClass.
       const cmaProgram = getCmaClientProgram();
 
-      const methodsSection = renderMethodsSection(cmaProgram, endpoint);
-      if (methodsSection) sections.push(methodsSection);
+      if (!typesOnly) {
+        const methodsSection = renderMethodsSection(cmaProgram, endpoint);
+        if (methodsSection) sections.push(methodsSection);
+      }
 
       const typesSection = renderTypesSection(cmaProgram, endpoint, {
         expandTypes: flags['expand-types'],
@@ -228,10 +237,6 @@ function renderTypesSection(
   endpoint: ResourcesEndpoint,
   options: { expandTypes?: string[]; maxDepth?: number },
 ): string {
-  const wantsExpansion =
-    options.expandTypes !== undefined || options.maxDepth !== undefined;
-  if (!wantsExpansion) return '';
-
   const { program, checker, clientClass } = cmaProgram;
 
   const aggregatedSymbols: SymbolMap = new Map();
