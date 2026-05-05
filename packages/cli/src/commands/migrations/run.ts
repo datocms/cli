@@ -126,12 +126,17 @@ export default class Command extends CmaClientCommand {
       ? sourceEnv.id
       : rawDestinationEnvId || `${sourceEnv.id}-post-migrations`;
 
+    const destinationIsPrimary =
+      !!primaryEnv && primaryEnv.id === destinationEnvId;
+
     this.log(
-      `Migrations will be run in "${destinationEnvId}" sandbox environment`,
+      `Migrations will be run in "${destinationEnvId}" ${
+        destinationIsPrimary ? 'primary' : 'sandbox'
+      } environment`,
     );
 
     if (inPlace) {
-      if (primaryEnv && primaryEnv.id === destinationEnvId) {
+      if (destinationIsPrimary) {
         if (!allowPrimary) {
           this.error(
             'Running migrations on primary environment is not allowed!',
