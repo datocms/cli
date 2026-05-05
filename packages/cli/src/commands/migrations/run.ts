@@ -440,11 +440,14 @@ export default class Command extends CmaClientCommand {
     client: CmaClient.Client,
     migrationModelApiKey: string,
   ): Promise<CmaClient.ApiTypes.ItemType> {
-    const model = await client.itemTypes.create({
-      name: 'Schema migration',
-      api_key: migrationModelApiKey,
-      draft_mode_active: false,
-    });
+    const model = await client.itemTypes.create(
+      {
+        name: 'Schema migration',
+        api_key: migrationModelApiKey,
+        draft_mode_active: false,
+      },
+      { skip_menu_item_creation: true },
+    );
 
     await client.fields.create(model.id, {
       label: 'Migration file name',
