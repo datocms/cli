@@ -283,6 +283,7 @@ export default class Command extends CmaClientCommand {
         if (!validation.passed) {
           this.log();
           this.log(validation.output);
+          this.printAgentBanner('Script failed TypeScript validation.');
           this.error('Script failed TypeScript validation', {
             suggestions: [
               'Fix the errors above and try again',
@@ -343,7 +344,26 @@ export default class Command extends CmaClientCommand {
     const blocked = this.formatBlockedPatterns(options);
     const message = `${header}\n\n${blocked}`;
 
+    this.printAgentBanner('Script failed structural validation.');
     this.error(message);
+  }
+
+  private printAgentBanner(context: string): void {
+    if (process.stderr.isTTY) return;
+    const banner = [
+      '',
+      '===== AGENT INSTRUCTION =====',
+      `${context} Before retrying, you MUST read the`,
+      '`editing-records` reference of the `datocms-cma` skill. It',
+      'contains the patterns and type-safety rules required to',
+      'write a valid script.',
+      '',
+      'If the skill is not installed, fetch the reference with:',
+      '  datocms agents:reference datocms-cma editing-records',
+      '=============================',
+      '',
+    ].join('\n');
+    process.stderr.write(`${banner}\n`);
   }
 
   private formatBlockedPatterns(options: {
