@@ -130,7 +130,9 @@ export default class Command extends CmaClientCommand {
       !!primaryEnv && primaryEnv.id === destinationEnvId;
 
     this.log(
-      `Migrations will be run in "${destinationEnvId}" ${
+      `Migrations will be ${
+        dryRun ? 'simulated (dry run)' : 'run'
+      } in "${destinationEnvId}" ${
         destinationIsPrimary ? 'primary' : 'sandbox'
       } environment`,
     );
@@ -217,7 +219,9 @@ export default class Command extends CmaClientCommand {
     this.log(
       migrationScriptsToRun.length === 0
         ? 'No new migration scripts to run, skipping operation'
-        : `Successfully run ${migrationScriptsToRun.length} migration scripts`,
+        : dryRun
+          ? `Successfully simulated ${migrationScriptsToRun.length} migration scripts (dry run, no changes were made)`
+          : `Successfully run ${migrationScriptsToRun.length} migration scripts`,
     );
 
     return {
@@ -237,7 +241,11 @@ export default class Command extends CmaClientCommand {
   ) {
     const relativePath = relative(migrationsDir, script.path);
 
-    this.startSpinner(`Running migration "${relativePath}"`);
+    this.startSpinner(
+      dryRun
+        ? `Simulating migration "${relativePath}" (dry run)`
+        : `Running migration "${relativePath}"`,
+    );
 
     try {
       if (!dryRun) {
@@ -337,7 +345,11 @@ export default class Command extends CmaClientCommand {
   ) {
     try {
       this.startSpinner(
-        `Creating a fork of "${sourceEnv.id}" environment called "${destinationEnvId}"`,
+        `Creating a fork of "${
+          sourceEnv.id
+        }" environment called "${destinationEnvId}"${
+          dryRun ? ' (dry run, skipped)' : ''
+        }`,
       );
 
       const existingEnvironment = allEnvironments.find(
@@ -412,7 +424,11 @@ export default class Command extends CmaClientCommand {
       return await client.itemTypes.find(migrationModelApiKey);
     } catch (e) {
       if (e instanceof CmaClient.ApiError && e.response.status === 404) {
-        this.startSpinner(`Creating "${migrationModelApiKey}" model`);
+        this.startSpinner(
+          `Creating "${migrationModelApiKey}" model${
+            dryRun ? ' (dry run, skipped)' : ''
+          }`,
+        );
 
         let migrationItemType: CmaClient.ApiTypes.ItemType | null = null;
 
