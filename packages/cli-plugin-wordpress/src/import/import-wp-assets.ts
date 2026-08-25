@@ -51,16 +51,17 @@ export default class WpAssets extends BaseStep {
       ctx.wpMediaItems,
       (wpMediaItem) => wpMediaItem.source_url,
       async (wpMediaItem, notify) => {
-        // The legacy locale-keyed shape of `default_field_metadata`, which is
-        // what environments without the `non_localized_focal_points` opt-in
-        // accept. See the same note in the Contentful importer.
-        const defaultFieldMetadata: CmaClient.UploadLocaleKeyedDefaultFieldMetadataInRequest =
+        // `default_field_metadata` is keyed by field and then by locale
+        // (`{ alt: { en } }`), not by locale and then by field
+        // (`{ en: { alt } }`). The API rejects the latter outright —
+        // `422 INVALID_FORMAT: "en" is not a permitted key` — so this is not a
+        // matter of which shape is preferred. See the same note in the
+        // Contentful importer.
+        const defaultFieldMetadata: CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'] =
           {
-            en: {
-              title: wpMediaItem.title.rendered,
-              alt: wpMediaItem.alt_text,
-              custom_data: {},
-            },
+            title: { en: wpMediaItem.title.rendered },
+            alt: { en: wpMediaItem.alt_text },
+            custom_data: { en: {} },
           };
 
         const upload = await this.client.uploads.createFromUrl({
@@ -75,8 +76,7 @@ export default class WpAssets extends BaseStep {
               }`,
             );
           },
-          default_field_metadata:
-            defaultFieldMetadata as unknown as CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'],
+          default_field_metadata: defaultFieldMetadata,
         });
 
         wpAssetIdToDatoId[wpMediaItem.id] = upload.id;

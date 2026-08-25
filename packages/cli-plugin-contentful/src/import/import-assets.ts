@@ -40,28 +40,24 @@ export default class ImportAssets extends BaseStep {
         }
 
         try {
-          // `default_field_metadata` has two shapes, and which one an
-          // environment accepts depends on its `non_localized_focal_points`
-          // opt-in. The generated types describe the new, field-keyed one; this
-          // importer sends the legacy locale-keyed one, for which the client
-          // exports a dedicated type. Teaching the importers about the new shape
-          // is a change of its own — this only keeps the payload we already send
-          // describable.
-          const fileMetadata = ctx.locales.reduce(
-            (
-              acc: CmaClient.UploadLocaleKeyedDefaultFieldMetadataInRequest,
-              locale: string,
-            ) => {
-              acc[locale] = {
-                title: contentfulAsset.fields.title?.[locale] || null,
-                alt: contentfulAsset.fields.description?.[locale] || null,
-                custom_data: {},
-              };
+          // `default_field_metadata` is keyed by field and then by locale
+          // (`{ alt: { en } }`), not by locale and then by field
+          // (`{ en: { alt } }`). The API rejects the latter outright —
+          // `422 INVALID_FORMAT: "en" is not a permitted key`.
+          const fileMetadata: CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'] =
+            {
+              title: {},
+              alt: {},
+              custom_data: {},
+            };
 
-              return acc;
-            },
-            {},
-          );
+          for (const locale of ctx.locales) {
+            fileMetadata!.title![locale] =
+              contentfulAsset.fields.title?.[locale] || null;
+            fileMetadata!.alt![locale] =
+              contentfulAsset.fields.description?.[locale] || null;
+            fileMetadata!.custom_data![locale] = {};
+          }
 
           const client = this.client;
 
@@ -100,8 +96,7 @@ export default class ImportAssets extends BaseStep {
                   }`,
                 );
               },
-              default_field_metadata:
-                fileMetadata as unknown as CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'],
+              default_field_metadata: fileMetadata,
             });
           }
 
