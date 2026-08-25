@@ -1,4 +1,4 @@
-import type { CmaClient } from '@datocms/cli-utils';
+import { buildDefaultFieldMetadataEncoder } from '@datocms/cli-utils';
 import {
   Listr,
   type ListrRendererFactory,
@@ -45,24 +45,25 @@ export default class WpAssets extends BaseStep {
     const wpAssetIdToDatoId: Record<string, string> = {};
     const wpAssetUrlToDatoUrl: Record<string, string> = {};
 
+    // Asked once, not per asset: it costs an API call, and the answer can't
+    // change under us mid-import.
+    const encodeDefaultFieldMetadata = await buildDefaultFieldMetadataEncoder(
+      this.client,
+    );
+
     await this.runConcurrentlyOver(
       task,
       createTitle,
       ctx.wpMediaItems,
       (wpMediaItem) => wpMediaItem.source_url,
       async (wpMediaItem, notify) => {
-        // `default_field_metadata` is keyed by field and then by locale
-        // (`{ alt: { en } }`), not by locale and then by field
-        // (`{ en: { alt } }`). The API rejects the latter outright —
-        // `422 INVALID_FORMAT: "en" is not a permitted key` — so this is not a
-        // matter of which shape is preferred. See the same note in the
-        // Contentful importer.
-        const defaultFieldMetadata: CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'] =
-          {
-            title: { en: wpMediaItem.title.rendered },
-            alt: { en: wpMediaItem.alt_text },
-            custom_data: { en: {} },
-          };
+        const defaultFieldMetadata = encodeDefaultFieldMetadata({
+          en: {
+            title: wpMediaItem.title.rendered,
+            alt: wpMediaItem.alt_text,
+            custom_data: {},
+          },
+        });
 
         const upload = await this.client.uploads.createFromUrl({
           url: wpMediaItem.source_url,

@@ -8,6 +8,7 @@ import {
   createTestSite,
   destroyTestSite,
 } from '../../../../../test-helpers/dashboardClient';
+import { fieldKeyedMetadata } from '../../../../../test-helpers/defaultFieldMetadata';
 import { waitForMuxPlaybackId } from '../../../../../test-helpers/waitForMuxPlaybackId';
 
 describe('Import from WP', () => {
@@ -58,7 +59,7 @@ describe('Import from WP', () => {
     expect(uploads.length).to.eq(3);
 
     const computerImage = uploads.find(
-      (u) => u.default_field_metadata.alt.en === 'PC Alternative Text',
+      (u) => fieldKeyedMetadata(u).alt.en === 'PC Alternative Text',
     );
 
     expect(computerImage).to.exist;
@@ -66,10 +67,10 @@ describe('Import from WP', () => {
     if (!computerImage) {
       throw new Error('type narrowing fail');
     }
-    expect(computerImage.default_field_metadata.title.en).to.eq('PC Title');
+    expect(fieldKeyedMetadata(computerImage).title.en).to.eq('PC Title');
 
     const cloudImage = uploads.find(
-      (u) => u.default_field_metadata.alt.en === 'Alternative Cloud',
+      (u) => fieldKeyedMetadata(u).alt.en === 'Alternative Cloud',
     );
 
     expect(cloudImage).to.exist;
@@ -78,7 +79,7 @@ describe('Import from WP', () => {
       throw new Error('type narrowing fail');
     }
 
-    expect(cloudImage.default_field_metadata.title.en).to.eq('Cloud Title');
+    expect(fieldKeyedMetadata(cloudImage).title.en).to.eq('Cloud Title');
 
     const video = uploads.find((u) => u.format === 'mp4');
 
@@ -88,7 +89,7 @@ describe('Import from WP', () => {
       throw new Error('type narrowing fail');
     }
 
-    expect(video.default_field_metadata.title.en).to.eq('beach');
+    expect(fieldKeyedMetadata(video).title.en).to.eq('beach');
     expect((await waitForMuxPlaybackId(client, video.id)).mux_playback_id).to
       .not.be.null;
 

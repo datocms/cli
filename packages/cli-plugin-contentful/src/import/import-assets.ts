@@ -1,4 +1,4 @@
-import type { CmaClient } from '@datocms/cli-utils';
+import { buildDefaultFieldMetadataEncoder } from '@datocms/cli-utils';
 import { fetch } from '@whatwg-node/fetch';
 import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context } from '../commands/contentful/import';
@@ -17,6 +17,12 @@ export default class ImportAssets extends BaseStep {
 
     const contentfulAssets = await getAll(
       this.cfEnvironmentApi.getAssets.bind(this.cfEnvironmentApi),
+    );
+
+    // Asked once, not per asset: it costs an API call, and the answer can't
+    // change under us mid-import.
+    const encodeDefaultFieldMetadata = await buildDefaultFieldMetadataEncoder(
+      this.client,
     );
 
     await this.runConcurrentlyOver(
@@ -40,24 +46,18 @@ export default class ImportAssets extends BaseStep {
         }
 
         try {
-          // `default_field_metadata` is keyed by field and then by locale
-          // (`{ alt: { en } }`), not by locale and then by field
-          // (`{ en: { alt } }`). The API rejects the latter outright —
-          // `422 INVALID_FORMAT: "en" is not a permitted key`.
-          const fileMetadata: CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'] =
-            {
-              title: {},
-              alt: {},
-              custom_data: {},
-            };
-
-          for (const locale of ctx.locales) {
-            fileMetadata!.title![locale] =
-              contentfulAsset.fields.title?.[locale] || null;
-            fileMetadata!.alt![locale] =
-              contentfulAsset.fields.description?.[locale] || null;
-            fileMetadata!.custom_data![locale] = {};
-          }
+          const fileMetadata = encodeDefaultFieldMetadata(
+            Object.fromEntries(
+              ctx.locales.map((locale: string) => [
+                locale,
+                {
+                  title: contentfulAsset.fields.title?.[locale] || null,
+                  alt: contentfulAsset.fields.description?.[locale] || null,
+                  custom_data: {},
+                },
+              ]),
+            ),
+          );
 
           const client = this.client;
 
