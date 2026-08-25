@@ -6,14 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the DatoCMS CLI - a monorepo containing CLI tools for managing DatoCMS projects, environments, and schemas. It includes:
 
-- `@datocms/cli`: Main CLI package with environment management, migrations, and maintenance commands
-- `@datocms/cli-plugin-wordpress`: WordPress import functionality  
+- `datocms` (`packages/cli/`): Main CLI package with environment management, migrations, and maintenance commands
+- `@datocms/cli` (`packages/cli-legacy/`): Legacy scoped alias that just depends on `datocms`
+- `@datocms/cli-plugin-wordpress`: WordPress import functionality
 - `@datocms/cli-plugin-contentful`: Contentful import functionality
 - `@datocms/cli-utils`: Shared utilities and base commands
 
 ## Architecture
 
-The codebase uses **Lerna** for monorepo management with packages organized under `packages/`. Each package is built independently using TypeScript.
+The packages live under `packages/` and are **npm workspaces**. **Turborepo** runs the builds, deriving the order from the dependencies between packages, and **Changesets** handles versioning and the changelogs.
 
 ### Key Components
 
@@ -39,19 +40,24 @@ The codebase uses **Lerna** for monorepo management with packages organized unde
 ```bash
 # Initial setup
 npm install
-lerna bootstrap  
 npm run build
 
 # Development workflow
 npm run format     # Format and fix code with Biome
 npm run lint       # Check code quality with Biome
-npm run build      # Build all packages with Lerna
-npm run test       # Run tests (individual packages)
+npm run build      # Build all packages, in dependency order, via Turborepo
+npm run test       # Run every package's tests via Turborepo
 
-# Publishing
-npm run publish      # Test, build, and publish to npm
-npm run publish-next # Publish with next tag
+# Releasing
+npx changeset        # Describe a change, in the PR that makes it
+npm run publish      # Build, test, version, publish, tag, release notes
+npm run publish-next # The same, under the `next` dist-tag
 ```
+
+Changes worth mentioning in a release need a changeset committed alongside them
+(`npx changeset`); see `.changeset/README.md`. Note that `changeset version`
+runs no npm lifecycle hooks, so anything that used to hang off one — the
+`oclif readme` regeneration, in particular — lives in `bin/publish.mjs`.
 
 ### Individual Package Commands
 
@@ -67,8 +73,16 @@ npm run prepack  # Build + generate oclif manifest
 
 - Uses **Mocha** with TypeScript support via `ts-node`
 - Test files follow pattern `test/**/*.test.ts`
-- Individual packages run tests independently
-- No unified test runner - each package manages its own tests
+- Each package manages its own tests; `npm test` at the root runs them
+  through Turborepo, after building what they depend on
+- The WordPress and Contentful import suites talk to live APIs and create real
+  DatoCMS projects, which they delete afterwards. They need a `.env` at the root
+  (see `.env.sample`) and, for WordPress, `docker compose up` in its package.
+  `npm test` runs them, and so does `npm run publish` — a release cannot be cut
+  without that setup. Each prerequisite is checked in a `before` hook that says
+  what is missing and how to fix it, so a misconfiguration fails as itself
+  rather than as a 401 halfway through an import
+- `packages/cli`'s suite needs nothing
 
 ## Code Quality
 

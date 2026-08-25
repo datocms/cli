@@ -77,7 +77,7 @@ Unfortunately Contentful management client only accepts read-write tokens, so we
 To run the tests use this command:
 
 ```
-CONTENTFUL_TOKEN=xxx npm run test
+npm test
 ```
 
 You can get the `CONTENTFUL_TOKEN` from the password management service

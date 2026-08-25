@@ -1,3 +1,4 @@
+import { buildDefaultFieldMetadataEncoder } from '@datocms/cli-utils';
 import {
   Listr,
   type ListrRendererFactory,
@@ -44,12 +45,26 @@ export default class WpAssets extends BaseStep {
     const wpAssetIdToDatoId: Record<string, string> = {};
     const wpAssetUrlToDatoUrl: Record<string, string> = {};
 
+    // Asked once, not per asset: it costs an API call, and the answer can't
+    // change under us mid-import.
+    const encodeDefaultFieldMetadata = await buildDefaultFieldMetadataEncoder(
+      this.client,
+    );
+
     await this.runConcurrentlyOver(
       task,
       createTitle,
       ctx.wpMediaItems,
       (wpMediaItem) => wpMediaItem.source_url,
       async (wpMediaItem, notify) => {
+        const defaultFieldMetadata = encodeDefaultFieldMetadata({
+          en: {
+            title: wpMediaItem.title.rendered,
+            alt: wpMediaItem.alt_text,
+            custom_data: {},
+          },
+        });
+
         const upload = await this.client.uploads.createFromUrl({
           url: wpMediaItem.source_url,
           skipCreationIfAlreadyExists: true,
@@ -62,13 +77,7 @@ export default class WpAssets extends BaseStep {
               }`,
             );
           },
-          default_field_metadata: {
-            en: {
-              title: wpMediaItem.title.rendered,
-              alt: wpMediaItem.alt_text,
-              custom_data: {},
-            },
-          },
+          default_field_metadata: defaultFieldMetadata,
         });
 
         wpAssetIdToDatoId[wpMediaItem.id] = upload.id;

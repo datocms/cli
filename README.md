@@ -18,13 +18,50 @@ DatoCMS CLI tool for managing DatoCMS projects, environments and schemas.
 
 ## Development
 
-After checking out the repo, run the following:
+This is an npm-workspaces monorepo: `npm install` links the packages to each
+other, and Turborepo derives the build order from their dependencies, so there
+is nothing to bootstrap.
 
 ```
 npm install
-lerna bootstrap
 npm run build
+npm test
 ```
+
+`npm test` includes the WordPress and Contentful import suites, which talk to
+live APIs: they need a `.env` at the root (copy `.env.sample`) and, for
+WordPress, `docker compose up` in `packages/cli-plugin-wordpress`. Each suite
+checks its prerequisites first and tells you which one is missing.
+
+## Releasing
+
+Maintainers only. A release publishes the packages that changed, and gives them
+all the same version number; the ones you didn't touch keep the version they
+already had.
+
+1. **Describe your change.** Run `npx changeset` in the same PR that makes the
+   change: it asks which packages are affected and whether the bump is a
+   patch/minor/major, then writes a small markdown file under `.changeset/`
+   which you commit. `patch` is for bug fixes only; new API surface is
+   `minor`. See [`.changeset/README.md`](.changeset/README.md).
+2. **Release.** From an up-to-date, clean `main`, run `npm run publish`.
+   It builds and tests first, then applies the pending changesets (bumping the
+   versions and writing the `CHANGELOG.md`s), regenerates the oclif command
+   reference in the READMEs of the packages that moved, publishes to npm, and
+   only then tags each of them `name@X.Y.Z`, pushes, and publishes one GitHub
+   release per tag — its notes are the changelog entries changesets just wrote.
+
+If a release is interrupted, **do not undo anything**: run `npm run publish`
+again. It detects that some package is still missing from the registry and
+resumes the publish instead of starting a new release.
+
+`npm run publish-next` does the same under the `next` dist-tag, leaving
+`latest` untouched; its GitHub releases are marked as prereleases, so they
+don't become the repository's "Latest release" either.
+
+Releases up to v4.0.29 carried a single `vX.Y.Z` tag covering the whole repo.
+Those tags stay where they are; new ones are per package, which is also what the
+source links in the generated command reference now point at.
 
 <!--datocms-autoinclude-footer start-->
 

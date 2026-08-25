@@ -1,37 +1,40 @@
 import { CmaClient } from '@datocms/cli-utils';
-import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
+import type { Client } from '@datocms/dashboard-client';
 import { runCommand } from '@oclif/test';
 import { fetch } from '@whatwg-node/fetch';
 import { expect } from 'chai';
+import {
+  buildTestDashboardClient,
+  createTestSite,
+  destroyTestSite,
+} from '../../../../../test-helpers/dashboardClient';
+import { fieldKeyedMetadata } from '../../../../../test-helpers/defaultFieldMetadata';
+import {
+  requireEnv,
+  requireWordPress,
+} from '../../../../../test-helpers/preflight';
+import { waitForMuxPlaybackId } from '../../../../../test-helpers/waitForMuxPlaybackId';
+
+const WP_URL = 'http://localhost:8081/';
 
 describe('Import from WP', () => {
+  let dashboardClient: Client;
+  let siteId: string | undefined;
+
+  before(async () => {
+    requireEnv('DATOCMS_ACCOUNT_EMAIL', 'DATOCMS_ACCOUNT_PASSWORD');
+    await requireWordPress(WP_URL);
+
+    dashboardClient = await buildTestDashboardClient();
+  });
+
+  after(async () => {
+    await destroyTestSite(dashboardClient, siteId);
+  });
+
   it('works', async () => {
-    const randomString = Math.random().toString(36).slice(0, 7) + Date.now();
-
-    const nonLoggedDashboardClient = buildDashboardClient({
-      apiToken: null,
-      baseUrl: process.env.ACCOUNT_API_BASE_URL,
-    });
-
-    const account = await nonLoggedDashboardClient.account.create({
-      email: `${randomString}@delete-this-at-midnight-utc.tk`,
-      password: 'STRONG_pass123!',
-      first_name: 'Test',
-      company: 'DatoCMS',
-    });
-
-    const dashboardClient = buildDashboardClient({
-      apiToken: account.id,
-      baseUrl: process.env.ACCOUNT_API_BASE_URL,
-    });
-
-    const site = await dashboardClient.sites.create({
-      name: 'Project',
-    });
-
-    console.log(
-      `Project: https://${site.internal_subdomain}.admin.datocms.com/`,
-    );
+    const site = await createTestSite(dashboardClient, 'WordPress import test');
+    siteId = site.id;
 
     const datoApiToken = site.access_token!;
     process.env.DATOCMS_API_TOKEN = datoApiToken;
@@ -42,9 +45,21 @@ describe('Import from WP', () => {
 
     await client.itemTypes.create({ name: 'WP Page', api_key: 'wp_page' });
 
-    await runCommand(
-      'wordpress:import --wp-url=http://localhost:8081/ --wp-username=admin --wp-password=password --autoconfirm',
+    const { error: importError } = await runCommand(
+      `wordpress:import --wp-url=${WP_URL} --wp-username=admin --wp-password=password --autoconfirm`,
     );
+
+    // Without this, an import that fails outright shows up further down as
+    // `expected 0 to equal 3`, which says nothing about why. The importer wraps
+    // per-item failures in a `CuncurrentItemError` whose message names only the
+    // step and the item, so the cause has to be dug out by hand.
+    if (importError) {
+      const { originalError } = importError as { originalError?: unknown };
+      if (originalError) {
+        console.error('Caused by:', originalError);
+      }
+      throw importError;
+    }
 
     // =================== ASSETS ===================
 
@@ -53,7 +68,7 @@ describe('Import from WP', () => {
     expect(uploads.length).to.eq(3);
 
     const computerImage = uploads.find(
-      (u) => u.default_field_metadata.en.alt === 'PC Alternative Text',
+      (u) => fieldKeyedMetadata(u).alt.en === 'PC Alternative Text',
     );
 
     expect(computerImage).to.exist;
@@ -61,10 +76,10 @@ describe('Import from WP', () => {
     if (!computerImage) {
       throw new Error('type narrowing fail');
     }
-    expect(computerImage.default_field_metadata.en.title).to.eq('PC Title');
+    expect(fieldKeyedMetadata(computerImage).title.en).to.eq('PC Title');
 
     const cloudImage = uploads.find(
-      (u) => u.default_field_metadata.en.alt === 'Alternative Cloud',
+      (u) => fieldKeyedMetadata(u).alt.en === 'Alternative Cloud',
     );
 
     expect(cloudImage).to.exist;
@@ -73,7 +88,7 @@ describe('Import from WP', () => {
       throw new Error('type narrowing fail');
     }
 
-    expect(cloudImage.default_field_metadata.en.title).to.eq('Cloud Title');
+    expect(fieldKeyedMetadata(cloudImage).title.en).to.eq('Cloud Title');
 
     const video = uploads.find((u) => u.format === 'mp4');
 
@@ -83,8 +98,9 @@ describe('Import from WP', () => {
       throw new Error('type narrowing fail');
     }
 
-    expect(video.default_field_metadata.en.title).to.eq('beach');
-    expect(video.mux_playback_id).to.not.be.null;
+    expect(fieldKeyedMetadata(video).title.en).to.eq('beach');
+    expect((await waitForMuxPlaybackId(client, video.id)).mux_playback_id).to
+      .not.be.null;
 
     // =================== CATEGORIES ===================
 

@@ -1,9 +1,17 @@
 import { CmaClient } from '@datocms/cli-utils';
-import { buildClient as buildDashboardClient } from '@datocms/dashboard-client';
+import type { Client } from '@datocms/dashboard-client';
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 import type { Document } from 'datocms-structured-text-utils';
 import get from 'lodash/get';
+import {
+  buildTestDashboardClient,
+  createTestSite,
+  destroyTestSite,
+} from '../../../test-helpers/dashboardClient';
+import { fieldKeyedMetadata } from '../../../test-helpers/defaultFieldMetadata';
+import { requireEnv } from '../../../test-helpers/preflight';
+import { waitForMuxPlaybackId } from '../../../test-helpers/waitForMuxPlaybackId';
 import type { UploadData } from '../src/utils/item-create-helpers';
 
 interface BlogPostType extends CmaClient.ApiTypes.Item {
@@ -22,39 +30,29 @@ interface LandingPageType extends CmaClient.ApiTypes.Item {
 }
 
 describe('Import from Contentful', () => {
-  it('works', async () => {
-    if (!process.env.CONTENTFUL_TOKEN) {
-      throw new Error(
-        'Missing env variable CONTENTFUL_TOKEN! Cannot run tests!',
-      );
-    }
+  let dashboardClient: Client;
+  let siteId: string | undefined;
 
-    const randomString = Math.random().toString(36).slice(0, 7) + Date.now();
-
-    const nonLoggedDashboardClient = buildDashboardClient({
-      apiToken: null,
-      baseUrl: process.env.ACCOUNT_API_BASE_URL,
-    });
-
-    const account = await nonLoggedDashboardClient.account.create({
-      email: `${randomString}@delete-this-at-midnight-utc.tk`,
-      password: 'STRONG_pass123!',
-      first_name: 'Test',
-      company: 'DatoCMS',
-    });
-
-    const dashboardClient = buildDashboardClient({
-      apiToken: account.id,
-      baseUrl: process.env.ACCOUNT_API_BASE_URL,
-    });
-
-    const site = await dashboardClient.sites.create({
-      name: 'Project',
-    });
-
-    console.log(
-      `Project: https://${site.internal_subdomain}.admin.datocms.com/`,
+  before(async () => {
+    requireEnv(
+      'DATOCMS_ACCOUNT_EMAIL',
+      'DATOCMS_ACCOUNT_PASSWORD',
+      'CONTENTFUL_TOKEN',
     );
+
+    dashboardClient = await buildTestDashboardClient();
+  });
+
+  after(async () => {
+    await destroyTestSite(dashboardClient, siteId);
+  });
+
+  it('works', async () => {
+    const site = await createTestSite(
+      dashboardClient,
+      'Contentful import test',
+    );
+    siteId = site.id;
 
     const datoApiToken = site.access_token!;
     process.env.DATOCMS_API_TOKEN = datoApiToken;
@@ -187,20 +185,21 @@ describe('Import from Contentful', () => {
     expect(uploads.length).to.eq(3);
 
     const computerImage = uploads.find(
-      (u) => u.default_field_metadata['en-US'].title === 'Computer',
+      (u) => fieldKeyedMetadata(u).title['en-US'] === 'Computer',
     );
-    expect(computerImage?.default_field_metadata['en-US'].alt).to.eq(
+    expect(computerImage).to.exist;
+
+    expect(fieldKeyedMetadata(computerImage!).alt['en-US']).to.eq(
       'Computer pixel',
     );
-    expect(computerImage?.default_field_metadata.it.title).to.eq(
-      'Computer ITA',
-    );
+    expect(fieldKeyedMetadata(computerImage!).title.it).to.eq('Computer ITA');
 
     const video = uploads.find((u) => u.format === 'mp4');
     expect(video).to.exist;
 
-    expect(video?.default_field_metadata['en-US'].title).to.eq('beach video');
-    expect(video?.mux_playback_id).to.not.be.null;
+    expect(fieldKeyedMetadata(video!).title['en-US']).to.eq('beach video');
+    expect((await waitForMuxPlaybackId(client, video!.id)).mux_playback_id).to
+      .not.be.null;
 
     // =================== RECORDS ===================
 

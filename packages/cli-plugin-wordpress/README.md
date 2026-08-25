@@ -80,7 +80,7 @@ docker compose up
 You can then run tests with:
 
 ```
-npm run test
+npm test
 ```
 
 To save a new dump:
