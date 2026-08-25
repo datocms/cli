@@ -40,11 +40,16 @@ export default class ImportAssets extends BaseStep {
         }
 
         try {
+          // `default_field_metadata` has two shapes, and which one an
+          // environment accepts depends on its `non_localized_focal_points`
+          // opt-in. The generated types describe the new, field-keyed one; this
+          // importer sends the legacy locale-keyed one, for which the client
+          // exports a dedicated type. Teaching the importers about the new shape
+          // is a change of its own — this only keeps the payload we already send
+          // describable.
           const fileMetadata = ctx.locales.reduce(
             (
-              acc: NonNullable<
-                CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata']
-              >,
+              acc: CmaClient.UploadLocaleKeyedDefaultFieldMetadataInRequest,
               locale: string,
             ) => {
               acc[locale] = {
@@ -95,7 +100,8 @@ export default class ImportAssets extends BaseStep {
                   }`,
                 );
               },
-              default_field_metadata: fileMetadata,
+              default_field_metadata:
+                fileMetadata as unknown as CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'],
             });
           }
 

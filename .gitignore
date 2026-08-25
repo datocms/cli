@@ -13,3 +13,6 @@ migrations
 **/.DS_Store/
 **/api-calls/*.log
 **/api-calls.log
+# Turborepo's local cache and TypeScript's incremental build state
+.turbo
+*.tsbuildinfo

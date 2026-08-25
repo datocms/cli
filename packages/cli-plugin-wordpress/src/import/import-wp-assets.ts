@@ -1,3 +1,4 @@
+import type { CmaClient } from '@datocms/cli-utils';
 import {
   Listr,
   type ListrRendererFactory,
@@ -50,6 +51,18 @@ export default class WpAssets extends BaseStep {
       ctx.wpMediaItems,
       (wpMediaItem) => wpMediaItem.source_url,
       async (wpMediaItem, notify) => {
+        // The legacy locale-keyed shape of `default_field_metadata`, which is
+        // what environments without the `non_localized_focal_points` opt-in
+        // accept. See the same note in the Contentful importer.
+        const defaultFieldMetadata: CmaClient.UploadLocaleKeyedDefaultFieldMetadataInRequest =
+          {
+            en: {
+              title: wpMediaItem.title.rendered,
+              alt: wpMediaItem.alt_text,
+              custom_data: {},
+            },
+          };
+
         const upload = await this.client.uploads.createFromUrl({
           url: wpMediaItem.source_url,
           skipCreationIfAlreadyExists: true,
@@ -62,13 +75,8 @@ export default class WpAssets extends BaseStep {
               }`,
             );
           },
-          default_field_metadata: {
-            en: {
-              title: wpMediaItem.title.rendered,
-              alt: wpMediaItem.alt_text,
-              custom_data: {},
-            },
-          },
+          default_field_metadata:
+            defaultFieldMetadata as unknown as CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata'],
         });
 
         wpAssetIdToDatoId[wpMediaItem.id] = upload.id;

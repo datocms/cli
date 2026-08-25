@@ -11,11 +11,7 @@
     "url": "https://github.com/datocms/cli.git",
     "directory": "packages/cli-plugin-wordpress"
   },
-  "files": [
-    "/lib",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
-  ],
+  "files": ["/lib", "/npm-shrinkwrap.json", "/oclif.manifest.json"],
   "publishConfig": {
     "access": "public"
   },
@@ -36,17 +32,13 @@
     "build": "rm -rf lib && tsc -b",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run build && oclif manifest && oclif readme",
-    "test": "mocha --timeout 200000 --require ts-node/register --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif readme && git add README.md"
+    "test": "mocha --timeout 200000 --require ts-node/register --forbid-only \"test/**/*.test.ts\""
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "bugs": "https://github.com/datocms/cli/issues",
-  "keywords": [
-    "datocms",
-    "cli"
-  ],
+  "keywords": ["datocms", "cli"],
   "types": "lib/src/index.d.ts",
   "gitHead": "09f72bd8742b2933271407559d9fbcc235662876",
   "devDependencies": {
