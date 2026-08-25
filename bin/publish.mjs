@@ -265,8 +265,6 @@ const main = async () => {
       input: notes,
       stdio: ['pipe', 'inherit', 'inherit'],
     });
-    const url = ['release', 'view', tag, '--json', 'url', '--jq', '.url'];
-    console.log(capture('gh', url));
   }
 
   console.log('\n\x1b[32mReleased\x1b[0m');
