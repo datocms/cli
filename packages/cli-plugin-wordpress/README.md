@@ -52,19 +52,19 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-level=<option>   Level of logging for performed API calls
                          <options: NONE|BASIC|BODY|BODY_AND_HEADERS>
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Imports a WordPress site into a DatoCMS project
 ```
 
-_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/v4.0.25/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
+_See code: [lib/commands/wordpress/import.js](https://github.com/datocms/cli/blob/@datocms/cli-plugin-wordpress@4.1.0/packages/cli-plugin-wordpress/lib/commands/wordpress/import.js)_
 <!-- commandsstop -->
 
 # Development

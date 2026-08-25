@@ -1,6 +1,6 @@
 {
   "name": "@datocms/cli-plugin-wordpress",
-  "version": "4.0.25",
+  "version": "4.1.0",
   "description": "DatoCMS CLI plugin to import WordPress sites",
   "author": "DatoCMS <support@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
@@ -16,7 +16,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@datocms/cli-utils": "^4.0.25",
+    "@datocms/cli-utils": "^4.1.0",
     "@oclif/core": "^4",
     "async-scheduler": "^1.4.4",
     "enquirer": ">= 2.3.0 < 3",

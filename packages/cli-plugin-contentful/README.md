@@ -57,17 +57,17 @@ FLAGS
 
 GLOBAL FLAGS
   --api-token=<value>    Specify a custom API key to access a DatoCMS project
-  --config-file=<value>  [default: ./datocms.config.json] Specify a custom config file path
+  --config-file=<value>  [default: ./datocms.config.json, env: DATOCMS_CONFIG_FILE] Specify a custom config file path
   --json                 Format output as json.
   --log-mode=<option>    Where logged output should be written to
                          <options: stdout|file|directory>
-  --profile=<value>      Use settings of profile in datocms.config.js
+  --profile=<value>      [env: DATOCMS_PROFILE] Use settings of profile in datocms.config.js
 
 DESCRIPTION
   Import a Contentful project into a DatoCMS project
 ```
 
-_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/v4.0.25/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
+_See code: [lib/commands/contentful/import.js](https://github.com/datocms/cli/blob/@datocms/cli-plugin-contentful@4.1.0/packages/cli-plugin-contentful/lib/commands/contentful/import.js)_
 <!-- commandsstop -->
 
 # Test
