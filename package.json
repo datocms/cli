@@ -11,12 +11,13 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "changeset": "changeset",
-    "publish": "./bin/publish.sh",
-    "publish-next": "./bin/publish.sh --tag next"
+    "publish": "node bin/publish.mjs",
+    "publish-next": "node bin/publish.mjs --tag next"
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
     "@changesets/cli": "^3.0.1",
+    "@manypkg/get-packages": "^3.1.0",
     "@oclif/test": "^4",
     "@types/chai": "^4",
     "@types/mocha": "^10",

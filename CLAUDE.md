@@ -46,7 +46,7 @@ npm run build
 npm run format     # Format and fix code with Biome
 npm run lint       # Check code quality with Biome
 npm run build      # Build all packages, in dependency order, via Turborepo
-npm run test       # Run every package's tests via Turborepo
+npm run test       # Run the tests that need no credentials, via Turborepo
 
 # Releasing
 npx changeset        # Describe a change, in the PR that makes it
@@ -57,7 +57,7 @@ npm run publish-next # The same, under the `next` dist-tag
 Changes worth mentioning in a release need a changeset committed alongside them
 (`npx changeset`); see `.changeset/README.md`. Note that `changeset version`
 runs no npm lifecycle hooks, so anything that used to hang off one — the
-`oclif readme` regeneration, in particular — lives in `bin/publish.sh`.
+`oclif readme` regeneration, in particular — lives in `bin/publish.mjs`.
 
 ### Individual Package Commands
 
@@ -65,7 +65,7 @@ Each package supports:
 ```bash
 cd packages/cli
 npm run build    # TypeScript compilation
-npm run test     # Mocha tests
+npm run test     # Mocha tests (`test:integration` in the two import plugins)
 npm run prepack  # Build + generate oclif manifest
 ```
 
@@ -73,10 +73,13 @@ npm run prepack  # Build + generate oclif manifest
 
 - Uses **Mocha** with TypeScript support via `ts-node`
 - Test files follow pattern `test/**/*.test.ts`
-- Each package manages its own tests; `npm test` at the root runs them all
+- Each package manages its own tests; `npm test` at the root runs them
   through Turborepo, after building what they depend on
 - The WordPress and Contentful import suites talk to live DatoCMS and source
-  APIs and need credentials; `packages/cli`'s suite does not
+  APIs and need credentials, so they are **not** called `test`: they are
+  `npm run test:integration`, in their own package. That keeps `npm test` — and
+  with it every release, which runs it — green without credentials.
+  `packages/cli`'s suite needs none and runs as `test`
 
 ## Code Quality
 

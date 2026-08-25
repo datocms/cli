@@ -58,7 +58,7 @@
       "@oclif/plugin-not-found",
       "@oclif/plugin-warn-if-update-available"
     ],
-    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli/<%- commandPath %>",
+    "repositoryPrefix": "<%- repo %>/blob/datocms@<%- version %>/packages/cli/<%- commandPath %>",
     "topicSeparator": ":",
     "topics": {
       "cma": {

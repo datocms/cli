@@ -42,17 +42,21 @@ already had.
 2. **Release.** From an up-to-date, clean `main`, run `npm run publish`.
    It builds and tests first, then applies the pending changesets (bumping the
    versions and writing the `CHANGELOG.md`s), regenerates the oclif command
-   reference in each README, publishes to npm, and only then tags `vX.Y.Z`,
-   pushes, and publishes the GitHub release — its notes are the changelog
-   entries changesets just wrote.
+   reference in the READMEs of the packages that moved, publishes to npm, and
+   only then tags each of them `name@X.Y.Z`, pushes, and publishes one GitHub
+   release per tag — its notes are the changelog entries changesets just wrote.
 
 If a release is interrupted, **do not undo anything**: run `npm run publish`
 again. It detects that some package is still missing from the registry and
 resumes the publish instead of starting a new release.
 
 `npm run publish-next` does the same under the `next` dist-tag, leaving
-`latest` untouched; its GitHub release is marked as a prerelease, so it doesn't
-become the repository's "Latest release" either.
+`latest` untouched; its GitHub releases are marked as prereleases, so they
+don't become the repository's "Latest release" either.
+
+Releases up to v4.0.29 carried a single `vX.Y.Z` tag covering the whole repo.
+Those tags stay where they are; new ones are per package, which is also what the
+source links in the generated command reference now point at.
 
 <!--datocms-autoinclude-footer start-->
 
