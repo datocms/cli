@@ -28,6 +28,11 @@ npm run build
 npm test
 ```
 
+`npm test` includes the WordPress and Contentful import suites, which talk to
+live APIs: they need a `.env` at the root (copy `.env.sample`) and, for
+WordPress, `docker compose up` in `packages/cli-plugin-wordpress`. Each suite
+checks its prerequisites first and tells you which one is missing.
+
 ## Releasing
 
 Maintainers only. A release publishes the packages that changed, and gives them

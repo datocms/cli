@@ -9,13 +9,22 @@ import {
   destroyTestSite,
 } from '../../../../../test-helpers/dashboardClient';
 import { fieldKeyedMetadata } from '../../../../../test-helpers/defaultFieldMetadata';
+import {
+  requireEnv,
+  requireWordPress,
+} from '../../../../../test-helpers/preflight';
 import { waitForMuxPlaybackId } from '../../../../../test-helpers/waitForMuxPlaybackId';
+
+const WP_URL = 'http://localhost:8081/';
 
 describe('Import from WP', () => {
   let dashboardClient: Client;
   let siteId: string | undefined;
 
   before(async () => {
+    requireEnv('DATOCMS_ACCOUNT_EMAIL', 'DATOCMS_ACCOUNT_PASSWORD');
+    await requireWordPress(WP_URL);
+
     dashboardClient = await buildTestDashboardClient();
   });
 
@@ -37,7 +46,7 @@ describe('Import from WP', () => {
     await client.itemTypes.create({ name: 'WP Page', api_key: 'wp_page' });
 
     const { error: importError } = await runCommand(
-      'wordpress:import --wp-url=http://localhost:8081/ --wp-username=admin --wp-password=password --autoconfirm',
+      `wordpress:import --wp-url=${WP_URL} --wp-username=admin --wp-password=password --autoconfirm`,
     );
 
     // Without this, an import that fails outright shows up further down as

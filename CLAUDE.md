@@ -46,7 +46,7 @@ npm run build
 npm run format     # Format and fix code with Biome
 npm run lint       # Check code quality with Biome
 npm run build      # Build all packages, in dependency order, via Turborepo
-npm run test       # Run the tests that need no credentials, via Turborepo
+npm run test       # Run every package's tests via Turborepo
 
 # Releasing
 npx changeset        # Describe a change, in the PR that makes it
@@ -65,7 +65,7 @@ Each package supports:
 ```bash
 cd packages/cli
 npm run build    # TypeScript compilation
-npm run test     # Mocha tests (`test:integration` in the two import plugins)
+npm run test     # Mocha tests
 npm run prepack  # Build + generate oclif manifest
 ```
 
@@ -75,11 +75,14 @@ npm run prepack  # Build + generate oclif manifest
 - Test files follow pattern `test/**/*.test.ts`
 - Each package manages its own tests; `npm test` at the root runs them
   through Turborepo, after building what they depend on
-- The WordPress and Contentful import suites talk to live DatoCMS and source
-  APIs and need credentials, so they are **not** called `test`: they are
-  `npm run test:integration`, in their own package. That keeps `npm test` — and
-  with it every release, which runs it — green without credentials.
-  `packages/cli`'s suite needs none and runs as `test`
+- The WordPress and Contentful import suites talk to live APIs and create real
+  DatoCMS projects, which they delete afterwards. They need a `.env` at the root
+  (see `.env.sample`) and, for WordPress, `docker compose up` in its package.
+  `npm test` runs them, and so does `npm run publish` — a release cannot be cut
+  without that setup. Each prerequisite is checked in a `before` hook that says
+  what is missing and how to fix it, so a misconfiguration fails as itself
+  rather than as a 401 halfway through an import
+- `packages/cli`'s suite needs nothing
 
 ## Code Quality
 

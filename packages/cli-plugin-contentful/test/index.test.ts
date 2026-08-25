@@ -10,6 +10,7 @@ import {
   destroyTestSite,
 } from '../../../test-helpers/dashboardClient';
 import { fieldKeyedMetadata } from '../../../test-helpers/defaultFieldMetadata';
+import { requireEnv } from '../../../test-helpers/preflight';
 import { waitForMuxPlaybackId } from '../../../test-helpers/waitForMuxPlaybackId';
 import type { UploadData } from '../src/utils/item-create-helpers';
 
@@ -33,11 +34,11 @@ describe('Import from Contentful', () => {
   let siteId: string | undefined;
 
   before(async () => {
-    if (!process.env.CONTENTFUL_TOKEN) {
-      throw new Error(
-        'Missing env variable CONTENTFUL_TOKEN! Cannot run tests!',
-      );
-    }
+    requireEnv(
+      'DATOCMS_ACCOUNT_EMAIL',
+      'DATOCMS_ACCOUNT_PASSWORD',
+      'CONTENTFUL_TOKEN',
+    );
 
     dashboardClient = await buildTestDashboardClient();
   });
