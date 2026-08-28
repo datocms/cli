@@ -57,7 +57,7 @@ npm run publish-next # The same, under the `next` dist-tag
 Changes worth mentioning in a release need a changeset committed alongside them
 (`npx changeset`); see `.changeset/README.md`. Note that `changeset version`
 runs no npm lifecycle hooks, so anything that used to hang off one — the
-`oclif readme` regeneration, in particular — lives in `bin/publish.mjs`.
+`oclif readme` regeneration, in particular — lives in `toolchain/publish.mjs`.
 
 ### Individual Package Commands
 
