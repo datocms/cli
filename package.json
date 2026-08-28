@@ -6,13 +6,13 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "format": "biome check packages --apply-unsafe && biome format --write packages",
+    "format": "biome check toolchain packages --apply-unsafe && biome format --write toolchain packages",
     "lint": "biome ci packages",
     "build": "turbo run build",
     "test": "turbo run test",
     "changeset": "changeset",
-    "publish": "node bin/publish.mjs",
-    "publish-next": "node bin/publish.mjs --tag next"
+    "publish": "node toolchain/publish.mjs",
+    "publish-next": "node toolchain/publish.mjs --tag next"
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
