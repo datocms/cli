@@ -50,14 +50,16 @@ npm run test       # Run every package's tests via Turborepo
 
 # Releasing
 npx changeset        # Describe a change, in the PR that makes it
-npm run publish      # Build, test, version, publish, tag, release notes
-npm run publish-next # The same, under the `next` dist-tag
+npm run release      # Build, test, version, publish, tag, release notes
+npm run release:next # The same, under the `next` dist-tag
 ```
 
 Changes worth mentioning in a release need a changeset committed alongside them
 (`npx changeset`); see `.changeset/README.md`. Note that `changeset version`
 runs no npm lifecycle hooks, so anything that used to hang off one — the
-`oclif readme` regeneration, in particular — lives in `toolchain/publish.mjs`.
+`oclif readme` regeneration, in particular — lives in `toolchain/release.mjs`,
+which is this repo's `beforeCommit` hook into the shared
+[`@datocms/release-toolchain`](https://github.com/datocms/release-toolchain).
 
 ### Individual Package Commands
 
@@ -78,7 +80,7 @@ npm run prepack  # Build + generate oclif manifest
 - The WordPress and Contentful import suites talk to live APIs and create real
   DatoCMS projects, which they delete afterwards. They need a `.env` at the root
   (see `.env.sample`) and, for WordPress, `docker compose up` in its package.
-  `npm test` runs them, and so does `npm run publish` — a release cannot be cut
+  `npm test` runs them, and so does `npm run release` — a release cannot be cut
   without that setup. Each prerequisite is checked in a `before` hook that says
   what is missing and how to fix it, so a misconfiguration fails as itself
   rather than as a 401 halfway through an import

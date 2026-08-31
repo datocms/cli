@@ -62,20 +62,26 @@ already had.
    patch/minor/major, then writes a small markdown file under `.changeset/`
    which you commit. `patch` is for bug fixes only; new API surface is
    `minor`. See [`.changeset/README.md`](.changeset/README.md).
-2. **Release.** From an up-to-date, clean `main`, run `npm run publish`.
+2. **Release.** From an up-to-date, clean `main`, run `npm run release`.
    It builds and tests first, then applies the pending changesets (bumping the
    versions and writing the `CHANGELOG.md`s), regenerates the oclif command
    reference in the READMEs of the packages that moved, publishes to npm, and
    only then tags each of them `name@X.Y.Z`, pushes, and publishes one GitHub
    release per tag — its notes are the changelog entries changesets just wrote.
 
-If a release is interrupted, **do not undo anything**: run `npm run publish`
+If a release is interrupted, **do not undo anything**: run `npm run release`
 again. It detects that some package is still missing from the registry and
 resumes the publish instead of starting a new release.
 
-`npm run publish-next` does the same under the `next` dist-tag, leaving
+`npm run release:next` does the same under the `next` dist-tag, leaving
 `latest` untouched; its GitHub releases are marked as prereleases, so they
 don't become the repository's "Latest release" either.
+
+The script is [`@datocms/release-toolchain`](https://github.com/datocms/release-toolchain),
+shared with every other DatoCMS repository and pinned here by tag;
+`toolchain/release.mjs` is the twenty lines that are only true here, where the
+oclif command reference has to be regenerated between the version bump and the
+release commit.
 
 Releases up to v4.0.29 carried a single `vX.Y.Z` tag covering the whole repo.
 Those tags stay where they are; new ones are per package, which is also what the
