@@ -1,5 +1,13 @@
 # @datocms/cli-utils
 
+## 4.2.1
+
+### Patch Changes
+
+- 1fdbb5d: Add the `repository` field to the package manifest. It was the only package
+  here without one, so npm had no link back to the source, and tooling that reads
+  that field could not resolve the repository.
+
 ## 4.2.0
 
 ### Minor Changes
