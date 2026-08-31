@@ -140,11 +140,22 @@ const main = async () => {
   }
 
   run('git', ['fetch', '--quiet', 'origin', branch]);
+  // Being *ahead* of origin is not a problem here, it's the normal resume
+  // state: the release commit is made locally and pushed only once npm has
+  // accepted the packages, so a run that died in between leaves exactly that.
+  // What we can't work with is the other direction — commits on origin we
+  // don't have, which we'd release without.
   if (
-    capture('git', ['rev-parse', 'HEAD']) !==
-    capture('git', ['rev-parse', `origin/${branch}`])
+    !succeeds('git', [
+      'merge-base',
+      '--is-ancestor',
+      `origin/${branch}`,
+      'HEAD',
+    ])
   ) {
-    fail(`${branch} and origin/${branch} have diverged. Pull (or push) first.`);
+    fail(
+      `origin/${branch} has commits ${branch} doesn't. Pull (and rerun) first.`,
+    );
   }
 
   if (!succeeds('npm', ['whoami']))
