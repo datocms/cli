@@ -1,4 +1,4 @@
-import { buildDefaultFieldMetadataEncoder } from '@datocms/cli-utils';
+import type { CmaClient } from '@datocms/cli-utils';
 import { fetch } from '@whatwg-node/fetch';
 import type { ListrRendererFactory, ListrTaskWrapper } from 'listr2';
 import type { Context } from '../commands/contentful/import';
@@ -6,6 +6,20 @@ import { getAll } from '../utils/getAll';
 import BaseStep from './base-step';
 
 const createAssetsLog = 'Import assets from Contentful';
+
+/**
+ * The locale-indexed part of an asset's `default_field_metadata` — everything
+ * but `focal_point` and `poster_time`, which this importer doesn't set — with
+ * the three members required, so they can be filled in a loop.
+ */
+type LocalizedDefaultFieldMetadata = Required<
+  Pick<
+    NonNullable<
+      CmaClient.ApiTypes.UploadCreateSchema['default_field_metadata']
+    >,
+    'alt' | 'title' | 'custom_data'
+  >
+>;
 
 export default class ImportAssets extends BaseStep {
   async task(
@@ -17,12 +31,6 @@ export default class ImportAssets extends BaseStep {
 
     const contentfulAssets = await getAll(
       this.cfEnvironmentApi.getAssets.bind(this.cfEnvironmentApi),
-    );
-
-    // Asked once, not per asset: it costs an API call, and the answer can't
-    // change under us mid-import.
-    const encodeDefaultFieldMetadata = await buildDefaultFieldMetadataEncoder(
-      this.client,
     );
 
     await this.runConcurrentlyOver(
@@ -46,18 +54,23 @@ export default class ImportAssets extends BaseStep {
         }
 
         try {
-          const fileMetadata = encodeDefaultFieldMetadata(
-            Object.fromEntries(
-              ctx.locales.map((locale: string) => [
-                locale,
-                {
-                  title: contentfulAsset.fields.title?.[locale] || null,
-                  alt: contentfulAsset.fields.description?.[locale] || null,
-                  custom_data: {},
-                },
-              ]),
-            ),
-          );
+          // Field-keyed (`{ alt: { en } }`), which is what the types describe.
+          // Environments that still speak the locale-keyed shape are
+          // `uploads.createFromUrl`'s problem, not ours: the simple methods
+          // convert in both directions.
+          const fileMetadata: LocalizedDefaultFieldMetadata = {
+            title: {},
+            alt: {},
+            custom_data: {},
+          };
+
+          for (const locale of ctx.locales) {
+            fileMetadata.title[locale] =
+              contentfulAsset.fields.title?.[locale] || null;
+            fileMetadata.alt[locale] =
+              contentfulAsset.fields.description?.[locale] || null;
+            fileMetadata.custom_data[locale] = {};
+          }
 
           const client = this.client;
 

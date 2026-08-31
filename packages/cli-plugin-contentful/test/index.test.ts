@@ -9,7 +9,6 @@ import {
   createTestSite,
   destroyTestSite,
 } from '../../../test-helpers/dashboardClient';
-import { fieldKeyedMetadata } from '../../../test-helpers/defaultFieldMetadata';
 import { requireEnv } from '../../../test-helpers/preflight';
 import { waitForMuxPlaybackId } from '../../../test-helpers/waitForMuxPlaybackId';
 import type { UploadData } from '../src/utils/item-create-helpers';
@@ -185,19 +184,21 @@ describe('Import from Contentful', () => {
     expect(uploads.length).to.eq(3);
 
     const computerImage = uploads.find(
-      (u) => fieldKeyedMetadata(u).title['en-US'] === 'Computer',
+      (u) => u.default_field_metadata.title['en-US'] === 'Computer',
     );
     expect(computerImage).to.exist;
 
-    expect(fieldKeyedMetadata(computerImage!).alt['en-US']).to.eq(
+    expect(computerImage!.default_field_metadata.alt['en-US']).to.eq(
       'Computer pixel',
     );
-    expect(fieldKeyedMetadata(computerImage!).title.it).to.eq('Computer ITA');
+    expect(computerImage!.default_field_metadata.title.it).to.eq(
+      'Computer ITA',
+    );
 
     const video = uploads.find((u) => u.format === 'mp4');
     expect(video).to.exist;
 
-    expect(fieldKeyedMetadata(video!).title['en-US']).to.eq('beach video');
+    expect(video!.default_field_metadata.title['en-US']).to.eq('beach video');
     expect((await waitForMuxPlaybackId(client, video!.id)).mux_playback_id).to
       .not.be.null;
 

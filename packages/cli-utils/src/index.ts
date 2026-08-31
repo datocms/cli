@@ -7,7 +7,6 @@ export * as CmaClient from '@datocms/cma-client-node';
 export * as oclif from '@oclif/core';
 export * from './base-command';
 export * from './cma-client-command';
-export * from './default-field-metadata';
 export * from './config';
 export * from './credentials';
 export * from './dato-config-command';
