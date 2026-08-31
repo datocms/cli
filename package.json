@@ -17,8 +17,8 @@
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
     "@changesets/cli": "^3.0.1",
-    "@datocms/release-toolchain": "github:datocms/release-toolchain#v1.1.0",
     "@datocms/dashboard-client": "^6.1.0",
+    "@datocms/release-toolchain": "github:datocms/release-toolchain#v1.2.0",
     "@oclif/test": "^4",
     "@types/chai": "^4",
     "@types/mocha": "^10",
