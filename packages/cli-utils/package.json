@@ -5,6 +5,11 @@
   "author": "Stefano Verna <s.verna@datocms.com>",
   "homepage": "https://github.com/datocms/cli",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datocms/cli.git",
+    "directory": "packages/cli-utils"
+  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "directories": {

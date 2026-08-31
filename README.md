@@ -33,6 +33,24 @@ live APIs: they need a `.env` at the root (copy `.env.sample`) and, for
 WordPress, `docker compose up` in `packages/cli-plugin-wordpress`. Each suite
 checks its prerequisites first and tells you which one is missing.
 
+## Trying a change before it's released
+
+Every push to a branch here publishes a preview of all the packages, which you
+can run or install anywhere — no npm release, no `npm link`:
+
+```
+npx https://pkg.pr.new/datocms@<commit-sha> environments:list
+npm i https://pkg.pr.new/@datocms/cli-plugin-wordpress@<commit-sha>
+```
+
+The exact URLs show up in the commit's check run on GitHub, and in a comment on
+the pull request once there is one. Installing one preview pulls in the previews
+of its siblings built from the same commit, so a change spanning several
+packages can be tried as one coherent set.
+
+Previews are throwaway: they are never published to npm, and the URL stops
+resolving after a while. Never commit one to a `package.json` that ships.
+
 ## Releasing
 
 Maintainers only. A release publishes the packages that changed, and gives them
