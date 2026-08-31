@@ -30,6 +30,7 @@
     "lint-staged": "^13.1.0",
     "mocha": "^10",
     "oclif": "^4",
+    "pkg-pr-new": "^0.0.88",
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "tslib": "^2.3.1",
