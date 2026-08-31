@@ -11,14 +11,14 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "changeset": "changeset",
-    "publish": "node toolchain/publish.mjs",
-    "publish-next": "node toolchain/publish.mjs --tag next"
+    "release": "node toolchain/release.mjs",
+    "release:next": "node toolchain/release.mjs --tag next"
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
     "@changesets/cli": "^3.0.1",
+    "@datocms/release-toolchain": "github:datocms/release-toolchain#v1.0.0",
     "@datocms/dashboard-client": "^6.1.0",
-    "@manypkg/get-packages": "^3.1.0",
     "@oclif/test": "^4",
     "@types/chai": "^4",
     "@types/mocha": "^10",
