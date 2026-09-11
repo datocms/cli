@@ -2,7 +2,7 @@ import { BaseCommand, oclif } from '@datocms/cli-utils';
 
 const NAME_PATTERN = /^[a-z0-9-]+$/;
 const SKILLS_BASE_URL =
-  'https://raw.githubusercontent.com/datocms/agent-skills/refs/heads/master/skills/';
+  'https://raw.githubusercontent.com/datocms/agent-skills/86c533b74c2913e590797eb0b2622d2cdfe5cf68/skills/';
 
 export default class Command extends BaseCommand {
   static hidden = true;
