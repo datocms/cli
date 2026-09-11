@@ -1,8 +1,19 @@
 import { BaseCommand, oclif } from '@datocms/cli-utils';
 
 const NAME_PATTERN = /^[a-z0-9-]+$/;
-const SKILLS_BASE_URL =
-  'https://raw.githubusercontent.com/datocms/agent-skills/86c533b74c2913e590797eb0b2622d2cdfe5cf68/skills/';
+const LEGACY_SKILL_DOMAINS = new Map([
+  ['datocms-cda', 'cda'],
+  ['datocms-cli', 'cli'],
+  ['datocms-cma', 'cma'],
+  ['datocms-content-modeling', 'modeling'],
+  ['datocms-frontend-integrations', 'frontend'],
+  ['datocms-plugin', 'plugin'],
+  ['datocms-setup', 'setup'],
+  ['datocms-feedback', 'feedback'],
+]);
+const DOMAINS = new Set(LEGACY_SKILL_DOMAINS.values());
+const REFERENCES_BASE_URL =
+  'https://raw.githubusercontent.com/datocms/agent-skills/b22e0f87d52bd1a20f146191ba760ce46616150e/skills/datocms/references/';
 
 export default class Command extends BaseCommand {
   static hidden = true;
@@ -12,19 +23,21 @@ export default class Command extends BaseCommand {
 
   static examples = [
     {
-      description: "Print the datocms-cma skill's editing-records reference",
+      description: "Print the datocms skill's CMA editing-records reference",
       command:
-        '<%= config.bin %> <%= command.id %> datocms-cma editing-records',
+        '<%= config.bin %> <%= command.id %> datocms cma/editing-records',
     },
   ];
 
   static args = {
     skill: oclif.Args.string({
-      description: 'Skill name (e.g. `datocms-cma`)',
+      description:
+        'Skill name (`datocms`, or a legacy name such as `datocms-cma`)',
       required: true,
     }),
     name: oclif.Args.string({
-      description: 'Reference name (e.g. `editing-records`)',
+      description:
+        'Reference path (e.g. `cma/editing-records`, or `editing-records` with a legacy skill name)',
       required: true,
     }),
   };
@@ -38,13 +51,40 @@ export default class Command extends BaseCommand {
       );
     }
 
-    if (!NAME_PATTERN.test(args.name)) {
+    const legacyDomain = LEGACY_SKILL_DOMAINS.get(args.skill);
+    if (args.skill !== 'datocms' && !legacyDomain) {
       this.error(
-        `Invalid reference name "${args.name}": must match ${NAME_PATTERN}`,
+        `Unknown skill "${
+          args.skill
+        }": use "datocms" or a supported legacy skill name (${[
+          ...LEGACY_SKILL_DOMAINS.keys(),
+        ].join(', ')})`,
       );
     }
 
-    const url = `${SKILLS_BASE_URL}${args.skill}/references/${args.name}.md`;
+    const referencePath = legacyDomain
+      ? `${legacyDomain}/${args.name}`
+      : args.name;
+    const [domain, name, ...extraSegments] = referencePath.split('/');
+
+    if (
+      !domain ||
+      !DOMAINS.has(domain) ||
+      !name ||
+      !NAME_PATTERN.test(name) ||
+      name !== name.trim() ||
+      extraSegments.length > 0
+    ) {
+      this.error(
+        `Invalid reference name "${args.name}": use ${
+          legacyDomain ? 'a reference name' : '"<domain>/<name>"'
+        } with ${
+          legacyDomain ? '' : `domain one of ${[...DOMAINS].join(', ')} and `
+        }name matching ${NAME_PATTERN}`,
+      );
+    }
+
+    const url = `${REFERENCES_BASE_URL}${referencePath}.md`;
 
     let response: Response;
     try {

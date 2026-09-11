@@ -16,6 +16,23 @@ DatoCMS CLI tool for managing DatoCMS projects, environments and schemas.
 - [@datocms/cli-plugin-wordpress](https://github.com/datocms/cli/tree/main/packages/cli-plugin-wordpress): CLI plugin to import WordPress websites into DatoCMS projects
 - [@datocms/cli-plugin-contentful](https://github.com/datocms/cli/tree/main/packages/cli-plugin-contentful): CLI plugin to import Contentful spaces into DatoCMS projects
 
+## Reference documents
+
+Read a bundled reference from the `datocms` skill without installing it locally:
+
+```sh
+datocms agents:reference datocms cma/editing-records
+```
+
+Use `<domain>/<name>` without the `.md` extension. Domains are `cda`, `cli`,
+`cma`, `modeling`, `frontend`, `plugin`, `setup`, and `feedback`. Downloads use
+an immutable revision of the skill bundle.
+
+Legacy commands such as `datocms agents:reference datocms-cma editing-records`
+still work. `datocms-content-modeling` maps to `modeling`,
+`datocms-frontend-integrations` maps to `frontend`, and the other legacy names
+map to the domain after `datocms-`.
+
 ## Development
 
 This is an npm-workspaces monorepo: `npm install` links the packages to each
