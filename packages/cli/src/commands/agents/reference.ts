@@ -13,7 +13,7 @@ const LEGACY_SKILL_DOMAINS = new Map([
 ]);
 const DOMAINS = new Set(LEGACY_SKILL_DOMAINS.values());
 const REFERENCES_BASE_URL =
-  'https://raw.githubusercontent.com/datocms/agent-skills/b22e0f87d52bd1a20f146191ba760ce46616150e/skills/datocms/references/';
+  'https://raw.githubusercontent.com/datocms/agent-skills/cf3d1bd2af63c95d657fa80f7c242827c689db7f/skills/datocms/references/';
 
 export default class Command extends BaseCommand {
   static hidden = true;
