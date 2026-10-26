@@ -16,3 +16,4 @@ migrations
 # Turborepo's local cache and TypeScript's incremental build state
 .turbo
 *.tsbuildinfo
+CLAUDE.md
